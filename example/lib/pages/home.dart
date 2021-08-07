@@ -97,4 +97,9 @@ class _HomePageState extends State<HomePage> with TrayListener {
   void onTrayIconRightMouseUp() {
     print(TrayManager.instance.getFrame());
   }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) {
+    print(menuItem.toJson());
+  }
 }

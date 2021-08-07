@@ -12,6 +12,7 @@ const kEventOnTrayIconMouseDown = 'onTrayIconMouseDown';
 const kEventOnTrayIconMouseUp = 'onTrayIconMouseUp';
 const kEventOnTrayIconRightMouseDown = 'onTrayIconRightMouseDown';
 const kEventOnTrayIconRightMouseUp = 'onTrayIconRightMouseUp';
+const kEventOnTrayMenuItemClick = 'onTrayMenuItemClick';
 
 class TrayManager {
   TrayManager._();
@@ -32,29 +33,13 @@ class TrayManager {
   }
 
   Future<void> _methodCallHandler(MethodCall call) async {
-    notifyListeners(call.method);
-  }
-
-  bool get hasListeners {
-    return _listeners!.isNotEmpty;
-  }
-
-  void addListener(TrayListener listener) {
-    _listeners!.add(listener);
-  }
-
-  void removeListener(TrayListener listener) {
-    _listeners!.remove(listener);
-  }
-
-  void notifyListeners(String? method, [dynamic data]) {
     if (_listeners == null) return;
 
     final List<TrayListener> localListeners =
         List<TrayListener>.from(_listeners!);
     for (final TrayListener listener in localListeners) {
       if (_listeners!.contains(listener)) {
-        switch (method) {
+        switch (call.method) {
           case kEventOnTrayIconMouseDown:
             listener.onTrayIconMouseDown();
             break;
@@ -67,9 +52,30 @@ class TrayManager {
           case kEventOnTrayIconRightMouseUp:
             listener.onTrayIconRightMouseUp();
             break;
+          case kEventOnTrayMenuItemClick:
+            print(kEventOnTrayMenuItemClick);
+            String identifier = call.arguments['identifier'];
+            print(identifier);
+            MenuItem menuItem =
+                _menuItemList.firstWhere((e) => e.identifier == identifier);
+            print(menuItem.toJson());
+            listener.onTrayMenuItemClick(menuItem);
+            break;
         }
       }
     }
+  }
+
+  bool get hasListeners {
+    return _listeners!.isNotEmpty;
+  }
+
+  void addListener(TrayListener listener) {
+    _listeners!.add(listener);
+  }
+
+  void removeListener(TrayListener listener) {
+    _listeners!.remove(listener);
   }
 
   Future<String?> get platformVersion async {
@@ -109,6 +115,7 @@ class TrayManager {
   }
 
   Future<void> setContextMenu(List<MenuItem> menuItems) async {
+    _menuItemList = menuItems;
     final Map<String, dynamic> arguments = {
       'menuItems': menuItems.map((e) => e.toJson()).toList(),
     };

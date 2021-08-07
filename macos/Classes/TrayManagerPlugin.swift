@@ -5,6 +5,7 @@ let kEventOnTrayIconMouseDown = "onTrayIconMouseDown"
 let kEventOnTrayIconMouseUp = "onTrayIconMouseUp"
 let kEventOnTrayIconRightMouseDown = "onTrayIconRightMouseDown"
 let kEventOnTrayIconRightMouseUp = "onTrayIconRightMouseUp"
+let kEventOnTrayMenuItemClick = "onTrayMenuItemClick"
 
 public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     var channel: FlutterMethodChannel!
@@ -13,6 +14,8 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     var statusItemMenu: NSMenu = NSMenu()
     
     var _inited: Bool = false;
+    var menuItemTagDict: Dictionary<Int, String> = [:]
+    var lastMenuItemTag: Int = 0
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "tray_manager", binaryMessenger: registrar.messenger)
@@ -81,7 +84,13 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     
     @objc func statusItemMenuButtonClicked(_ sender: Any?) {
         let menuItem = sender as! NSMenuItem
-        channel.invokeMethod("MenuItemClicked", arguments: menuItem.tag, result: nil)
+        
+        let identifier: String = menuItemTagDict[menuItem.tag]!
+        let arguments: NSDictionary = [
+            "identifier": identifier,
+        ]
+        
+        channel.invokeMethod(kEventOnTrayMenuItemClick, arguments: arguments, result: nil)
     }
     
     public func getFrame(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -136,6 +145,7 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
             let menuItem: NSMenuItem
             
             let itemDict = item as! [String: Any]
+            let identifier: String = itemDict["identifier"] as! String
             let title: String = itemDict["title"] as? String ?? ""
             let toolTip: String = itemDict["toolTip"] as? String ?? ""
             let isEnabled: Bool = itemDict["isEnabled"] as? Bool ?? true
@@ -147,11 +157,16 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
                 menuItem = NSMenuItem()
             }
             
+            lastMenuItemTag+=1
+            
+            menuItem.tag = lastMenuItemTag
             menuItem.title = title
             menuItem.toolTip = toolTip
             menuItem.isEnabled = isEnabled
             menuItem.action = isEnabled ? #selector(statusItemMenuButtonClicked) : nil
             menuItem.target = self
+            
+            menuItemTagDict[lastMenuItemTag] = identifier
             
             statusItemMenu.addItem(menuItem)
         }

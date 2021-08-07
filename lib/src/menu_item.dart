@@ -1,5 +1,7 @@
+import 'package:uuid/uuid.dart';
+
 class MenuItem {
-  final String? tag;
+  String identifier = Uuid().v4();
   final String? title;
   final String? toolTip;
   final bool isEnabled;
@@ -8,16 +10,18 @@ class MenuItem {
   static final MenuItem separator = MenuItem(isSeparatorItem: true);
 
   MenuItem({
-    this.tag,
+    String? identifier,
     this.title,
     this.toolTip,
     this.isEnabled = true,
     this.isSeparatorItem = false,
-  });
+  }) {
+    if (identifier != null) this.identifier = identifier;
+  }
 
   Map<String, dynamic> toJson() {
     return {
-      'tag': tag,
+      'identifier': identifier,
       'title': title,
       'toolTip': toolTip,
       'isEnabled': isEnabled,
