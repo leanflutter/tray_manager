@@ -28,6 +28,8 @@ flutter:
   # adding or updating assets for this project.
   plugin:
     platforms:
+      linux:
+        pluginClass: TrayManagerPlugin
       macos:
         pluginClass: TrayManagerPlugin
 
