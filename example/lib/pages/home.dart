@@ -15,7 +15,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
     TrayManager.instance.addListener(this);
     super.initState();
   }
-  
+
   @override
   void dispose() {
     TrayManager.instance.removeListener(this);
@@ -30,11 +30,12 @@ class _HomePageState extends State<HomePage> with TrayListener {
             PreferenceListItem(
               title: Text('getFrame'),
               onTap: () async {
-                Rect frame = await TrayManager.instance.getFrame();
-                Size size = frame.size;
-                Offset origin = frame.topLeft;
+                Rect bounds = await TrayManager.instance.getBounds();
+                Size size = bounds.size;
+                Offset origin = bounds.topLeft;
                 BotToast.showText(
-                    text: '${size.toString()}\n${origin.toString()}');
+                  text: '${size.toString()}\n${origin.toString()}',
+                );
               },
             ),
             PreferenceListItem(
@@ -95,7 +96,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
   @override
   void onTrayIconRightMouseUp() {
-    print(TrayManager.instance.getFrame());
+    print(TrayManager.instance.getBounds());
   }
 
   @override

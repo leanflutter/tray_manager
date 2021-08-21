@@ -53,12 +53,10 @@ class TrayManager {
             listener.onTrayIconRightMouseUp();
             break;
           case kEventOnTrayMenuItemClick:
-            print(kEventOnTrayMenuItemClick);
             String identifier = call.arguments['identifier'];
-            print(identifier);
-            MenuItem menuItem =
-                _menuItemList.firstWhere((e) => e.identifier == identifier);
-            print(menuItem.toJson());
+            MenuItem menuItem = _menuItemList.firstWhere(
+              (e) => e.identifier == identifier,
+            );
             listener.onTrayMenuItemClick(menuItem);
             break;
         }
@@ -83,15 +81,15 @@ class TrayManager {
     return version;
   }
 
-  Future<Rect> getFrame() async {
+  Future<Rect> getBounds() async {
     final Map<dynamic, dynamic> resultData =
-        await _channel.invokeMethod('getFrame');
+        await _channel.invokeMethod('getBounds');
 
     return Rect.fromLTWH(
-      resultData['origin_x'],
-      resultData['origin_y'],
-      resultData['size_width'],
-      resultData['size_height'],
+      resultData['x'],
+      resultData['y'],
+      resultData['width'],
+      resultData['height'],
     );
   }
 

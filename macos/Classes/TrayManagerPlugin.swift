@@ -28,8 +28,8 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         switch call.method {
         case "getPlatformVersion":
             result("macOS " + ProcessInfo.processInfo.operatingSystemVersionString)
-        case "getFrame":
-            getFrame(call, result: result)
+        case "getBounds":
+            getBounds(call, result: result)
             break
         case "setIcon":
             setIcon(call, result: result)
@@ -93,15 +93,15 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         channel.invokeMethod(kEventOnTrayMenuItemClick, arguments: arguments, result: nil)
     }
     
-    public func getFrame(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    public func getBounds(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let origin = statusItem.button?.window?.frame.origin;
         let size =  statusItem.button?.window?.frame.size;
         
         let resultData: NSDictionary = [
-            "origin_x": origin!.x,
-            "origin_y": origin!.y,
-            "size_width": size!.width,
-            "size_height": size!.height,
+            "x": origin!.x,
+            "y": origin!.y,
+            "width": size!.width,
+            "height": size!.height,
         ]
         result(resultData)
     }
