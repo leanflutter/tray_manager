@@ -81,6 +81,10 @@ class TrayManager {
     return version;
   }
 
+  Future<void> destroy() async {
+    await _channel.invokeMethod('destroy');
+  }
+
   Future<Rect> getBounds() async {
     final Map<dynamic, dynamic> resultData =
         await _channel.invokeMethod('getBounds');

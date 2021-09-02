@@ -7,10 +7,24 @@ let kEventOnTrayIconRightMouseDown = "onTrayIconRightMouseDown"
 let kEventOnTrayIconRightMouseUp = "onTrayIconRightMouseUp"
 let kEventOnTrayMenuItemClick = "onTrayMenuItemClick"
 
+extension NSRect {
+    var topLeft: CGPoint {
+        set {
+            let screenFrameRect = NSScreen.main!.frame
+            origin.x = newValue.x
+            origin.y = screenFrameRect.height - newValue.y - size.height
+        }
+        get {
+            let screenFrameRect = NSScreen.main!.frame
+            return CGPoint(x: origin.x, y: screenFrameRect.height - origin.y - size.height)
+        }
+    }
+}
+
 public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     var channel: FlutterMethodChannel!
     
-    let statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
+    var statusItem: NSStatusItem = NSStatusItem();
     var statusItemMenu: NSMenu = NSMenu()
     
     var _inited: Bool = false;
@@ -23,11 +37,11 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         instance.channel = channel
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
-    
+
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
-        case "getPlatformVersion":
-            result("macOS " + ProcessInfo.processInfo.operatingSystemVersionString)
+        case "destroy":
+            destroy(call, result: result)
         case "getBounds":
             getBounds(call, result: result)
             break
@@ -49,6 +63,7 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     }
     
     private func _init() {
+        statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
         if let button = statusItem.button {
             button.action = #selector(self.statusItemButtonClicked(sender:))
             button.sendAction(on: [.leftMouseDown, .leftMouseUp, .rightMouseDown, .rightMouseUp])
@@ -93,15 +108,20 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         channel.invokeMethod(kEventOnTrayMenuItemClick, arguments: arguments, result: nil)
     }
     
+    public func destroy(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        NSStatusBar.system.removeStatusItem(statusItem)
+        _inited = false
+        result(true)
+    }
+    
     public func getBounds(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        let origin = statusItem.button?.window?.frame.origin;
-        let size =  statusItem.button?.window?.frame.size;
+        let frame = statusItem.button?.window?.frame;
         
         let resultData: NSDictionary = [
-            "x": origin!.x,
-            "y": origin!.y,
-            "width": size!.width,
-            "height": size!.height,
+            "x": frame!.topLeft.x,
+            "y": frame!.topLeft.y,
+            "width": frame!.size.width,
+            "height": frame!.size.height,
         ]
         result(resultData)
     }
