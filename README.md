@@ -23,9 +23,9 @@ This plugin allows Flutter **desktop** apps to defines system tray.
 
 ## Platform Support
 
-| MacOS | Linux | Windows |
+| Linux | macOS | Windows |
 | :---: | :---: | :-----: |
-|  ✔️   |  ➖   |   ➖    |
+|   ➖   |   ✔️   |    ➖    |
 
 ## Quick Start
 
@@ -71,13 +71,14 @@ await TrayManager.instance.popUpContextMenu();
 
 ### TrayManager
 
-| Method           | Description |
-| ---------------- | ----------- |
-| getFrame         | -           |
-| setIcon          | -           |
-| setToolTip       | -           |
-| setContextMenu   | -           |
-| popUpContextMenu | -           |
+| Method           | Description                                    | Linux | macOS | Windows |
+| ---------------- | ---------------------------------------------- | ----- | ----- | ------- |
+| destroy          | Destroys the tray icon immediately.            | ➖     | ✔️     | ✔️       |
+| setIcon          | Sets the image associated with this tray icon. | ➖     | ✔️     | ✔️       |
+| setToolTip       | -                                              | ➖     | ✔️     | ➖       |
+| setContextMenu   | -                                              | ➖     | ✔️     | ➖       |
+| popUpContextMenu | -                                              | ➖     | ✔️     | ➖       |
+| getBounds        | -                                              | ➖     | ✔️     | ✔️       |
 
 ## License
 

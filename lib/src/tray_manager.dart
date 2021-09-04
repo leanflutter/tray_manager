@@ -81,29 +81,19 @@ class TrayManager {
     return version;
   }
 
+  // Destroys the tray icon immediately.
   Future<void> destroy() async {
     await _channel.invokeMethod('destroy');
   }
 
-  Future<Rect> getBounds() async {
-    final Map<dynamic, dynamic> resultData =
-        await _channel.invokeMethod('getBounds');
-
-    return Rect.fromLTWH(
-      resultData['x'],
-      resultData['y'],
-      resultData['width'],
-      resultData['height'],
-    );
-  }
-
-  Future<void> setIcon(String icon) async {
+  Future<void> setIcon(String iconPath) async {
     if (!_inited) this._init();
 
-    ByteData imageData = await rootBundle.load(icon);
+    ByteData imageData = await rootBundle.load(iconPath);
     String base64Icon = base64Encode(imageData.buffer.asUint8List());
 
     final Map<String, dynamic> arguments = {
+      'iconPath': iconPath,
       'base64Icon': base64Icon,
     };
     await _channel.invokeMethod('setIcon', arguments);
@@ -126,5 +116,19 @@ class TrayManager {
 
   Future<void> popUpContextMenu() async {
     await _channel.invokeMethod('popUpContextMenu');
+  }
+
+  Future<Rect> getBounds() async {
+    final Map<String, dynamic> arguments = {
+      'devicePixelRatio': window.devicePixelRatio,
+    };
+    final Map<dynamic, dynamic> resultData =
+        await _channel.invokeMethod('getBounds', arguments);
+    return Rect.fromLTWH(
+      resultData['x'],
+      resultData['y'],
+      resultData['width'],
+      resultData['height'],
+    );
   }
 }

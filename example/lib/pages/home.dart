@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,20 +30,19 @@ class _HomePageState extends State<HomePage> with TrayListener {
         PreferenceListSection(
           children: [
             PreferenceListItem(
-              title: Text('getFrame'),
-              onTap: () async {
-                Rect bounds = await TrayManager.instance.getBounds();
-                Size size = bounds.size;
-                Offset origin = bounds.topLeft;
-                BotToast.showText(
-                  text: '${size.toString()}\n${origin.toString()}',
-                );
+              title: Text('destroy'),
+              onTap: () {
+                TrayManager.instance.destroy();
               },
             ),
             PreferenceListItem(
               title: Text('setIcon'),
               onTap: () async {
-                await TrayManager.instance.setIcon('images/tray_icon.png');
+                await TrayManager.instance.setIcon(
+                  Platform.isWindows
+                      ? 'images/tray_icon.ico'
+                      : 'images/tray_icon.png',
+                );
               },
             ),
             PreferenceListItem(
@@ -71,6 +72,17 @@ class _HomePageState extends State<HomePage> with TrayListener {
               title: Text('popUpContextMenu'),
               onTap: () async {
                 await TrayManager.instance.popUpContextMenu();
+              },
+            ),
+            PreferenceListItem(
+              title: Text('getBounds'),
+              onTap: () async {
+                Rect bounds = await TrayManager.instance.getBounds();
+                Size size = bounds.size;
+                Offset origin = bounds.topLeft;
+                BotToast.showText(
+                  text: '${size.toString()}\n${origin.toString()}',
+                );
               },
             ),
           ],
