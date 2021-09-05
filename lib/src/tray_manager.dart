@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
+import 'package:path/path.dart' as path;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -93,7 +95,11 @@ class TrayManager {
     String base64Icon = base64Encode(imageData.buffer.asUint8List());
 
     final Map<String, dynamic> arguments = {
-      'iconPath': iconPath,
+      'iconPath': path.joinAll([
+        path.dirname(Platform.resolvedExecutable),
+        'data/flutter_assets',
+        iconPath,
+      ]),
       'base64Icon': base64Icon,
     };
     await _channel.invokeMethod('setIcon', arguments);
