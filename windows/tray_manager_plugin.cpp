@@ -93,8 +93,8 @@ namespace {
     }
 
     std::optional<LRESULT> TrayManagerPlugin::HandleWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-        switch (message) {
-        case WM_MYMESSAGE:
+        std::optional<LRESULT> result;
+        if (message == WM_MYMESSAGE) {
             switch (lParam) {
             case WM_LBUTTONUP:
                 channel->InvokeMethod("onTrayIconMouseDown", std::make_unique<flutter::EncodableValue>(nullptr));
@@ -105,11 +105,8 @@ namespace {
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             };
-            break;
-        default:
-            return DefWindowProc(hWnd, message, wParam, lParam);
         }
-        return 0;
+        return result;
     }
 
     void TrayManagerPlugin::Destroy(
