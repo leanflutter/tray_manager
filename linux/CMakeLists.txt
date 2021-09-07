@@ -6,6 +6,9 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 # not be changed
 set(PLUGIN_NAME "tray_manager_plugin")
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules (APPINDICATOR REQUIRED IMPORTED_TARGET appindicator3-0.1)
+
 add_library(${PLUGIN_NAME} SHARED
   "tray_manager_plugin.cc"
 )
@@ -17,6 +20,7 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter)
 target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GTK)
+target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::APPINDICATOR)
 
 # List of absolute paths to libraries that should be bundled with the plugin
 set(tray_manager_bundled_libraries

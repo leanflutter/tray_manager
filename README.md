@@ -14,6 +14,7 @@ This plugin allows Flutter **desktop** apps to defines system tray.
   - [Platform Support](#platform-support)
   - [Quick Start](#quick-start)
     - [Installation](#installation)
+      - [⚠️ Linux requirements](#️-linux-requirements)
     - [Usage](#usage)
   - [API](#api)
     - [TrayManager](#traymanager)
@@ -25,7 +26,7 @@ This plugin allows Flutter **desktop** apps to defines system tray.
 
 | Linux | macOS | Windows |
 | :---: | :---: | :-----: |
-|   ➖   |   ✔️   |    ➖    |
+|   ✔️   |   ✔️   |    ➖    |
 
 ## Quick Start
 
@@ -44,9 +45,21 @@ Or
 dependencies:
   tray_manager:
     git:
-      url: https://github.com/leanflutter/tray_manager
+      url: https://github.com/leanflutter/tray_manager.git
       ref: main
 ```
+
+
+#### ⚠️ Linux requirements
+
+- `appindicator3-0.1`
+
+Run the following command
+
+```
+sudo apt-get install appindicator3-0.1 libappindicator3-dev
+```
+
 
 ### Usage
 

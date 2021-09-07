@@ -37,6 +37,29 @@ class _HomePageState extends State<HomePage> with TrayListener {
             ),
             PreferenceListItem(
               title: Text('setIcon'),
+              accessoryView: Row(
+                children: [
+                  CupertinoButton(
+                      child: Text('Default'),
+                      onPressed: () async {
+                        await TrayManager.instance.setIcon(
+                          Platform.isWindows
+                              ? 'images/tray_icon.ico'
+                              : 'images/tray_icon.png',
+                        );
+                      }),
+                  CupertinoButton(
+                    child: Text('Original'),
+                    onPressed: () async {
+                      await TrayManager.instance.setIcon(
+                        Platform.isWindows
+                            ? 'images/tray_icon_original.ico'
+                            : 'images/tray_icon_original.png',
+                      );
+                    },
+                  ),
+                ],
+              ),
               onTap: () async {
                 await TrayManager.instance.setIcon(
                   Platform.isWindows
@@ -62,7 +85,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
                   MenuItem(title: 'Copy'),
                   MenuItem(title: 'Paste'),
                   MenuItem.separator,
-                  MenuItem(title: 'Find'),
+                  MenuItem(title: 'Find', isEnabled: false),
                   MenuItem(title: 'Replace'),
                 ];
                 await TrayManager.instance.setContextMenu(menuItems);
@@ -114,5 +137,8 @@ class _HomePageState extends State<HomePage> with TrayListener {
   @override
   void onTrayMenuItemClick(MenuItem menuItem) {
     print(menuItem.toJson());
+    BotToast.showText(
+      text: '${menuItem.toJson()}',
+    );
   }
 }
