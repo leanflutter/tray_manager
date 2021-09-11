@@ -22,7 +22,7 @@ class MenuItem {
   Map<String, dynamic> toJson() {
     return {
       'identifier': identifier,
-      'title': title,
+      'title': title ?? '',
       'toolTip': toolTip,
       'isEnabled': isEnabled,
       'isSeparatorItem': isSeparatorItem,

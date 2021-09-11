@@ -7,6 +7,10 @@
 
 This plugin allows Flutter **desktop** apps to defines system tray.
 
+[![Discord](https://img.shields.io/badge/discord-%237289DA.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/vba8W9SF)
+
+---
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -26,7 +30,7 @@ This plugin allows Flutter **desktop** apps to defines system tray.
 
 | Linux | macOS | Windows |
 | :---: | :---: | :-----: |
-|   ✔️   |   ✔️   |    ➖    |
+|   ✔️   |   ✔️   |    ✔️    |
 
 ## Quick Start
 
@@ -36,7 +40,7 @@ Add this to your package's pubspec.yaml file:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.0.1
+  tray_manager: ^0.0.2
 ```
 
 Or
@@ -84,14 +88,14 @@ await TrayManager.instance.popUpContextMenu();
 
 ### TrayManager
 
-| Method           | Description                                    | Linux | macOS | Windows |
-| ---------------- | ---------------------------------------------- | ----- | ----- | ------- |
-| destroy          | Destroys the tray icon immediately.            | ➖     | ✔️     | ✔️       |
-| setIcon          | Sets the image associated with this tray icon. | ➖     | ✔️     | ✔️       |
-| setToolTip       | -                                              | ➖     | ✔️     | ➖       |
-| setContextMenu   | -                                              | ➖     | ✔️     | ➖       |
-| popUpContextMenu | -                                              | ➖     | ✔️     | ➖       |
-| getBounds        | -                                              | ➖     | ✔️     | ✔️       |
+| Method           | Description                                                                                                                     | Linux | macOS | Windows |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----- | ----- | ------- |
+| destroy          | Destroys the tray icon immediately.                                                                                             | ✔️     | ✔️     | ✔️       |
+| setIcon          | Sets the image associated with this tray icon.                                                                                  | ✔️     | ✔️     | ✔️       |
+| setToolTip       | -                                                                                                                               | ➖     | ✔️     | ➖       |
+| setContextMenu   | -                                                                                                                               | ✔️     | ✔️     | ✔️       |
+| popUpContextMenu | Pops up the context menu of the tray icon. When menu is passed, the menu will be shown instead of the tray icon's context menu. | ➖     | ✔️     | ✔️       |
+| getBounds        | Returns `Rect` The bounds of this tray icon.                                                                                    | ✔️     | ✔️     | ✔️       |
 
 ## License
 

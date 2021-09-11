@@ -125,7 +125,12 @@ class _HomePageState extends State<HomePage> with TrayListener {
   }
 
   @override
-  void onTrayIconMouseUp() {
+  void onTrayIconMouseDown() {
+    TrayManager.instance.popUpContextMenu();
+  }
+
+  @override
+  void onTrayIconRightMouseDown() {
     TrayManager.instance.popUpContextMenu();
   }
 
