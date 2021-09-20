@@ -37,7 +37,7 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         instance.channel = channel
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
-
+    
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "destroy":
@@ -108,6 +108,50 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         channel.invokeMethod(kEventOnTrayMenuItemClick, arguments: arguments, result: nil)
     }
     
+    func createContentMenu(_ args: [String: Any]) -> NSMenu {
+        let menu = NSMenu()
+        
+        let items: [NSDictionary] = args["items"] as! [NSDictionary];
+        
+        for item in items {
+            let menuItem: NSMenuItem
+            
+            let itemDict = item as! [String: Any]
+            let identifier: String = itemDict["identifier"] as! String
+            let title: String = itemDict["title"] as? String ?? ""
+            let toolTip: String = itemDict["toolTip"] as? String ?? ""
+            let isEnabled: Bool = itemDict["isEnabled"] as? Bool ?? true
+            let isSeparatorItem: Bool = itemDict["isSeparatorItem"] as! Bool
+            let subItems: [NSDictionary] = itemDict["items"] as! [NSDictionary];
+            
+            
+            if (isSeparatorItem) {
+                menuItem = NSMenuItem.separator()
+            } else {
+                menuItem = NSMenuItem()
+            }
+            
+            lastMenuItemTag += 1
+            
+            menuItem.tag = lastMenuItemTag
+            menuItem.title = title
+            menuItem.toolTip = toolTip
+            menuItem.isEnabled = isEnabled
+            menuItem.action = isEnabled ? #selector(statusItemMenuButtonClicked) : nil
+            menuItem.target = self
+            
+            menuItemTagDict[lastMenuItemTag] = identifier
+            
+            menu.addItem(menuItem)
+            
+            if (!subItems.isEmpty) {
+                let submenu = createContentMenu(itemDict)
+                menu.setSubmenu(submenu, for: menuItem)
+            }
+        }
+        return menu
+    }
+    
     public func destroy(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         NSStatusBar.system.removeStatusItem(statusItem)
         _inited = false
@@ -135,7 +179,7 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         let imageData = Data(base64Encoded: base64Icon, options: .ignoreUnknownCharacters)
         let image = NSImage(data: imageData!)
         image!.size = NSSize(width: 18, height: 18)
-//        image!.isTemplate = true
+        // image!.isTemplate = true
         
         if let button = statusItem.button {
             button.image = image
@@ -156,40 +200,9 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     }
     
     public func setContextMenu(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        statusItemMenu.removeAllItems()
-        
         let args:[String: Any] = call.arguments as! [String: Any]
-        let menuItems: NSMutableArray = args["menuItems"] as! NSMutableArray;
-        
-        for item in menuItems {
-            let menuItem: NSMenuItem
-            
-            let itemDict = item as! [String: Any]
-            let identifier: String = itemDict["identifier"] as! String
-            let title: String = itemDict["title"] as? String ?? ""
-            let toolTip: String = itemDict["toolTip"] as? String ?? ""
-            let isEnabled: Bool = itemDict["isEnabled"] as? Bool ?? true
-            let isSeparatorItem: Bool = itemDict["isSeparatorItem"] as! Bool
-            
-            if (isSeparatorItem) {
-                menuItem = NSMenuItem.separator()
-            } else {
-                menuItem = NSMenuItem()
-            }
-            
-            lastMenuItemTag+=1
-            
-            menuItem.tag = lastMenuItemTag
-            menuItem.title = title
-            menuItem.toolTip = toolTip
-            menuItem.isEnabled = isEnabled
-            menuItem.action = isEnabled ? #selector(statusItemMenuButtonClicked) : nil
-            menuItem.target = self
-            
-            menuItemTagDict[lastMenuItemTag] = identifier
-            
-            statusItemMenu.addItem(menuItem)
-        }
+        statusItemMenu.removeAllItems()
+        statusItemMenu = createContentMenu(args)
         result(true)
     }
     

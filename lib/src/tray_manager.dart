@@ -25,7 +25,7 @@ class TrayManager {
   final MethodChannel _channel = const MethodChannel('tray_manager');
 
   bool _inited = false;
-  List<MenuItem> _menuItemList = [];
+  List<MenuItem> _itemList = [];
 
   ObserverList<TrayListener>? _listeners = ObserverList<TrayListener>();
 
@@ -56,7 +56,7 @@ class TrayManager {
             break;
           case kEventOnTrayMenuItemClick:
             String identifier = call.arguments['identifier'];
-            MenuItem menuItem = _menuItemList.firstWhere(
+            MenuItem menuItem = _itemList.firstWhere(
               (e) => e.identifier == identifier,
             );
             listener.onTrayMenuItemClick(menuItem);
@@ -112,10 +112,18 @@ class TrayManager {
     await _channel.invokeMethod('setToolTip', arguments);
   }
 
-  Future<void> setContextMenu(List<MenuItem> menuItems) async {
-    _menuItemList = menuItems;
+  Future<void> setContextMenu(List<MenuItem> items) async {
+    _itemList = [];
+    for (var item in items) {
+      _itemList.add(item);
+      if (item.items.isNotEmpty) {
+        for (var subitem in item.items) {
+          _itemList.add(subitem);
+        }
+      }
+    }
     final Map<String, dynamic> arguments = {
-      'menuItems': menuItems.map((e) => e.toJson()).toList(),
+      'items': items.map((e) => e.toJson()).toList(),
     };
     await _channel.invokeMethod('setContextMenu', arguments);
   }

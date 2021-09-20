@@ -6,6 +6,7 @@ class MenuItem {
   final String? toolTip;
   final bool isEnabled;
   final bool isSeparatorItem;
+  List<MenuItem> items = [];
 
   static final MenuItem separator = MenuItem(isSeparatorItem: true);
 
@@ -15,8 +16,10 @@ class MenuItem {
     this.toolTip,
     this.isEnabled = true,
     this.isSeparatorItem = false,
+    List<MenuItem>? items,
   }) {
     if (identifier != null) this.identifier = identifier;
+    if (items != null) this.items = items;
   }
 
   Map<String, dynamic> toJson() {
@@ -26,6 +29,7 @@ class MenuItem {
       'toolTip': toolTip,
       'isEnabled': isEnabled,
       'isSeparatorItem': isSeparatorItem,
+      'items': items.map((e) => e.toJson()).toList(),
     }..removeWhere((key, value) => value == null);
   }
 }

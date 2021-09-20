@@ -77,18 +77,25 @@ class _HomePageState extends State<HomePage> with TrayListener {
             PreferenceListItem(
               title: Text('setContextMenu'),
               onTap: () async {
-                List<MenuItem> menuItems = [
+                List<MenuItem> items = [
                   MenuItem(title: 'Undo'),
                   MenuItem(title: 'Redo'),
                   MenuItem.separator,
                   MenuItem(title: 'Cut'),
                   MenuItem(title: 'Copy'),
+                  MenuItem(
+                    title: 'Copy As',
+                    items: [
+                      MenuItem(title: 'Copy Remote File Url'),
+                      MenuItem(title: 'Copy Remote File Url From...'),
+                    ],
+                  ),
                   MenuItem(title: 'Paste'),
                   MenuItem.separator,
                   MenuItem(title: 'Find', isEnabled: false),
                   MenuItem(title: 'Replace'),
                 ];
-                await TrayManager.instance.setContextMenu(menuItems);
+                await TrayManager.instance.setContextMenu(items);
               },
             ),
             PreferenceListItem(
