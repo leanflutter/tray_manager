@@ -24,7 +24,7 @@ std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>,
                 std::default_delete<flutter::MethodChannel<flutter::EncodableValue>>>
     channel = nullptr;
 
-std::map<std::string, int> menu_item_id_map;
+std::map<std::string, int> menu_item_id_map = {};
 int last_menu_item_id = 0;
 
 class TrayManagerPlugin : public flutter::Plugin
@@ -204,6 +204,7 @@ void TrayManagerPlugin::Destroy(const flutter::MethodCall<flutter::EncodableValu
     Shell_NotifyIcon(NIM_DELETE, &nid);
     DestroyIcon(nid.hIcon);
     tray_icon_setted = false;
+    menu_item_id_map.clear();
 
     result->Success(flutter::EncodableValue(true));
 }
@@ -255,6 +256,7 @@ void TrayManagerPlugin::SetContextMenu(const flutter::MethodCall<flutter::Encoda
 
     flutter::EncodableList menuItemList = std::get<flutter::EncodableList>(args.at(flutter::EncodableValue("items")));
 
+    menu_item_id_map.clear();
     hMenu = CreatePopupMenu();
     _CreateContextMenu(hMenu, args);
 
