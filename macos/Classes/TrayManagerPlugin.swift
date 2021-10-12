@@ -28,8 +28,6 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     var statusItemMenu: NSMenu = NSMenu()
     
     var _inited: Bool = false;
-    var menuItemTagDict: Dictionary<Int, String> = [:]
-    var lastMenuItemTag: Int = 0
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "tray_manager", binaryMessenger: registrar.messenger)
@@ -42,6 +40,7 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         switch call.method {
         case "destroy":
             destroy(call, result: result)
+            break
         case "getBounds":
             getBounds(call, result: result)
             break
@@ -99,16 +98,14 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     
     @objc func statusItemMenuButtonClicked(_ sender: Any?) {
         let menuItem = sender as! NSMenuItem
-        
-        let identifier: String = menuItemTagDict[menuItem.tag]!
         let arguments: NSDictionary = [
-            "identifier": identifier,
+            "id": menuItem.tag,
         ]
         
         channel.invokeMethod(kEventOnTrayMenuItemClick, arguments: arguments, result: nil)
     }
     
-    func createContentMenu(_ args: [String: Any]) -> NSMenu {
+    func createContextMenu(_ args: [String: Any]) -> NSMenu {
         let menu = NSMenu()
         
         let items: [NSDictionary] = args["items"] as! [NSDictionary];
@@ -117,13 +114,12 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
             let menuItem: NSMenuItem
             
             let itemDict = item as! [String: Any]
-            let identifier: String = itemDict["identifier"] as! String
+            let id: Int = itemDict["id"] as! Int
             let title: String = itemDict["title"] as? String ?? ""
             let toolTip: String = itemDict["toolTip"] as? String ?? ""
             let isEnabled: Bool = itemDict["isEnabled"] as? Bool ?? true
             let isSeparatorItem: Bool = itemDict["isSeparatorItem"] as! Bool
             let subItems: [NSDictionary] = itemDict["items"] as! [NSDictionary];
-            
             
             if (isSeparatorItem) {
                 menuItem = NSMenuItem.separator()
@@ -131,21 +127,17 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
                 menuItem = NSMenuItem()
             }
             
-            lastMenuItemTag += 1
-            
-            menuItem.tag = lastMenuItemTag
+            menuItem.tag = id
             menuItem.title = title
             menuItem.toolTip = toolTip
             menuItem.isEnabled = isEnabled
             menuItem.action = isEnabled ? #selector(statusItemMenuButtonClicked) : nil
             menuItem.target = self
             
-            menuItemTagDict[lastMenuItemTag] = identifier
-            
             menu.addItem(menuItem)
             
             if (!subItems.isEmpty) {
-                let submenu = createContentMenu(itemDict)
+                let submenu = createContextMenu(itemDict)
                 menu.setSubmenu(submenu, for: menuItem)
             }
         }
@@ -202,7 +194,7 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     public func setContextMenu(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args:[String: Any] = call.arguments as! [String: Any]
         statusItemMenu.removeAllItems()
-        statusItemMenu = createContentMenu(args)
+        statusItemMenu = createContextMenu(args)
         result(true)
     }
     

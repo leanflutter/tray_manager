@@ -17,70 +17,67 @@ const kEventOnTrayIconRightMouseUp = 'onTrayIconRightMouseUp';
 const kEventOnTrayMenuItemClick = 'onTrayMenuItemClick';
 
 class TrayManager {
-  TrayManager._();
+  TrayManager._() {
+    _channel.setMethodCallHandler(_methodCallHandler);
+  }
 
   /// The shared instance of [TrayManager].
   static final TrayManager instance = TrayManager._();
 
   final MethodChannel _channel = const MethodChannel('tray_manager');
 
-  bool _inited = false;
-  List<MenuItem> _itemList = [];
+  Map<int, MenuItem> _itemMap = {};
+  int _lastItemId = 0;
 
-  ObserverList<TrayListener>? _listeners = ObserverList<TrayListener>();
-
-  void _init() {
-    _channel.setMethodCallHandler(_methodCallHandler);
-    _inited = true;
-  }
+  ObserverList<TrayListener> _listeners = ObserverList<TrayListener>();
 
   Future<void> _methodCallHandler(MethodCall call) async {
-    if (_listeners == null) return;
-
-    final List<TrayListener> localListeners =
-        List<TrayListener>.from(_listeners!);
-    for (final TrayListener listener in localListeners) {
-      if (_listeners!.contains(listener)) {
-        switch (call.method) {
-          case kEventOnTrayIconMouseDown:
-            listener.onTrayIconMouseDown();
-            break;
-          case kEventOnTrayIconMouseUp:
-            listener.onTrayIconMouseUp();
-            break;
-          case kEventOnTrayIconRightMouseDown:
-            listener.onTrayIconRightMouseDown();
-            break;
-          case kEventOnTrayIconRightMouseUp:
-            listener.onTrayIconRightMouseUp();
-            break;
-          case kEventOnTrayMenuItemClick:
-            String identifier = call.arguments['identifier'];
-            MenuItem menuItem = _itemList.firstWhere(
-              (e) => e.identifier == identifier,
-            );
-            listener.onTrayMenuItemClick(menuItem);
-            break;
-        }
+    for (final TrayListener listener in _listeners) {
+      switch (call.method) {
+        case kEventOnTrayIconMouseDown:
+          listener.onTrayIconMouseDown();
+          break;
+        case kEventOnTrayIconMouseUp:
+          listener.onTrayIconMouseUp();
+          break;
+        case kEventOnTrayIconRightMouseDown:
+          listener.onTrayIconRightMouseDown();
+          break;
+        case kEventOnTrayIconRightMouseUp:
+          listener.onTrayIconRightMouseUp();
+          break;
+        case kEventOnTrayMenuItemClick:
+          int id = call.arguments['id'];
+          MenuItem menuItem = _itemMap[id]!;
+          listener.onTrayMenuItemClick(menuItem);
+          break;
       }
     }
   }
 
   bool get hasListeners {
-    return _listeners!.isNotEmpty;
+    return _listeners.isNotEmpty;
   }
 
   void addListener(TrayListener listener) {
-    _listeners!.add(listener);
+    _listeners.add(listener);
   }
 
   void removeListener(TrayListener listener) {
-    _listeners!.remove(listener);
+    _listeners.remove(listener);
   }
 
-  Future<String?> get platformVersion async {
-    final String? version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
+  Map<int, MenuItem> _indexItemMap(List<MenuItem> items) {
+    final itemMap = <int, MenuItem>{};
+    for (var item in items) {
+      item.id = _lastItemId++;
+      itemMap[item.id] = item;
+      if (item.items.isNotEmpty) {
+        final subItemMap = _indexItemMap(item.items);
+        itemMap.addAll(subItemMap);
+      }
+    }
+    return itemMap;
   }
 
   // Destroys the tray icon immediately.
@@ -88,9 +85,8 @@ class TrayManager {
     await _channel.invokeMethod('destroy');
   }
 
+  /// Sets the image associated with this tray icon.
   Future<void> setIcon(String iconPath) async {
-    if (!_inited) this._init();
-
     ByteData imageData = await rootBundle.load(iconPath);
     String base64Icon = base64Encode(imageData.buffer.asUint8List());
 
@@ -105,6 +101,7 @@ class TrayManager {
     await _channel.invokeMethod('setIcon', arguments);
   }
 
+  /// Sets the hover text for this tray icon.
   Future<void> setToolTip(String toolTip) async {
     final Map<String, dynamic> arguments = {
       'toolTip': toolTip,
@@ -112,22 +109,16 @@ class TrayManager {
     await _channel.invokeMethod('setToolTip', arguments);
   }
 
+  /// Sets the context menu for this icon.
   Future<void> setContextMenu(List<MenuItem> items) async {
-    _itemList = [];
-    for (var item in items) {
-      _itemList.add(item);
-      if (item.items.isNotEmpty) {
-        for (var subitem in item.items) {
-          _itemList.add(subitem);
-        }
-      }
-    }
+    _itemMap = _indexItemMap(items);
     final Map<String, dynamic> arguments = {
       'items': items.map((e) => e.toJson()).toList(),
     };
     await _channel.invokeMethod('setContextMenu', arguments);
   }
 
+  /// Pops up the context menu of the tray icon.
   Future<void> popUpContextMenu() async {
     await _channel.invokeMethod('popUpContextMenu');
   }

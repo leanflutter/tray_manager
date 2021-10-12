@@ -1,7 +1,8 @@
 import 'package:uuid/uuid.dart';
 
 class MenuItem {
-  String identifier = Uuid().v4();
+  int id = -1;
+  String key = Uuid().v4();
   final String? title;
   final String? toolTip;
   final bool isEnabled;
@@ -11,20 +12,21 @@ class MenuItem {
   static final MenuItem separator = MenuItem(isSeparatorItem: true);
 
   MenuItem({
-    String? identifier,
+    String? key,
     this.title,
     this.toolTip,
     this.isEnabled = true,
     this.isSeparatorItem = false,
     List<MenuItem>? items,
   }) {
-    if (identifier != null) this.identifier = identifier;
+    if (key != null) this.key = key;
     if (items != null) this.items = items;
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'identifier': identifier,
+      'id': id,
+      'key': key,
       'title': title ?? '',
       'toolTip': toolTip,
       'isEnabled': isEnabled,
