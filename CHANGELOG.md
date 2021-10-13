@@ -1,3 +1,7 @@
+## 0.1.0
+
+* Support sub menu.
+
 ## 0.0.2
 
 * Implemented `destroy` Method.

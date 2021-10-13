@@ -40,7 +40,7 @@ Add this to your package's pubspec.yaml file:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.0.2
+  tray_manager: ^0.1.0
 ```
 
 Or
@@ -53,7 +53,6 @@ dependencies:
       ref: main
 ```
 
-
 #### ⚠️ Linux requirements
 
 - `appindicator3-0.1`
@@ -64,7 +63,6 @@ Run the following command
 sudo apt-get install appindicator3-0.1 libappindicator3-dev
 ```
 
-
 ### Usage
 
 Register/Unregsiter a system/inapp wide hot key.
@@ -72,14 +70,17 @@ Register/Unregsiter a system/inapp wide hot key.
 ```dart
 import 'package:tray_manager/tray_manager.dart';
 
-await TrayManager.instance.setIcon('images/tray_icon.png');
+await TrayManager.instance.setIcon(
+  Platform.isWindows
+    ? 'images/tray_icon.ico'
+    : 'images/tray_icon.png',
+);
 List<MenuItem> menuItems = [
   MenuItem(title: 'Show/Hide Main Window'),
   MenuItem.separator,
   MenuItem(title: 'Exit App'),
 ];
 await TrayManager.instance.setContextMenu(menuItems);
-await TrayManager.instance.popUpContextMenu();
 ```
 
 > Please see the example app of this plugin for a full example.
@@ -92,7 +93,6 @@ await TrayManager.instance.popUpContextMenu();
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----- | ----- | ------- |
 | destroy          | Destroys the tray icon immediately.                                                                                             | ✔️     | ✔️     | ✔️       |
 | setIcon          | Sets the image associated with this tray icon.                                                                                  | ✔️     | ✔️     | ✔️       |
-| setToolTip       | -                                                                                                                               | ➖     | ✔️     | ➖       |
 | setContextMenu   | -                                                                                                                               | ✔️     | ✔️     | ✔️       |
 | popUpContextMenu | Pops up the context menu of the tray icon. When menu is passed, the menu will be shown instead of the tray icon's context menu. | ➖     | ✔️     | ✔️       |
 | getBounds        | Returns `Rect` The bounds of this tray icon.                                                                                    | ✔️     | ✔️     | ✔️       |
