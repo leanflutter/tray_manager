@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -6,12 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:preference_list/preference_list.dart';
 import 'package:tray_manager/tray_manager.dart';
 
+const _kIconTypeDefault = 'default';
+const _kIconTypeOriginal = 'original';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> with TrayListener {
+  String _iconType = _kIconTypeOriginal;
+
+  Timer? _timer;
+
   @override
   void initState() {
     TrayManager.instance.addListener(this);
@@ -22,6 +30,35 @@ class _HomePageState extends State<HomePage> with TrayListener {
   void dispose() {
     TrayManager.instance.removeListener(this);
     super.dispose();
+  }
+
+  void _handleSetIcon(String iconType) async {
+    _iconType = iconType;
+    String iconPath =
+        Platform.isWindows ? 'images/tray_icon.ico' : 'images/tray_icon.png';
+
+    if (_iconType == 'original') {
+      iconPath = Platform.isWindows
+          ? 'images/tray_icon_original.ico'
+          : 'images/tray_icon_original.png';
+    }
+
+    await TrayManager.instance.setIcon(iconPath);
+  }
+
+  void _startIconFlashing() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
+      _handleSetIcon(_iconType == _kIconTypeOriginal
+          ? _kIconTypeDefault
+          : _kIconTypeOriginal);
+    });
+    setState(() {});
+  }
+
+  void _stopIconFlashing() {
+    if (_timer != null && _timer!.isActive) {
+      _timer!.cancel();
+    }
   }
 
   Widget _buildBody(BuildContext context) {
@@ -39,41 +76,33 @@ class _HomePageState extends State<HomePage> with TrayListener {
               title: Text('setIcon'),
               accessoryView: Row(
                 children: [
+                  Builder(builder: (_) {
+                    bool isFlashing = (_timer != null && _timer!.isActive);
+                    return CupertinoButton(
+                      child:
+                          isFlashing ? Text('stop flash') : Text('start flash'),
+                      onPressed:
+                          isFlashing ? _stopIconFlashing : _startIconFlashing,
+                    );
+                  }),
                   CupertinoButton(
-                      child: Text('Default'),
-                      onPressed: () async {
-                        await TrayManager.instance.setIcon(
-                          Platform.isWindows
-                              ? 'images/tray_icon.ico'
-                              : 'images/tray_icon.png',
-                        );
-                      }),
+                    child: Text('Default'),
+                    onPressed: () => _handleSetIcon(_kIconTypeDefault),
+                  ),
                   CupertinoButton(
                     child: Text('Original'),
-                    onPressed: () async {
-                      await TrayManager.instance.setIcon(
-                        Platform.isWindows
-                            ? 'images/tray_icon_original.ico'
-                            : 'images/tray_icon_original.png',
-                      );
-                    },
+                    onPressed: () => _handleSetIcon(_kIconTypeOriginal),
                   ),
                 ],
               ),
-              onTap: () async {
-                await TrayManager.instance.setIcon(
-                  Platform.isWindows
-                      ? 'images/tray_icon.ico'
-                      : 'images/tray_icon.png',
-                );
-              },
+              onTap: () => _handleSetIcon(_kIconTypeDefault),
             ),
-            PreferenceListItem(
-              title: Text('setToolTip'),
-              onTap: () async {
-                await TrayManager.instance.setToolTip('tray_manager');
-              },
-            ),
+            // PreferenceListItem(
+            //   title: Text('setToolTip'),
+            //   onTap: () async {
+            //     await TrayManager.instance.setToolTip('tray_manager');
+            //   },
+            // ),
             PreferenceListItem(
               title: Text('setContextMenu'),
               onTap: () async {
