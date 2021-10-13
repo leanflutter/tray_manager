@@ -20,6 +20,7 @@ This plugin allows Flutter **desktop** apps to defines system tray.
     - [Installation](#installation)
       - [⚠️ Linux requirements](#️-linux-requirements)
     - [Usage](#usage)
+      - [Listening events](#listening-events)
   - [API](#api)
     - [TrayManager](#traymanager)
   - [License](#license)
@@ -75,15 +76,82 @@ await TrayManager.instance.setIcon(
     ? 'images/tray_icon.ico'
     : 'images/tray_icon.png',
 );
-List<MenuItem> menuItems = [
-  MenuItem(title: 'Show/Hide Main Window'),
+List<MenuItem> items = [
+  MenuItem(
+    key: 'show_window',
+    title: 'Show Window',
+  ),
   MenuItem.separator,
-  MenuItem(title: 'Exit App'),
+  MenuItem(
+    key: 'exit_app',
+    title: 'Exit App',
+  ),
 ];
-await TrayManager.instance.setContextMenu(menuItems);
+await TrayManager.instance.setContextMenu(items);
 ```
 
 > Please see the example app of this plugin for a full example.
+
+#### Listening events
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:tray_manager/tray_manager.dart';
+
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> with TrayListener {
+  @override
+  void initState() {
+    TrayManager.instance.addListener(this);
+    super.initState();
+    _init();
+  }
+
+  @override
+  void dispose() {
+    TrayManager.instance.removeListener(this);
+    super.dispose();
+  }
+
+  void _init() {
+    // ...
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // ...
+  }
+
+  @override
+  void onTrayIconMouseDown() {
+    // do something
+  }
+
+  @override
+  void onTrayIconRightMouseDown() {
+    // do something
+  }
+
+  @override
+  void onTrayIconRightMouseUp() {
+    // do something
+  }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) {
+    if (menuItem.key == 'show_window') {
+      // do something
+    } else if (menuItem.key == 'exit_app') {
+       // do something
+    }
+  }
+}
+```
 
 ## API
 
