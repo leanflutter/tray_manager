@@ -24,9 +24,6 @@ std::unique_ptr<flutter::MethodChannel<flutter::EncodableValue>,
                 std::default_delete<flutter::MethodChannel<flutter::EncodableValue>>>
     channel = nullptr;
 
-std::map<std::string, int> menu_item_id_map = {};
-int last_menu_item_id = 0;
-
 class TrayManagerPlugin : public flutter::Plugin
 {
   public:
@@ -110,12 +107,12 @@ void TrayManagerPlugin::_CreateContextMenu(HMENU menu, flutter::EncodableMap arg
     for (flutter::EncodableValue item_value : items)
     {
         flutter::EncodableMap item_map = std::get<flutter::EncodableMap>(item_value);
-        std::string identifier = std::get<std::string>(item_map.at(flutter::EncodableValue("identifier")));
+        int id = std::get<int>(item_map.at(flutter::EncodableValue("id")));
         std::string title = std::get<std::string>(item_map.at(flutter::EncodableValue("title")));
         bool is_enabled = std::get<bool>(item_map.at(flutter::EncodableValue("isEnabled")));
         bool is_separator_item = std::get<bool>(item_map.at(flutter::EncodableValue("isSeparatorItem")));
 
-        UINT_PTR item_id = ++last_menu_item_id;
+        UINT_PTR item_id = id;
 
         if (is_separator_item)
         {
@@ -142,7 +139,6 @@ void TrayManagerPlugin::_CreateContextMenu(HMENU menu, flutter::EncodableMap arg
 
             AppendMenuW(menu, uFlags, item_id, g_converter.from_bytes(title).c_str());
         }
-        menu_item_id_map.insert(std::pair<std::string, int>(identifier, static_cast<int>(item_id)));
     }
 }
 
@@ -159,20 +155,8 @@ std::optional<LRESULT> TrayManagerPlugin::HandleWindowProc(HWND hWnd, UINT messa
     }
     else if (message == WM_COMMAND)
     {
-        int menu_item_id = (int)wParam;
-
-        std::string identifier;
-        for (auto &i : menu_item_id_map)
-        {
-            if (i.second == menu_item_id)
-            {
-                identifier = i.first;
-                break;
-            }
-        }
-
         flutter::EncodableMap eventData = flutter::EncodableMap();
-        eventData[flutter::EncodableValue("identifier")] = flutter::EncodableValue(identifier);
+        eventData[flutter::EncodableValue("id")] = flutter::EncodableValue((int)wParam);
 
         channel->InvokeMethod("onTrayMenuItemClick", std::make_unique<flutter::EncodableValue>(eventData));
     }
@@ -204,7 +188,6 @@ void TrayManagerPlugin::Destroy(const flutter::MethodCall<flutter::EncodableValu
     Shell_NotifyIcon(NIM_DELETE, &nid);
     DestroyIcon(nid.hIcon);
     tray_icon_setted = false;
-    menu_item_id_map.clear();
 
     result->Success(flutter::EncodableValue(true));
 }
@@ -256,7 +239,6 @@ void TrayManagerPlugin::SetContextMenu(const flutter::MethodCall<flutter::Encoda
 
     flutter::EncodableList menuItemList = std::get<flutter::EncodableList>(args.at(flutter::EncodableValue("items")));
 
-    menu_item_id_map.clear();
     hMenu = CreatePopupMenu();
     _CreateContextMenu(hMenu, args);
 
