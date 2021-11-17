@@ -7,7 +7,6 @@
 #include <cstring>
 #include <map>
 #include <algorithm>
-#include <uuid/uuid.h>
 #include <libappindicator/app-indicator.h>
 
 #define TRAY_MANAGER_PLUGIN(obj)                                     \
@@ -101,6 +100,7 @@ static FlMethodResponse *destroy(TrayManagerPlugin *self,
 static FlMethodResponse *set_icon(TrayManagerPlugin *self,
                                   FlValue *args)
 {
+  const char *id = fl_value_get_string(fl_value_lookup_string(args, "id"));
   const char *icon_path = fl_value_get_string(fl_value_lookup_string(args, "iconPath"));
 
   if (!menu)
@@ -108,11 +108,6 @@ static FlMethodResponse *set_icon(TrayManagerPlugin *self,
 
   if (!indicator)
   {
-    char id[UUID_STR_LEN] = {0};
-    uuid_t out;
-    uuid_generate(out);
-    uuid_unparse_lower(out, id);
-
     indicator = app_indicator_new(id, icon_path, APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
 
     app_indicator_set_menu(indicator, GTK_MENU(menu));

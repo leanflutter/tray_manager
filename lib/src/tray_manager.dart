@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:path/path.dart' as path;
+import 'package:uuid/uuid.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -28,6 +29,7 @@ class TrayManager {
 
   Map<int, MenuItem> _itemMap = {};
   int _lastItemId = 0;
+  String _id = Uuid().v4();
 
   ObserverList<TrayListener> _listeners = ObserverList<TrayListener>();
 
@@ -91,6 +93,7 @@ class TrayManager {
     String base64Icon = base64Encode(imageData.buffer.asUint8List());
 
     final Map<String, dynamic> arguments = {
+      'id': _id,
       'iconPath': path.joinAll([
         path.dirname(Platform.resolvedExecutable),
         'data/flutter_assets',
