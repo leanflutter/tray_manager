@@ -1,3 +1,7 @@
+## 0.1.1
+
+* [linux] Remove `<uuid/uuid.h>` dependency
+
 ## 0.1.0
 
 * Support sub menu.

@@ -59,6 +59,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
     if (_timer != null && _timer!.isActive) {
       _timer!.cancel();
     }
+    setState(() {});
   }
 
   Widget _buildBody(BuildContext context) {
