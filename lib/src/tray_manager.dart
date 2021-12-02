@@ -88,7 +88,10 @@ class TrayManager {
   }
 
   /// Sets the image associated with this tray icon.
-  Future<void> setIcon(String iconPath) async {
+  Future<void> setIcon(
+    String iconPath, {
+    bool isTemplate = false, // macOS only
+  }) async {
     ByteData imageData = await rootBundle.load(iconPath);
     String base64Icon = base64Encode(imageData.buffer.asUint8List());
 
@@ -100,6 +103,7 @@ class TrayManager {
         iconPath,
       ]),
       'base64Icon': base64Icon,
+      'isTemplate': isTemplate,
     };
     await _channel.invokeMethod('setIcon', arguments);
   }

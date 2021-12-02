@@ -1,3 +1,7 @@
+## 0.1.2
+
+* [macos] Add `isTemplate` parameter to `setIcon` method
+
 ## 0.1.1
 
 * [linux] Remove `<uuid/uuid.h>` dependency

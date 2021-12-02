@@ -167,11 +167,12 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         
         let args:[String: Any] = call.arguments as! [String: Any]
         let base64Icon: String =  args["base64Icon"] as! String;
+        let isTemplate: Bool =  args["isTemplate"] as! Bool;
         
         let imageData = Data(base64Encoded: base64Icon, options: .ignoreUnknownCharacters)
         let image = NSImage(data: imageData!)
         image!.size = NSSize(width: 18, height: 18)
-        // image!.isTemplate = true
+        image!.isTemplate = isTemplate
         
         if let button = statusItem.button {
             button.image = image
