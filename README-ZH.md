@@ -8,49 +8,49 @@
 [discord-image]: https://img.shields.io/discord/884679008049037342.svg
 [discord-url]: https://discord.gg/zPa6EZ2jqb
 
-This plugin allows Flutter **desktop** apps to defines system tray.
+这个插件允许 Flutter **桌面** 应用定义系统托盘。
 
 ---
 
-English | [简体中文](./README-ZH.md)
+[English](./README.md) | 简体中文
 
 ---
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [tray_manager](#tray_manager)
-  - [Platform Support](#platform-support)
-  - [Quick Start](#quick-start)
-    - [Installation](#installation)
+- [hotkey_manager](#hotkey_manager)
+  - [平台支持](#平台支持)
+  - [快速开始](#快速开始)
+    - [安装](#安装)
       - [⚠️ Linux requirements](#️-linux-requirements)
-    - [Usage](#usage)
+    - [用法](#用法)
       - [Listening events](#listening-events)
-  - [Who's using it?](#whos-using-it)
+  - [谁在用使用它？](#谁在用使用它)
   - [API](#api)
     - [TrayManager](#traymanager)
-  - [License](#license)
+  - [许可证](#许可证)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## Platform Support
+## 平台支持
 
 | Linux | macOS | Windows |
 | :---: | :---: | :-----: |
 |   ✔️   |   ✔️   |    ✔️    |
 
-## Quick Start
+## 快速开始
 
-### Installation
+### 安装
 
-Add this to your package's pubspec.yaml file:
+将此添加到你的软件包的 pubspec.yaml 文件：
 
 ```yaml
 dependencies:
   tray_manager: ^0.1.2
 ```
 
-Or
+或
 
 ```yaml
 dependencies:
@@ -64,13 +64,13 @@ dependencies:
 
 - `appindicator3-0.1`
 
-Run the following command
+运行以下命令
 
 ```
 sudo apt-get install appindicator3-0.1 libappindicator3-dev
 ```
 
-### Usage
+### 用法
 
 ```dart
 import 'package:tray_manager/tray_manager.dart';
@@ -94,9 +94,9 @@ List<MenuItem> items = [
 await TrayManager.instance.setContextMenu(items);
 ```
 
-> Please see the example app of this plugin for a full example.
+> 请看这个插件的示例应用，以了解完整的例子。
 
-#### Listening events
+#### 监听事件
 
 ```dart
 import 'package:flutter/material.dart';
@@ -156,22 +156,22 @@ class _HomePageState extends State<HomePage> with TrayListener {
 }
 ```
 
-## Who's using it?
+## 谁在用使用它？
 
-- [Biyi (比译)](https://biyidev.com/) - A convenient translation and dictionary app.
+- [Biyi (比译)](https://biyidev.com/) - 一个便捷的翻译和词典应用程序。
 
 ## API
 
 ### TrayManager
 
-| Method           | Description                                    | Linux | macOS | Windows |
-| ---------------- | ---------------------------------------------- | ----- | ----- | ------- |
-| destroy          | Destroys the tray icon immediately.            | ✔️     | ✔️     | ✔️       |
-| setIcon          | Sets the image associated with this tray icon. | ✔️     | ✔️     | ✔️       |
-| setContextMenu   | -                                              | ✔️     | ✔️     | ✔️       |
-| popUpContextMenu | Pops up the context menu of the tray icon.     | ➖     | ✔️     | ✔️       |
-| getBounds        | Returns `Rect` The bounds of this tray icon.   | ✔️     | ✔️     | ✔️       |
+| Method           | Description                      | Linux | macOS | Windows |
+| ---------------- | -------------------------------- | ----- | ----- | ------- |
+| destroy          | 立即销毁托盘图标                 | ✔️     | ✔️     | ✔️       |
+| setIcon          | 设置与此托盘图标相关的图片。     | ✔️     | ✔️     | ✔️       |
+| setContextMenu   | -                                | ✔️     | ✔️     | ✔️       |
+| popUpContextMenu | 弹出托盘图标的上下文菜单。       | ➖     | ✔️     | ✔️       |
+| getBounds        | 返回 `Rect` 这个托盘图标的边界。 | ✔️     | ✔️     | ✔️       |
 
-## License
+## 许可证
 
 [MIT](./LICENSE)
