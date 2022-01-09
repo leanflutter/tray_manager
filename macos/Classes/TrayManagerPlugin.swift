@@ -196,11 +196,20 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         let args:[String: Any] = call.arguments as! [String: Any]
         statusItemMenu.removeAllItems()
         statusItemMenu = createContextMenu(args)
+        statusItemMenu.delegate = self
         result(true)
     }
     
     public func popUpContextMenu(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        statusItem.button?.isHighlighted = true
         statusItem.popUpMenu(statusItemMenu);
         result(true)
+    }
+    
+    // NSMenuDelegate
+
+    public func menuDidClose(_ menu: NSMenu) {
+        statusItemMenu.cancelTracking()
+        statusItem.button?.isHighlighted = false
     }
 }
