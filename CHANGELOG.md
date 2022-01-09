@@ -1,3 +1,7 @@
+## 0.1.3
+
+* [windows] Implemented `setToolTip` Method.
+
 ## 0.1.2
 
 * [macos] Add `isTemplate` parameter to `setIcon` method
