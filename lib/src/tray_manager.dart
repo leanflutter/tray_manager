@@ -144,3 +144,5 @@ class TrayManager {
     );
   }
 }
+
+final trayManager = TrayManager.instance;

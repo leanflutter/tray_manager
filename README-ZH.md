@@ -19,13 +19,13 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [hotkey_manager](#hotkey_manager)
+- [tray_manager](#tray_manager)
   - [平台支持](#平台支持)
   - [快速开始](#快速开始)
     - [安装](#安装)
       - [⚠️ Linux requirements](#️-linux-requirements)
     - [用法](#用法)
-      - [Listening events](#listening-events)
+      - [监听事件](#监听事件)
   - [谁在用使用它？](#谁在用使用它)
   - [API](#api)
     - [TrayManager](#traymanager)
@@ -75,7 +75,7 @@ sudo apt-get install appindicator3-0.1 libappindicator3-dev
 ```dart
 import 'package:tray_manager/tray_manager.dart';
 
-await TrayManager.instance.setIcon(
+await trayManager.setIcon(
   Platform.isWindows
     ? 'images/tray_icon.ico'
     : 'images/tray_icon.png',
@@ -91,7 +91,7 @@ List<MenuItem> items = [
     title: 'Exit App',
   ),
 ];
-await TrayManager.instance.setContextMenu(items);
+await trayManager.setContextMenu(items);
 ```
 
 > 请看这个插件的示例应用，以了解完整的例子。
@@ -110,14 +110,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TrayListener {
   @override
   void initState() {
-    TrayManager.instance.addListener(this);
+    trayManager.addListener(this);
     super.initState();
     _init();
   }
 
   @override
   void dispose() {
-    TrayManager.instance.removeListener(this);
+    trayManager.removeListener(this);
     super.dispose();
   }
 
@@ -168,9 +168,10 @@ class _HomePageState extends State<HomePage> with TrayListener {
 | ---------------- | -------------------------------- | ----- | ----- | ------- |
 | destroy          | 立即销毁托盘图标                 | ✔️     | ✔️     | ✔️       |
 | setIcon          | 设置与此托盘图标相关的图片。     | ✔️     | ✔️     | ✔️       |
-| setContextMenu   | -                                | ✔️     | ✔️     | ✔️       |
+| setToolTip       | 设置此托盘图标的悬停文本。       | ➖     | ✔️     | ✔️       |
+| setContextMenu   | 设置此图标的上下文菜单。         | ✔️     | ✔️     | ✔️       |
 | popUpContextMenu | 弹出托盘图标的上下文菜单。       | ➖     | ✔️     | ✔️       |
-| getBounds        | 返回 `Rect` 这个托盘图标的边界。 | ✔️     | ✔️     | ✔️       |
+| getBounds        | 返回 `Rect` 这个托盘图标的边界。 | ➖     | ✔️     | ✔️       |
 
 ## 许可证
 

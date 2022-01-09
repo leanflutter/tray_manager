@@ -75,7 +75,7 @@ sudo apt-get install appindicator3-0.1 libappindicator3-dev
 ```dart
 import 'package:tray_manager/tray_manager.dart';
 
-await TrayManager.instance.setIcon(
+await trayManager.setIcon(
   Platform.isWindows
     ? 'images/tray_icon.ico'
     : 'images/tray_icon.png',
@@ -91,7 +91,7 @@ List<MenuItem> items = [
     title: 'Exit App',
   ),
 ];
-await TrayManager.instance.setContextMenu(items);
+await trayManager.setContextMenu(items);
 ```
 
 > Please see the example app of this plugin for a full example.
@@ -110,14 +110,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TrayListener {
   @override
   void initState() {
-    TrayManager.instance.addListener(this);
+    trayManager.addListener(this);
     super.initState();
     _init();
   }
 
   @override
   void dispose() {
-    TrayManager.instance.removeListener(this);
+    trayManager.removeListener(this);
     super.dispose();
   }
 
@@ -168,9 +168,10 @@ class _HomePageState extends State<HomePage> with TrayListener {
 | ---------------- | ---------------------------------------------- | ----- | ----- | ------- |
 | destroy          | Destroys the tray icon immediately.            | ✔️     | ✔️     | ✔️       |
 | setIcon          | Sets the image associated with this tray icon. | ✔️     | ✔️     | ✔️       |
-| setContextMenu   | -                                              | ✔️     | ✔️     | ✔️       |
+| setToolTip       | Sets the hover text for this tray icon.        | ➖     | ✔️     | ✔️       |
+| setContextMenu   | Sets the context menu for this icon.           | ✔️     | ✔️     | ✔️       |
 | popUpContextMenu | Pops up the context menu of the tray icon.     | ➖     | ✔️     | ✔️       |
-| getBounds        | Returns `Rect` The bounds of this tray icon.   | ✔️     | ✔️     | ✔️       |
+| getBounds        | Returns `Rect` The bounds of this tray icon.   | ➖     | ✔️     | ✔️       |
 
 ## License
 

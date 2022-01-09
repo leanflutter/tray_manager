@@ -22,13 +22,13 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
   @override
   void initState() {
-    TrayManager.instance.addListener(this);
+    trayManager.addListener(this);
     super.initState();
   }
 
   @override
   void dispose() {
-    TrayManager.instance.removeListener(this);
+    trayManager.removeListener(this);
     super.dispose();
   }
 
@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
           : 'images/tray_icon_original.png';
     }
 
-    await TrayManager.instance.setIcon(iconPath);
+    await trayManager.setIcon(iconPath);
   }
 
   void _startIconFlashing() {
@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
             PreferenceListItem(
               title: Text('destroy'),
               onTap: () {
-                TrayManager.instance.destroy();
+                trayManager.destroy();
               },
             ),
             PreferenceListItem(
@@ -98,12 +98,12 @@ class _HomePageState extends State<HomePage> with TrayListener {
               ),
               onTap: () => _handleSetIcon(_kIconTypeDefault),
             ),
-            // PreferenceListItem(
-            //   title: Text('setToolTip'),
-            //   onTap: () async {
-            //     await TrayManager.instance.setToolTip('tray_manager');
-            //   },
-            // ),
+            PreferenceListItem(
+              title: Text('setToolTip'),
+              onTap: () async {
+                await trayManager.setToolTip('tray_manager');
+              },
+            ),
             PreferenceListItem(
               title: Text('setContextMenu'),
               onTap: () async {
@@ -125,19 +125,19 @@ class _HomePageState extends State<HomePage> with TrayListener {
                   MenuItem(title: 'Find', isEnabled: false),
                   MenuItem(title: 'Replace'),
                 ];
-                await TrayManager.instance.setContextMenu(items);
+                await trayManager.setContextMenu(items);
               },
             ),
             PreferenceListItem(
               title: Text('popUpContextMenu'),
               onTap: () async {
-                await TrayManager.instance.popUpContextMenu();
+                await trayManager.popUpContextMenu();
               },
             ),
             PreferenceListItem(
               title: Text('getBounds'),
               onTap: () async {
-                Rect bounds = await TrayManager.instance.getBounds();
+                Rect bounds = await trayManager.getBounds();
                 Size size = bounds.size;
                 Offset origin = bounds.topLeft;
                 BotToast.showText(
@@ -163,17 +163,17 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
   @override
   void onTrayIconMouseDown() {
-    TrayManager.instance.popUpContextMenu();
+    trayManager.popUpContextMenu();
   }
 
   @override
   void onTrayIconRightMouseDown() {
-    TrayManager.instance.popUpContextMenu();
+    trayManager.popUpContextMenu();
   }
 
   @override
   void onTrayIconRightMouseUp() {
-    print(TrayManager.instance.getBounds());
+    print(trayManager.getBounds());
   }
 
   @override

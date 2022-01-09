@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include <shellapi.h>
+#include <strsafe.h>
 
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
@@ -54,6 +55,8 @@ class TrayManagerPlugin : public flutter::Plugin
                                     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
     void TrayManagerPlugin::SetIcon(const flutter::MethodCall<flutter::EncodableValue> &method_call,
                                     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+    void TrayManagerPlugin::SetToolTip(const flutter::MethodCall<flutter::EncodableValue> &method_call,
+                                       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
     void TrayManagerPlugin::SetContextMenu(const flutter::MethodCall<flutter::EncodableValue> &method_call,
                                            std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
     void TrayManagerPlugin::PopUpContextMenu(const flutter::MethodCall<flutter::EncodableValue> &method_call,
@@ -214,7 +217,6 @@ void TrayManagerPlugin::SetIcon(const flutter::MethodCall<flutter::EncodableValu
     {
         nid.cbSize = sizeof(NOTIFYICONDATA);
         nid.hWnd = GetMainWindow();
-        // nid.uID = 100;
         nid.uCallbackMessage = WM_MYMESSAGE;
         nid.hIcon = hIcon;
         nid.uFlags = NIF_MESSAGE | NIF_ICON;
@@ -228,6 +230,21 @@ void TrayManagerPlugin::SetIcon(const flutter::MethodCall<flutter::EncodableValu
     niif.guidItem = GUID_NULL;
 
     tray_icon_setted = true;
+
+    result->Success(flutter::EncodableValue(true));
+}
+
+void TrayManagerPlugin::SetToolTip(const flutter::MethodCall<flutter::EncodableValue> &method_call,
+                                   std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+{
+    const flutter::EncodableMap &args = std::get<flutter::EncodableMap>(*method_call.arguments());
+
+    std::string toolTip = std::get<std::string>(args.at(flutter::EncodableValue("toolTip")));
+
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
+    StringCchCopy(nid.szTip, _countof(nid.szTip), converter.from_bytes(toolTip).c_str());
+    Shell_NotifyIcon(NIM_MODIFY, &nid);
 
     result->Success(flutter::EncodableValue(true));
 }
@@ -302,6 +319,10 @@ void TrayManagerPlugin::HandleMethodCall(const flutter::MethodCall<flutter::Enco
     else if (method_call.method_name().compare("setIcon") == 0)
     {
         SetIcon(method_call, std::move(result));
+    }
+    else if (method_call.method_name().compare("setToolTip") == 0)
+    {
+        SetToolTip(method_call, std::move(result));
     }
     else if (method_call.method_name().compare("setContextMenu") == 0)
     {
