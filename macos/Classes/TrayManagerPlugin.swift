@@ -201,15 +201,14 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     }
     
     public func popUpContextMenu(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        statusItem.button?.isHighlighted = true
-        statusItem.popUpMenu(statusItemMenu);
+        statusItem.menu = statusItemMenu
+        statusItem.button?.performClick(nil)
         result(true)
     }
     
     // NSMenuDelegate
-
+    
     public func menuDidClose(_ menu: NSMenu) {
-        statusItemMenu.cancelTracking()
-        statusItem.button?.isHighlighted = false
+        statusItem.menu = nil
     }
 }
