@@ -1,3 +1,7 @@
+## 0.1.4
+
+* [macos] Fix the problem that the tray highlight state is incorrect #4 #10
+
 ## 0.1.3
 
 * [windows] Implemented `setToolTip` Method.
