@@ -23,7 +23,7 @@
   - [平台支持](#平台支持)
   - [快速开始](#快速开始)
     - [安装](#安装)
-      - [⚠️ Linux requirements](#️-linux-requirements)
+      - [Linux requirements](#linux-requirements)
     - [用法](#用法)
       - [监听事件](#监听事件)
   - [谁在用使用它？](#谁在用使用它)
@@ -60,7 +60,7 @@ dependencies:
       ref: main
 ```
 
-#### ⚠️ Linux requirements
+#### Linux requirements
 
 - `appindicator3-0.1`
 
