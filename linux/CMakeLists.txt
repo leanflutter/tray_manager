@@ -7,7 +7,6 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 set(PLUGIN_NAME "tray_manager_plugin")
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules (APPINDICATOR REQUIRED IMPORTED_TARGET appindicator3-0.1)
 
 add_library(${PLUGIN_NAME} SHARED
   "tray_manager_plugin.cc"
@@ -20,7 +19,17 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter)
 target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::GTK)
-target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::APPINDICATOR)
+
+pkg_check_modules(APPINDICATOR IMPORTED_TARGET appindicator3-0.1)
+if(APPINDICATOR_FOUND)
+  target_link_libraries(${PLUGIN_NAME} PRIVATE PkgConfig::APPINDICATOR)
+else() 
+  message(
+    FATAL_ERROR
+    "\n"
+    "The `tray_manager` package requires appindicator3-0.1. See https://github.com/leanflutter/tray_manager#linux-requirements"
+  )
+endif()
 
 # List of absolute paths to libraries that should be bundled with the plugin
 set(tray_manager_bundled_libraries
