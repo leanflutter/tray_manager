@@ -1,3 +1,8 @@
+## 0.1.5
+
+* Support Checkbox MenuItem #3
+* [macos] Fixed onTrayIconMouseDown not triggered
+
 ## 0.1.4
 
 * [macos] Fix the problem that the tray highlight state is incorrect #4 #10

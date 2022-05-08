@@ -21,6 +21,7 @@
 
 - [tray_manager](#tray_manager)
   - [平台支持](#平台支持)
+  - [截图](#截图)
   - [快速开始](#快速开始)
     - [安装](#安装)
       - [Linux requirements](#linux-requirements)
@@ -53,7 +54,7 @@
 
 ```yaml
 dependencies:
-  tray_manager: ^0.1.4
+  tray_manager: ^0.1.5
 ```
 
 或
