@@ -131,11 +131,21 @@ class _HomePageState extends State<HomePage> with TrayListener {
                       label: 'Share',
                       submenu: Menu(
                         items: [
-                          MenuItem(
+                          MenuItem.checkbox(
                             label: 'Item 1',
+                            checked: true,
+                            onClick: (menuItem) {
+                              print('click item 1');
+                              menuItem.checked = !(menuItem.checked == true);
+                            },
                           ),
-                          MenuItem(
+                          MenuItem.checkbox(
                             label: 'Item 2',
+                            checked: false,
+                            onClick: (menuItem) {
+                              print('click item 2');
+                              menuItem.checked = !(menuItem.checked == true);
+                            },
                           ),
                         ],
                       ),

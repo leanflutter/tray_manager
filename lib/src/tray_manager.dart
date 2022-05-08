@@ -7,6 +7,7 @@ import 'package:path/path.dart' as path;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:shortid/shortid.dart';
 
 import 'tray_listener.dart';
 
@@ -95,6 +96,7 @@ class TrayManager {
     String base64Icon = base64Encode(imageData.buffer.asUint8List());
 
     final Map<String, dynamic> arguments = {
+      "id": shortid.generate(),
       'iconPath': path.joinAll([
         path.dirname(Platform.resolvedExecutable),
         'data/flutter_assets',
@@ -125,10 +127,7 @@ class TrayManager {
 
   /// Pops up the context menu of the tray icon.
   Future<void> popUpContextMenu() async {
-    final Map<String, dynamic> arguments = {
-      'menu': _menu!.toJson(),
-    };
-    await _channel.invokeMethod('popUpContextMenu', arguments);
+    await _channel.invokeMethod('popUpContextMenu');
   }
 
   /// The bounds of this tray icon.

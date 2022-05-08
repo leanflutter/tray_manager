@@ -18,6 +18,7 @@ dependencies:
 
   menu_base: ^0.1.0
   path: ^1.8.0
+  shortid: ^0.1.2
 
 dev_dependencies:
   flutter_test:
