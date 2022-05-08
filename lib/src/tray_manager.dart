@@ -116,6 +116,14 @@ class TrayManager {
     await _channel.invokeMethod('setToolTip', arguments);
   }
 
+  /// Sets the title for this tray icon.
+  Future<void> setTitle(String title) async {
+    final Map<String, dynamic> arguments = {
+      'title': title,
+    };
+    await _channel.invokeMethod('setTitle', arguments);
+  }
+
   /// Sets the context menu for this icon.
   Future<void> setContextMenu(Menu menu) async {
     _menu = menu;

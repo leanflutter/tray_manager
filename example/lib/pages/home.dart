@@ -106,6 +106,12 @@ class _HomePageState extends State<HomePage> with TrayListener {
               },
             ),
             PreferenceListItem(
+              title: Text('setTitle'),
+              onTap: () async {
+                await trayManager.setTitle('tray_manager');
+              },
+            ),
+            PreferenceListItem(
               title: Text('setContextMenu'),
               onTap: () async {
                 _menu ??= Menu(
