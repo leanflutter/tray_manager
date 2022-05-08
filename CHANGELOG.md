@@ -1,3 +1,6 @@
+## 0.1.6
+* [macos] Add `setTitle` method.
+
 ## 0.1.5
 
 * Support Checkbox MenuItem #3

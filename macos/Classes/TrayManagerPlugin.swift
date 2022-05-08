@@ -50,6 +50,9 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         case "setToolTip":
             setToolTip(call, result: result)
             break
+        case "setTitle":
+            setTitle(call, result: result)
+            break
         case "setContextMenu":
             setContextMenu(call, result: result)
             break
@@ -62,7 +65,7 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     }
     
     private func _init() {
-        statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
+        statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.variableLength)
         if let button = statusItem.button {
             button.action = #selector(self.statusItemButtonClicked(sender:))
             button.sendAction(on: [.leftMouseDown, .leftMouseUp, .rightMouseDown, .rightMouseUp])
@@ -128,6 +131,7 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         
         if let button = statusItem.button {
             button.image = image
+            button.imagePosition = NSControl.ImagePosition.imageLeft
         }
         
         result(true)
@@ -143,7 +147,18 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         
         result(true)
     }
-    
+
+    public func setTitle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let args:[String: Any] = call.arguments as! [String: Any]
+        let title: String =  args["title"] as! String;
+
+        if let button = statusItem.button {
+            button.title  = title
+        }
+
+        result(true)
+    }
+
     public func setContextMenu(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args:[String: Any] = call.arguments as! [String: Any]
         statusItemMenu = TrayMenu(args["menu"] as! [String: Any])
