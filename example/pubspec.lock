@@ -50,13 +50,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
-  crypto:
-    dependency: transitive
-    description:
-      name: crypto
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.1"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -95,6 +88,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3"
+  menu_base:
+    dependency: transitive
+    description:
+      name: menu_base
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   meta:
     dependency: transitive
     description:
@@ -177,13 +177,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
-  uuid:
-    dependency: transitive
-    description:
-      name: uuid
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.4"
   vector_math:
     dependency: transitive
     description:

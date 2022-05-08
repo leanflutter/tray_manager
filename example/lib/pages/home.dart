@@ -17,6 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TrayListener {
   String _iconType = _kIconTypeOriginal;
+  Menu? _menu;
 
   Timer? _timer;
 
@@ -107,25 +108,91 @@ class _HomePageState extends State<HomePage> with TrayListener {
             PreferenceListItem(
               title: Text('setContextMenu'),
               onTap: () async {
-                List<MenuItem> items = [
-                  MenuItem(title: 'Undo'),
-                  MenuItem(title: 'Redo'),
-                  MenuItem.separator,
-                  MenuItem(title: 'Cut'),
-                  MenuItem(title: 'Copy'),
-                  MenuItem(
-                    title: 'Copy As',
-                    items: [
-                      MenuItem(title: 'Copy Remote File Url'),
-                      MenuItem(title: 'Copy Remote File Url From...'),
-                    ],
-                  ),
-                  MenuItem(title: 'Paste'),
-                  MenuItem.separator,
-                  MenuItem(title: 'Find', isEnabled: false),
-                  MenuItem(title: 'Replace'),
-                ];
-                await trayManager.setContextMenu(items);
+                _menu ??= Menu(
+                  items: [
+                    MenuItem(
+                      label: 'Look Up "LeanFlutter"',
+                    ),
+                    MenuItem(
+                      label: 'Search with Google',
+                    ),
+                    MenuItem.separator(),
+                    MenuItem(
+                      label: 'Cut',
+                    ),
+                    MenuItem(
+                      label: 'Copy',
+                    ),
+                    MenuItem(
+                      label: 'Paste',
+                      disabled: true,
+                    ),
+                    MenuItem.submenu(
+                      label: 'Share',
+                      submenu: Menu(
+                        items: [
+                          MenuItem(
+                            label: 'Item 1',
+                          ),
+                          MenuItem(
+                            label: 'Item 2',
+                          ),
+                        ],
+                      ),
+                    ),
+                    MenuItem.separator(),
+                    MenuItem.submenu(
+                      label: 'Font',
+                      submenu: Menu(
+                        items: [
+                          MenuItem.checkbox(
+                            label: 'Item 1',
+                            checked: true,
+                            onClick: (menuItem) {
+                              print('click item 1');
+                              menuItem.checked = !(menuItem.checked == true);
+                            },
+                          ),
+                          MenuItem.checkbox(
+                            label: 'Item 2',
+                            checked: false,
+                            onClick: (menuItem) {
+                              print('click item 2');
+                              menuItem.checked = !(menuItem.checked == true);
+                            },
+                          ),
+                          MenuItem.separator(),
+                          MenuItem(
+                            label: 'Item 3',
+                            checked: false,
+                          ),
+                          MenuItem(
+                            label: 'Item 4',
+                            checked: false,
+                          ),
+                          MenuItem(
+                            label: 'Item 5',
+                            checked: false,
+                          ),
+                        ],
+                      ),
+                    ),
+                    MenuItem.submenu(
+                      label: 'Speech',
+                      submenu: Menu(
+                        items: [
+                          MenuItem(
+                            label: 'Item 1',
+                          ),
+                          MenuItem(
+                            label: 'Item 2',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+                await trayManager.setContextMenu(_menu!);
               },
             ),
             PreferenceListItem(

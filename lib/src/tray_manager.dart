@@ -2,13 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'package:menu_base/menu_base.dart';
 import 'package:path/path.dart' as path;
-import 'package:uuid/uuid.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-import 'menu_item.dart';
 import 'tray_listener.dart';
 
 const kEventOnTrayIconMouseDown = 'onTrayIconMouseDown';
@@ -27,11 +26,9 @@ class TrayManager {
 
   final MethodChannel _channel = const MethodChannel('tray_manager');
 
-  Map<int, MenuItem> _itemMap = {};
-  int _lastItemId = 0;
-  String _id = Uuid().v4();
-
   ObserverList<TrayListener> _listeners = ObserverList<TrayListener>();
+
+  Menu? _menu;
 
   Future<void> _methodCallHandler(MethodCall call) async {
     for (final TrayListener listener in _listeners) {
@@ -50,8 +47,19 @@ class TrayManager {
           break;
         case kEventOnTrayMenuItemClick:
           int id = call.arguments['id'];
-          MenuItem menuItem = _itemMap[id]!;
-          listener.onTrayMenuItemClick(menuItem);
+          MenuItem? menuItem = _menu?.getMenuItemById(id);
+          if (menuItem != null) {
+            bool? oldChecked = menuItem.checked;
+            if (menuItem.onClick != null) {
+              menuItem.onClick!(menuItem);
+            }
+            listener.onTrayMenuItemClick(menuItem);
+
+            bool? newChecked = menuItem.checked;
+            if (oldChecked != newChecked) {
+              await setContextMenu(_menu!);
+            }
+          }
           break;
       }
     }
@@ -73,19 +81,6 @@ class TrayManager {
     _listeners.remove(listener);
   }
 
-  Map<int, MenuItem> _indexItemMap(List<MenuItem> items) {
-    final itemMap = <int, MenuItem>{};
-    for (var item in items) {
-      item.id = _lastItemId++;
-      itemMap[item.id] = item;
-      if (item.items.isNotEmpty) {
-        final subItemMap = _indexItemMap(item.items);
-        itemMap.addAll(subItemMap);
-      }
-    }
-    return itemMap;
-  }
-
   // Destroys the tray icon immediately.
   Future<void> destroy() async {
     await _channel.invokeMethod('destroy');
@@ -100,7 +95,6 @@ class TrayManager {
     String base64Icon = base64Encode(imageData.buffer.asUint8List());
 
     final Map<String, dynamic> arguments = {
-      'id': _id,
       'iconPath': path.joinAll([
         path.dirname(Platform.resolvedExecutable),
         'data/flutter_assets',
@@ -121,17 +115,20 @@ class TrayManager {
   }
 
   /// Sets the context menu for this icon.
-  Future<void> setContextMenu(List<MenuItem> items) async {
-    _itemMap = _indexItemMap(items);
+  Future<void> setContextMenu(Menu menu) async {
+    _menu = menu;
     final Map<String, dynamic> arguments = {
-      'items': items.map((e) => e.toJson()).toList(),
+      'menu': menu.toJson(),
     };
     await _channel.invokeMethod('setContextMenu', arguments);
   }
 
   /// Pops up the context menu of the tray icon.
   Future<void> popUpContextMenu() async {
-    await _channel.invokeMethod('popUpContextMenu');
+    final Map<String, dynamic> arguments = {
+      'menu': _menu!.toJson(),
+    };
+    await _channel.invokeMethod('popUpContextMenu', arguments);
   }
 
   /// The bounds of this tray icon.

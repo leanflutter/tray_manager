@@ -1,4 +1,4 @@
-import 'menu_item.dart';
+import 'package:menu_base/menu_base.dart';
 
 abstract class TrayListener {
   /// Emitted when the mouse clicks the tray icon.
