@@ -39,6 +39,12 @@
 | :---: | :---: | :-----: |
 |   ✔️   |   ✔️   |    ✔️    |
 
+## 截图
+
+| macOS                                                                                     | Linux                                                                                     | Windows                                                                                          |
+| ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| ![](https://github.com/leanflutter/tray_manager/blob/main/screenshots/macos.png?raw=true) | ![](https://github.com/leanflutter/tray_manager/blob/main/screenshots/linux.png?raw=true) | ![image](https://github.com/leanflutter/tray_manager/blob/main/screenshots/windows.png?raw=true) |
+
 ## 快速开始
 
 ### 安装
