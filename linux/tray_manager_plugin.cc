@@ -129,6 +129,16 @@ static FlMethodResponse* set_icon(TrayManagerPlugin* self, FlValue* args) {
       fl_method_success_response_new(fl_value_new_bool(true)));
 }
 
+static FlMethodResponse* set_title(TrayManagerPlugin* self, FlValue* args) {
+  const char* title =
+      fl_value_get_string(fl_value_lookup_string(args, "title"));
+
+  app_indicator_set_label(indicator, title, NULL);
+
+  return FL_METHOD_RESPONSE(
+      fl_method_success_response_new(fl_value_new_bool(true)));
+}
+
 static FlMethodResponse* set_context_menu(TrayManagerPlugin* self,
                                           FlValue* args) {
   menu = _create_menu(fl_value_lookup_string(args, "menu"));
@@ -152,6 +162,8 @@ static void tray_manager_plugin_handle_method_call(TrayManagerPlugin* self,
     response = destroy(self, args);
   } else if (strcmp(method, "setIcon") == 0) {
     response = set_icon(self, args);
+  } else if (strcmp(method, "setTitle") == 0) {
+    response = set_title(self, args);
   } else if (strcmp(method, "setContextMenu") == 0) {
     response = set_context_menu(self, args);
   } else {
