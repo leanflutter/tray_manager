@@ -7,7 +7,7 @@
 #ifdef HAVE_AYATANA
 #include <libayatana-appindicator/app-indicator.h>
 #else
-#include <appindicator/app-indicator.h>
+#include <libappindicator/app-indicator.h>
 #endif
 #include <algorithm>
 #include <cstring>
