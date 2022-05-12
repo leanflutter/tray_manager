@@ -32,7 +32,7 @@ else()
   message(
     FATAL_ERROR
     "\n"
-    "The `tray_manager` package requires appindicator3-0.1. See https://github.com/leanflutter/tray_manager#linux-requirements"
+    "The `tray_manager` package requires ayatana-appindicator3-0.1 or appindicator3-0.1. See https://github.com/leanflutter/tray_manager#linux-requirements"
   )
 endif()
 

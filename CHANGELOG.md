@@ -1,5 +1,9 @@
 ## 0.1.6
-* [macos] Add `setTitle` method.
+
+* Support Flutter 3.0
+* [macos] Implemented `setTitle` method.
+* [linux] Implemented `setTitle` method. #15
+* [linux] Fix build on Ubuntu 22.04 #16 #17
 
 ## 0.1.5
 

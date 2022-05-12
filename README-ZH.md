@@ -8,7 +8,7 @@
 [discord-image]: https://img.shields.io/discord/884679008049037342.svg
 [discord-url]: https://discord.gg/zPa6EZ2jqb
 
-这个插件允许 Flutter **桌面** 应用定义系统托盘。
+这个插件允许 Flutter 桌面应用定义系统托盘。
 
 ---
 
@@ -54,7 +54,7 @@
 
 ```yaml
 dependencies:
-  tray_manager: ^0.1.5
+  tray_manager: ^0.1.6
 ```
 
 或
@@ -69,9 +69,15 @@ dependencies:
 
 #### Linux requirements
 
-- `appindicator3-0.1`
+- `ayatana-appindicator3-0.1` or `appindicator3-0.1`
 
 运行以下命令
+
+```
+sudo apt-get install libayatana-appindicator3-dev
+```
+
+或
 
 ```
 sudo apt-get install appindicator3-0.1 libappindicator3-dev
@@ -80,6 +86,7 @@ sudo apt-get install appindicator3-0.1 libappindicator3-dev
 ### 用法
 
 ```dart
+import 'package:flutter/material.dart' hide MenuItem;
 import 'package:tray_manager/tray_manager.dart';
 
 await trayManager.setIcon(
@@ -139,7 +146,8 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
   @override
   void onTrayIconMouseDown() {
-    // do something
+    // do something, for example pop up the menu
+    trayManager.popUpContextMenu();
   }
 
   @override

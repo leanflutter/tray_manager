@@ -8,7 +8,7 @@
 [discord-image]: https://img.shields.io/discord/884679008049037342.svg
 [discord-url]: https://discord.gg/zPa6EZ2jqb
 
-This plugin allows Flutter **desktop** apps to defines system tray.
+This plugin allows Flutter desktop apps to defines system tray.
 
 ---
 
@@ -54,7 +54,7 @@ Add this to your package's pubspec.yaml file:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.1.5
+  tray_manager: ^0.1.6
 ```
 
 Or
@@ -69,9 +69,15 @@ dependencies:
 
 #### Linux requirements
 
-- `appindicator3-0.1`
+- `ayatana-appindicator3-0.1` or `appindicator3-0.1`
 
 Run the following command
+
+```
+sudo apt-get install libayatana-appindicator3-dev
+```
+
+Or
 
 ```
 sudo apt-get install appindicator3-0.1 libappindicator3-dev
@@ -80,6 +86,7 @@ sudo apt-get install appindicator3-0.1 libappindicator3-dev
 ### Usage
 
 ```dart
+import 'package:flutter/material.dart' hide MenuItem;
 import 'package:tray_manager/tray_manager.dart';
 
 await trayManager.setIcon(
