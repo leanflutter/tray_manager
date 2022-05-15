@@ -1,3 +1,7 @@
+## 0.1.7
+
+* [macos] Optimize tray icon click event response
+
 ## 0.1.6
 
 * Support Flutter 3.0

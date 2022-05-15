@@ -54,7 +54,7 @@
 
 ```yaml
 dependencies:
-  tray_manager: ^0.1.6
+  tray_manager: ^0.1.7
 ```
 
 或
