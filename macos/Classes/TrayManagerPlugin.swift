@@ -111,13 +111,17 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     public func getBounds(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let frame = trayIcon?.statusItem?.button?.window?.frame;
         
-        let resultData: NSDictionary = [
-            "x": frame!.topLeft.x,
-            "y": frame!.topLeft.y,
-            "width": frame!.size.width,
-            "height": frame!.size.height,
-        ]
-        result(resultData)
+        if (frame != nil) {
+            let resultData: NSDictionary = [
+                "x": frame!.topLeft.x,
+                "y": frame!.topLeft.y,
+                "width": frame!.size.width,
+                "height": frame!.size.height,
+            ]
+            result(resultData)
+        } else {
+            result(nil)
+        }
     }
     
     public func setIcon(_ call: FlutterMethodCall, result: @escaping FlutterResult) {

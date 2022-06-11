@@ -220,12 +220,14 @@ class _HomePageState extends State<HomePage> with TrayListener {
             PreferenceListItem(
               title: Text('getBounds'),
               onTap: () async {
-                Rect bounds = await trayManager.getBounds();
-                Size size = bounds.size;
-                Offset origin = bounds.topLeft;
-                BotToast.showText(
-                  text: '${size.toString()}\n${origin.toString()}',
-                );
+                Rect? bounds = await trayManager.getBounds();
+                if (bounds != null) {
+                  Size size = bounds.size;
+                  Offset origin = bounds.topLeft;
+                  BotToast.showText(
+                    text: '${size.toString()}\n${origin.toString()}',
+                  );
+                }
               },
             ),
           ],

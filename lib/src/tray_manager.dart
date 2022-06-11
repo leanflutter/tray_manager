@@ -139,12 +139,17 @@ class TrayManager {
   }
 
   /// The bounds of this tray icon.
-  Future<Rect> getBounds() async {
+  Future<Rect?> getBounds() async {
     final Map<String, dynamic> arguments = {
       'devicePixelRatio': window.devicePixelRatio,
     };
-    final Map<dynamic, dynamic> resultData =
-        await _channel.invokeMethod('getBounds', arguments);
+    final Map<dynamic, dynamic>? resultData = await _channel.invokeMethod(
+      'getBounds',
+      arguments,
+    );
+    if (resultData == null) {
+      return null;
+    }
     return Rect.fromLTWH(
       resultData['x'],
       resultData['y'],
