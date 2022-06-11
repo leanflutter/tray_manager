@@ -101,11 +101,14 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     }
     
     public func destroy(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        if (trayMenu != nil) {
+       if (trayIcon == nil) {
+            result(true)
+        } else {
             NSStatusBar.system.removeStatusItem((trayIcon?.statusItem)!)
+            trayIcon?.removeImage()
+            trayIcon = nil
+            result(true)
         }
-        trayIcon = nil
-        result(true)
     }
     
     public func getBounds(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
