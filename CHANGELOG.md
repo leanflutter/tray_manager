@@ -1,3 +1,9 @@
+## 0.1.8
+
+* [windows] getBounds method returns null when not initialized
+* [macos] fixed destroy() not properly destroying tray icons #21 #22
+* [macos] Fix getBounds crash
+
 ## 0.1.7
 
 * [macos] Optimize tray icon click event response
