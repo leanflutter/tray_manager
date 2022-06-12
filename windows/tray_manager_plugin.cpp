@@ -315,6 +315,11 @@ void TrayManagerPlugin::GetBounds(
   const flutter::EncodableMap& args =
       std::get<flutter::EncodableMap>(*method_call.arguments());
 
+  if (!tray_icon_setted) {
+    result->Success();
+    return;
+  }
+
   double devicePixelRatio =
       std::get<double>(args.at(flutter::EncodableValue("devicePixelRatio")));
 
