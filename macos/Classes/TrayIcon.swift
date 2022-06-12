@@ -27,11 +27,16 @@ public class TrayIcon: NSView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public  func setImage(_ image: NSImage) {
+    public func setImage(_ image: NSImage) {
         if let button = statusItem?.button {
             button.image = image
             button.imagePosition = NSControl.ImagePosition.imageLeft
         }
+        self.frame = statusItem!.button!.frame
+    }
+    
+    public func removeImage() {
+        statusItem?.button?.image = nil
         self.frame = statusItem!.button!.frame
     }
     
