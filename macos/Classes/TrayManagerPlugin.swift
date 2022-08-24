@@ -48,6 +48,9 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         case "setIcon":
             setIcon(call, result: result)
             break
+        case "setIconPosition":
+            setIconPosition(call, result: result)
+            break
         case "setToolTip":
             setToolTip(call, result: result)
             break
@@ -131,6 +134,7 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         let args:[String: Any] = call.arguments as! [String: Any]
         let base64Icon: String =  args["base64Icon"] as! String;
         let isTemplate: Bool =  args["isTemplate"] as! Bool;
+        let iconPosition: String =  args["iconPosition"] as! String;
         
         let imageData = Data(base64Encoded: base64Icon, options: .ignoreUnknownCharacters)
         let image = NSImage(data: imageData!)
@@ -153,11 +157,20 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
             }
         }
         
-        trayIcon?.setImage(image!)
+        trayIcon?.setImage(image!, iconPosition)
         
         result(true)
     }
     
+    public func setIconPosition(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let args:[String: Any] = call.arguments as! [String: Any]
+        let iconPosition: String =  args["iconPosition"] as! String;
+        
+        trayIcon?.setImagePosition(iconPosition)
+        
+        result(true)
+    }
+
     public func setToolTip(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args:[String: Any] = call.arguments as! [String: Any]
         let toolTip: String =  args["toolTip"] as! String;
