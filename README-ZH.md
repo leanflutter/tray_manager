@@ -56,7 +56,7 @@
 
 ```yaml
 dependencies:
-  tray_manager: ^0.1.8
+  tray_manager: ^0.2.0
 ```
 
 或
@@ -185,6 +185,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
 | ---------------- | -------------------------------- | ----- | ----- | ------- |
 | destroy          | 立即销毁托盘图标                 | ✔️     | ✔️     | ✔️       |
 | setIcon          | 设置与此托盘图标相关的图片。     | ✔️     | ✔️     | ✔️       |
+| setIconPosition  | 设置托盘图标的图标位置。         | ➖     | ✔️     | ➖       |
 | setToolTip       | 设置此托盘图标的悬停文本。       | ➖     | ✔️     | ✔️       |
 | setContextMenu   | 设置此图标的上下文菜单。         | ✔️     | ✔️     | ✔️       |
 | popUpContextMenu | 弹出托盘图标的上下文菜单。       | ➖     | ✔️     | ✔️       |

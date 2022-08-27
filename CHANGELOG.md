@@ -1,3 +1,7 @@
+## 0.2.0
+
+* [macos] Implemented ` setIconPosition` method. (#25)
+
 ## 0.1.8
 
 * [windows] getBounds method returns null when not initialized

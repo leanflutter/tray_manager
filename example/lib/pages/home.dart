@@ -100,6 +100,26 @@ class _HomePageState extends State<HomePage> with TrayListener {
               onTap: () => _handleSetIcon(_kIconTypeDefault),
             ),
             PreferenceListItem(
+              title: Text('setIconPosition'),
+              accessoryView: Row(
+                children: [
+                  CupertinoButton(
+                    child: Text('left'),
+                    onPressed: () {
+                      trayManager.setIconPosition(TrayIconPositon.left);
+                    },
+                  ),
+                  CupertinoButton(
+                    child: Text('right'),
+                    onPressed: () {
+                      trayManager.setIconPosition(TrayIconPositon.right);
+                    },
+                  ),
+                ],
+              ),
+              onTap: () => _handleSetIcon(_kIconTypeDefault),
+            ),
+            PreferenceListItem(
               title: Text('setToolTip'),
               onTap: () async {
                 await trayManager.setToolTip('tray_manager');

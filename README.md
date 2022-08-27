@@ -56,7 +56,7 @@ Add this to your package's pubspec.yaml file:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.1.8
+  tray_manager: ^0.2.0
 ```
 
 Or
@@ -185,6 +185,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
 | ---------------- | ---------------------------------------------- | ----- | ----- | ------- |
 | destroy          | Destroys the tray icon immediately.            | ✔️     | ✔️     | ✔️       |
 | setIcon          | Sets the image associated with this tray icon. | ✔️     | ✔️     | ✔️       |
+| setIconPosition  | Sets the icon position of the tray icon.       | ➖     | ✔️     | ➖       |
 | setToolTip       | Sets the hover text for this tray icon.        | ➖     | ✔️     | ✔️       |
 | setContextMenu   | Sets the context menu for this icon.           | ✔️     | ✔️     | ✔️       |
 | popUpContextMenu | Pops up the context menu of the tray icon.     | ➖     | ✔️     | ✔️       |
