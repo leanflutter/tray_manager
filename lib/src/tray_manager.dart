@@ -17,6 +17,8 @@ const kEventOnTrayIconRightMouseDown = 'onTrayIconRightMouseDown';
 const kEventOnTrayIconRightMouseUp = 'onTrayIconRightMouseUp';
 const kEventOnTrayMenuItemClick = 'onTrayMenuItemClick';
 
+enum TrayIconPositon { left, right }
+
 class TrayManager {
   TrayManager._() {
     _channel.setMethodCallHandler(_methodCallHandler);
@@ -91,6 +93,7 @@ class TrayManager {
   Future<void> setIcon(
     String iconPath, {
     bool isTemplate = false, // macOS only
+    TrayIconPositon iconPosition = TrayIconPositon.left, // macOS only
   }) async {
     ByteData imageData = await rootBundle.load(iconPath);
     String base64Icon = base64Encode(imageData.buffer.asUint8List());
@@ -104,8 +107,19 @@ class TrayManager {
       ]),
       'base64Icon': base64Icon,
       'isTemplate': isTemplate,
+      'iconPosition': iconPosition.name,
     };
     await _channel.invokeMethod('setIcon', arguments);
+  }
+
+  /// Sets the icon position of the tray icon.
+  ///
+  /// @platforms macos
+  Future<void> setIconPosition(TrayIconPositon trayIconPositon) async {
+    final arguments = <String, dynamic>{
+      'iconPosition': trayIconPositon.name,
+    };
+    await _channel.invokeMethod('setIconPosition', arguments);
   }
 
   /// Sets the hover text for this tray icon.
