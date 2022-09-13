@@ -96,18 +96,20 @@ await trayManager.setIcon(
     ? 'images/tray_icon.ico'
     : 'images/tray_icon.png',
 );
-List<MenuItem> items = [
-  MenuItem(
-    key: 'show_window',
-    title: 'Show Window',
-  ),
-  MenuItem.separator,
-  MenuItem(
-    key: 'exit_app',
-    title: 'Exit App',
-  ),
-];
-await trayManager.setContextMenu(items);
+Menu menu = Menu(
+  items: [
+    MenuItem(
+      key: 'show_window',
+      label: 'Show Window',
+    ),
+    MenuItem.separator(),
+    MenuItem(
+      key: 'exit_app',
+      label: 'Exit App',
+    ),
+  ],
+);
+await trayManager.setContextMenu(menu);
 ```
 
 > 请看这个插件的示例应用，以了解完整的例子。
