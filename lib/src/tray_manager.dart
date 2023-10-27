@@ -16,6 +16,7 @@ const kEventOnTrayIconMouseUp = 'onTrayIconMouseUp';
 const kEventOnTrayIconRightMouseDown = 'onTrayIconRightMouseDown';
 const kEventOnTrayIconRightMouseUp = 'onTrayIconRightMouseUp';
 const kEventOnTrayMenuItemClick = 'onTrayMenuItemClick';
+const kWindowsTaskbarCreated = 'onWindowsTaskbarCreated';
 
 enum TrayIconPositon { left, right }
 
@@ -63,6 +64,9 @@ class TrayManager {
               await setContextMenu(_menu!);
             }
           }
+          break;
+        case kWindowsTaskbarCreated:
+          listener.onWindowsTaskbarCreated();
           break;
       }
     }

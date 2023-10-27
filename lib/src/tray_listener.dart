@@ -12,4 +12,7 @@ abstract class TrayListener {
   void onTrayIconRightMouseUp() {}
 
   void onTrayMenuItemClick(MenuItem menuItem) {}
+
+  /// Emitted when windows taskbar created, such as explorer.exe restarted
+  void onWindowsTaskbarCreated() {}
 }
