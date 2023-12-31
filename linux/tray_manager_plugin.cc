@@ -123,7 +123,7 @@ static FlMethodResponse* set_icon(TrayManagerPlugin* self, FlValue* args) {
   }
 
   app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
-  app_indicator_set_icon(indicator, icon_path);
+  app_indicator_set_icon_full(indicator, icon_path, "");
 
   return FL_METHOD_RESPONSE(
       fl_method_success_response_new(fl_value_new_bool(true)));
