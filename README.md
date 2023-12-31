@@ -1,13 +1,11 @@
 # tray_manager
 
-[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] ![][visits-count-image] 
+[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] ![][visits-count-image]
 
 [pub-image]: https://img.shields.io/pub/v/tray_manager.svg
 [pub-url]: https://pub.dev/packages/tray_manager
-
 [discord-image]: https://img.shields.io/discord/884679008049037342.svg
 [discord-url]: https://discord.gg/zPa6EZ2jqb
-
 [visits-count-image]: https://img.shields.io/badge/dynamic/json?label=Visits%20Count&query=value&url=https://api.countapi.xyz/hit/leanflutter.tray_manager/visits
 
 This plugin allows Flutter desktop apps to defines system tray.
@@ -40,7 +38,7 @@ English | [简体中文](./README-ZH.md)
 
 | Linux | macOS | Windows |
 | :---: | :---: | :-----: |
-|   ✔️   |   ✔️   |    ✔️    |
+|  ✔️   |  ✔️   |   ✔️    |
 
 ## Screenshots
 
@@ -56,7 +54,7 @@ Add this to your package's pubspec.yaml file:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.2.0
+  tray_manager: ^0.2.1
 ```
 
 Or
@@ -185,13 +183,13 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
 | Method           | Description                                    | Linux | macOS | Windows |
 | ---------------- | ---------------------------------------------- | ----- | ----- | ------- |
-| destroy          | Destroys the tray icon immediately.            | ✔️     | ✔️     | ✔️       |
-| setIcon          | Sets the image associated with this tray icon. | ✔️     | ✔️     | ✔️       |
-| setIconPosition  | Sets the icon position of the tray icon.       | ➖     | ✔️     | ➖       |
-| setToolTip       | Sets the hover text for this tray icon.        | ➖     | ✔️     | ✔️       |
-| setContextMenu   | Sets the context menu for this icon.           | ✔️     | ✔️     | ✔️       |
-| popUpContextMenu | Pops up the context menu of the tray icon.     | ➖     | ✔️     | ✔️       |
-| getBounds        | Returns `Rect` The bounds of this tray icon.   | ➖     | ✔️     | ✔️       |
+| destroy          | Destroys the tray icon immediately.            | ✔️    | ✔️    | ✔️      |
+| setIcon          | Sets the image associated with this tray icon. | ✔️    | ✔️    | ✔️      |
+| setIconPosition  | Sets the icon position of the tray icon.       | ➖    | ✔️    | ➖      |
+| setToolTip       | Sets the hover text for this tray icon.        | ➖    | ✔️    | ✔️      |
+| setContextMenu   | Sets the context menu for this icon.           | ✔️    | ✔️    | ✔️      |
+| popUpContextMenu | Pops up the context menu of the tray icon.     | ➖    | ✔️    | ✔️      |
+| getBounds        | Returns `Rect` The bounds of this tray icon.   | ➖    | ✔️    | ✔️      |
 
 ## License
 

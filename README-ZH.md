@@ -1,13 +1,11 @@
 # tray_manager
 
-[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] ![][visits-count-image] 
+[![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] ![][visits-count-image]
 
 [pub-image]: https://img.shields.io/pub/v/tray_manager.svg
 [pub-url]: https://pub.dev/packages/tray_manager
-
 [discord-image]: https://img.shields.io/discord/884679008049037342.svg
 [discord-url]: https://discord.gg/zPa6EZ2jqb
-
 [visits-count-image]: https://img.shields.io/badge/dynamic/json?label=Visits%20Count&query=value&url=https://api.countapi.xyz/hit/leanflutter.tray_manager/visits
 
 这个插件允许 Flutter 桌面应用定义系统托盘。
@@ -40,7 +38,7 @@
 
 | Linux | macOS | Windows |
 | :---: | :---: | :-----: |
-|   ✔️   |   ✔️   |    ✔️    |
+|  ✔️   |  ✔️   |   ✔️    |
 
 ## 截图
 
@@ -56,7 +54,7 @@
 
 ```yaml
 dependencies:
-  tray_manager: ^0.2.0
+  tray_manager: ^0.2.1
 ```
 
 或
@@ -185,13 +183,13 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
 | Method           | Description                      | Linux | macOS | Windows |
 | ---------------- | -------------------------------- | ----- | ----- | ------- |
-| destroy          | 立即销毁托盘图标                 | ✔️     | ✔️     | ✔️       |
-| setIcon          | 设置与此托盘图标相关的图片。     | ✔️     | ✔️     | ✔️       |
-| setIconPosition  | 设置托盘图标的图标位置。         | ➖     | ✔️     | ➖       |
-| setToolTip       | 设置此托盘图标的悬停文本。       | ➖     | ✔️     | ✔️       |
-| setContextMenu   | 设置此图标的上下文菜单。         | ✔️     | ✔️     | ✔️       |
-| popUpContextMenu | 弹出托盘图标的上下文菜单。       | ➖     | ✔️     | ✔️       |
-| getBounds        | 返回 `Rect` 这个托盘图标的边界。 | ➖     | ✔️     | ✔️       |
+| destroy          | 立即销毁托盘图标                 | ✔️    | ✔️    | ✔️      |
+| setIcon          | 设置与此托盘图标相关的图片。     | ✔️    | ✔️    | ✔️      |
+| setIconPosition  | 设置托盘图标的图标位置。         | ➖    | ✔️    | ➖      |
+| setToolTip       | 设置此托盘图标的悬停文本。       | ➖    | ✔️    | ✔️      |
+| setContextMenu   | 设置此图标的上下文菜单。         | ✔️    | ✔️    | ✔️      |
+| popUpContextMenu | 弹出托盘图标的上下文菜单。       | ➖    | ✔️    | ✔️      |
+| getBounds        | 返回 `Rect` 这个托盘图标的边界。 | ➖    | ✔️    | ✔️      |
 
 ## 许可证
 

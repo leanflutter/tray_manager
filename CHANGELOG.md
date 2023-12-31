@@ -1,3 +1,8 @@
+## 0.2.1
+
+* chore: Bump flutter to 3.6
+* [linux] Fix libayatana set icon deprecation
+
 ## 0.2.0
 
 * [macos] Implemented ` setIconPosition` method. (#25)
