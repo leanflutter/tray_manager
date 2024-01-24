@@ -175,6 +175,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
 ## 谁在用使用它？
 
+- [Airclap](https://airclap.app/) - 任何文件，任意设备，随意发送。简单好用的跨平台高速文件传输APP。
 - [Biyi (比译)](https://biyidev.com/) - 一个便捷的翻译和词典应用程序。
 
 ## API
