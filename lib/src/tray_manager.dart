@@ -95,9 +95,6 @@ class TrayManager {
     bool isTemplate = false, // macOS only
     TrayIconPositon iconPosition = TrayIconPositon.left, // macOS only
   }) async {
-    ByteData imageData = await rootBundle.load(iconPath);
-    String base64Icon = base64Encode(imageData.buffer.asUint8List());
-
     final Map<String, dynamic> arguments = {
       "id": shortid.generate(),
       'iconPath': path.joinAll([
@@ -105,10 +102,21 @@ class TrayManager {
         'data/flutter_assets',
         iconPath,
       ]),
-      'base64Icon': base64Icon,
       'isTemplate': isTemplate,
       'iconPosition': iconPosition.name,
     };
+
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.macOS:
+        // Add the icon as base64 string
+        ByteData imageData = await rootBundle.load(iconPath);
+        String base64Icon = base64Encode(imageData.buffer.asUint8List());
+        arguments['base64Icon'] = base64Icon;
+        break;
+      default:
+        break;
+    }
+
     await _channel.invokeMethod('setIcon', arguments);
   }
 
