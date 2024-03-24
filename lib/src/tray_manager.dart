@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shortid/shortid.dart';
 
+import 'helpers/sandbox.dart';
 import 'tray_listener.dart';
 
 const kEventOnTrayIconMouseDown = 'onTrayIconMouseDown';
@@ -90,6 +91,14 @@ class TrayManager {
   }
 
   /// Sets the image associated with this tray icon.
+  ///
+  /// [iconPath] is the path to the image file.
+  ///
+  /// However, if the app is running in a sandbox like Flatpak or Snap,
+  /// [iconPath] should be the name of the icon as specified in the app's
+  /// manifest file, without the path or file extension. For example, if the
+  /// icon is specified as `org.example.app` in the Flatpak manifest file, then
+  /// the icon should be passed as `org.example.app`.
   Future<void> setIcon(
     String iconPath, {
     bool isTemplate = false, // macOS only
@@ -107,6 +116,15 @@ class TrayManager {
     };
 
     switch (defaultTargetPlatform) {
+      case TargetPlatform.linux:
+        if (runningInSandbox()) {
+          // Pass the icon name as specified if running in a sandbox.
+          //
+          // This is required because when running in a sandbox, paths are not
+          // the same as seen by the app and the host system.
+          arguments['iconPath'] = iconPath;
+        }
+        break;
       case TargetPlatform.macOS:
         // Add the icon as base64 string
         ByteData imageData = await rootBundle.load(iconPath);
