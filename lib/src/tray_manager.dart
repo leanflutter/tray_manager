@@ -1,16 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
-import 'package:menu_base/menu_base.dart';
-import 'package:path/path.dart' as path;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:menu_base/menu_base.dart';
+import 'package:path/path.dart' as path;
 import 'package:shortid/shortid.dart';
-
-import 'helpers/sandbox.dart';
-import 'tray_listener.dart';
+import 'package:tray_manager/src/helpers/sandbox.dart';
+import 'package:tray_manager/src/tray_listener.dart';
 
 const kEventOnTrayIconMouseDown = 'onTrayIconMouseDown';
 const kEventOnTrayIconMouseUp = 'onTrayIconMouseUp';
@@ -30,7 +29,12 @@ class TrayManager {
 
   final MethodChannel _channel = const MethodChannel('tray_manager');
 
-  ObserverList<TrayListener> _listeners = ObserverList<TrayListener>();
+  final ObserverList<TrayListener> _listeners = ObserverList<TrayListener>();
+
+  double get _devicePixelRatio {
+    final flutterView = WidgetsBinding.instance.platformDispatcher.views.single;
+    return MediaQueryData.fromView(flutterView).devicePixelRatio;
+  }
 
   Menu? _menu;
 
@@ -55,7 +59,7 @@ class TrayManager {
           if (menuItem != null) {
             bool? oldChecked = menuItem.checked;
             if (menuItem.onClick != null) {
-              menuItem.onClick!(menuItem);
+              menuItem.onClick?.call(menuItem);
             }
             listener.onTrayMenuItemClick(menuItem);
 
@@ -105,7 +109,7 @@ class TrayManager {
     TrayIconPositon iconPosition = TrayIconPositon.left, // macOS only
   }) async {
     final Map<String, dynamic> arguments = {
-      "id": shortid.generate(),
+      'id': shortid.generate(),
       'iconPath': path.joinAll([
         path.dirname(Platform.resolvedExecutable),
         'data/flutter_assets',
@@ -181,7 +185,7 @@ class TrayManager {
   /// The bounds of this tray icon.
   Future<Rect?> getBounds() async {
     final Map<String, dynamic> arguments = {
-      'devicePixelRatio': window.devicePixelRatio,
+      'devicePixelRatio': _devicePixelRatio,
     };
     final Map<dynamic, dynamic>? resultData = await _channel.invokeMethod(
       'getBounds',

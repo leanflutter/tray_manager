@@ -1,6 +1,6 @@
 import 'package:menu_base/menu_base.dart';
 
-abstract class TrayListener {
+abstract mixin class TrayListener {
   /// Emitted when the mouse clicks the tray icon.
   void onTrayIconMouseDown() {}
 

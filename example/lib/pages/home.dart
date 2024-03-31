@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/cupertino.dart' hide MenuItem;
-import 'package:flutter/material.dart' hide MenuItem;
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:preference_list/preference_list.dart';
 import 'package:tray_manager/tray_manager.dart';
 
@@ -11,8 +12,10 @@ const _kIconTypeDefault = 'default';
 const _kIconTypeOriginal = 'original';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> with TrayListener {
@@ -33,7 +36,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
     super.dispose();
   }
 
-  void _handleSetIcon(String iconType) async {
+  Future<void> _handleSetIcon(String iconType) async {
     _iconType = iconType;
     String iconPath =
         Platform.isWindows ? 'images/tray_icon.ico' : 'images/tray_icon.png';
@@ -48,10 +51,12 @@ class _HomePageState extends State<HomePage> with TrayListener {
   }
 
   void _startIconFlashing() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
-      _handleSetIcon(_iconType == _kIconTypeOriginal
-          ? _kIconTypeDefault
-          : _kIconTypeOriginal);
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      _handleSetIcon(
+        _iconType == _kIconTypeOriginal
+            ? _kIconTypeDefault
+            : _kIconTypeOriginal,
+      );
     });
     setState(() {});
   }
@@ -69,30 +74,33 @@ class _HomePageState extends State<HomePage> with TrayListener {
         PreferenceListSection(
           children: [
             PreferenceListItem(
-              title: Text('destroy'),
+              title: const Text('destroy'),
               onTap: () {
                 trayManager.destroy();
               },
             ),
             PreferenceListItem(
-              title: Text('setIcon'),
+              title: const Text('setIcon'),
               accessoryView: Row(
                 children: [
-                  Builder(builder: (_) {
-                    bool isFlashing = (_timer != null && _timer!.isActive);
-                    return CupertinoButton(
-                      child:
-                          isFlashing ? Text('stop flash') : Text('start flash'),
-                      onPressed:
-                          isFlashing ? _stopIconFlashing : _startIconFlashing,
-                    );
-                  }),
+                  Builder(
+                    builder: (_) {
+                      bool isFlashing = (_timer != null && _timer!.isActive);
+                      return CupertinoButton(
+                        onPressed:
+                            isFlashing ? _stopIconFlashing : _startIconFlashing,
+                        child: isFlashing
+                            ? const Text('stop flash')
+                            : const Text('start flash'),
+                      );
+                    },
+                  ),
                   CupertinoButton(
-                    child: Text('Default'),
+                    child: const Text('Default'),
                     onPressed: () => _handleSetIcon(_kIconTypeDefault),
                   ),
                   CupertinoButton(
-                    child: Text('Original'),
+                    child: const Text('Original'),
                     onPressed: () => _handleSetIcon(_kIconTypeOriginal),
                   ),
                 ],
@@ -100,17 +108,17 @@ class _HomePageState extends State<HomePage> with TrayListener {
               onTap: () => _handleSetIcon(_kIconTypeDefault),
             ),
             PreferenceListItem(
-              title: Text('setIconPosition'),
+              title: const Text('setIconPosition'),
               accessoryView: Row(
                 children: [
                   CupertinoButton(
-                    child: Text('left'),
+                    child: const Text('left'),
                     onPressed: () {
                       trayManager.setIconPosition(TrayIconPositon.left);
                     },
                   ),
                   CupertinoButton(
-                    child: Text('right'),
+                    child: const Text('right'),
                     onPressed: () {
                       trayManager.setIconPosition(TrayIconPositon.right);
                     },
@@ -120,19 +128,19 @@ class _HomePageState extends State<HomePage> with TrayListener {
               onTap: () => _handleSetIcon(_kIconTypeDefault),
             ),
             PreferenceListItem(
-              title: Text('setToolTip'),
+              title: const Text('setToolTip'),
               onTap: () async {
                 await trayManager.setToolTip('tray_manager');
               },
             ),
             PreferenceListItem(
-              title: Text('setTitle'),
+              title: const Text('setTitle'),
               onTap: () async {
                 await trayManager.setTitle('tray_manager');
               },
             ),
             PreferenceListItem(
-              title: Text('setContextMenu'),
+              title: const Text('setContextMenu'),
               onTap: () async {
                 _menu ??= Menu(
                   items: [
@@ -161,7 +169,9 @@ class _HomePageState extends State<HomePage> with TrayListener {
                             label: 'Item 1',
                             checked: true,
                             onClick: (menuItem) {
-                              print('click item 1');
+                              if (kDebugMode) {
+                                print('click item 1');
+                              }
                               menuItem.checked = !(menuItem.checked == true);
                             },
                           ),
@@ -169,7 +179,9 @@ class _HomePageState extends State<HomePage> with TrayListener {
                             label: 'Item 2',
                             checked: false,
                             onClick: (menuItem) {
-                              print('click item 2');
+                              if (kDebugMode) {
+                                print('click item 2');
+                              }
                               menuItem.checked = !(menuItem.checked == true);
                             },
                           ),
@@ -185,7 +197,9 @@ class _HomePageState extends State<HomePage> with TrayListener {
                             label: 'Item 1',
                             checked: true,
                             onClick: (menuItem) {
-                              print('click item 1');
+                              if (kDebugMode) {
+                                print('click item 1');
+                              }
                               menuItem.checked = !(menuItem.checked == true);
                             },
                           ),
@@ -193,7 +207,9 @@ class _HomePageState extends State<HomePage> with TrayListener {
                             label: 'Item 2',
                             checked: false,
                             onClick: (menuItem) {
-                              print('click item 2');
+                              if (kDebugMode) {
+                                print('click item 2');
+                              }
                               menuItem.checked = !(menuItem.checked == true);
                             },
                           ),
@@ -232,13 +248,13 @@ class _HomePageState extends State<HomePage> with TrayListener {
               },
             ),
             PreferenceListItem(
-              title: Text('popUpContextMenu'),
+              title: const Text('popUpContextMenu'),
               onTap: () async {
                 await trayManager.popUpContextMenu();
               },
             ),
             PreferenceListItem(
-              title: Text('getBounds'),
+              title: const Text('getBounds'),
               onTap: () async {
                 Rect? bounds = await trayManager.getBounds();
                 if (bounds != null) {
@@ -268,29 +284,39 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
   @override
   void onTrayIconMouseDown() {
-    print('onTrayIconMouseDown');
+    if (kDebugMode) {
+      print('onTrayIconMouseDown');
+    }
     trayManager.popUpContextMenu();
   }
 
   @override
   void onTrayIconMouseUp() {
-    print('onTrayIconMouseUp');
+    if (kDebugMode) {
+      print('onTrayIconMouseUp');
+    }
   }
 
   @override
   void onTrayIconRightMouseDown() {
-    print('onTrayIconRightMouseDown');
+    if (kDebugMode) {
+      print('onTrayIconRightMouseDown');
+    }
     // trayManager.popUpContextMenu();
   }
 
   @override
   void onTrayIconRightMouseUp() {
-    print('onTrayIconRightMouseUp');
+    if (kDebugMode) {
+      print('onTrayIconRightMouseUp');
+    }
   }
 
   @override
   void onTrayMenuItemClick(MenuItem menuItem) {
-    print(menuItem.toJson());
+    if (kDebugMode) {
+      print(menuItem.toJson());
+    }
     BotToast.showText(
       text: '${menuItem.toJson()}',
     );

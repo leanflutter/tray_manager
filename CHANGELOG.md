@@ -1,3 +1,8 @@
+## 0.2.2
+
+* fix(linux): ensure icon works in sandboxed environments #43
+* Updates minimum supported SDK version to Flutter 3.3/Dart 3.0.
+
 ## 0.2.1
 
 * chore: Bump flutter to 3.6
