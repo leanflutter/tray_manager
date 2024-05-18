@@ -1,3 +1,7 @@
+## 0.2.3
+
+* fix(macos): Fix app will crash when closing the tray. #44
+
 ## 0.2.2
 
 * fix(linux): ensure icon works in sandboxed environments #43
