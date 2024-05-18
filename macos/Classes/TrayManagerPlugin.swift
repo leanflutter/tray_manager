@@ -104,14 +104,14 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
     }
     
     public func destroy(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-       if (trayIcon == nil) {
-            result(true)
-        } else {
+        if (trayIcon?.statusItem != nil) {
             NSStatusBar.system.removeStatusItem((trayIcon?.statusItem)!)
+        }
+        if (trayIcon != nil) {
             trayIcon?.removeImage()
             trayIcon = nil
-            result(true)
         }
+        result(true)
     }
     
     public func getBounds(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -170,7 +170,7 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         
         result(true)
     }
-
+    
     public func setToolTip(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args:[String: Any] = call.arguments as! [String: Any]
         let toolTip: String =  args["toolTip"] as! String;
