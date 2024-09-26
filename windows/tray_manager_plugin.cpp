@@ -187,12 +187,12 @@ std::optional<LRESULT> TrayManagerPlugin::HandleWindowProc(HWND hWnd,
       case WM_LBUTTONUP:
         channel->InvokeMethod(
             "onTrayIconMouseDown",
-            std::make_unique<flutter::EncodableValue>(nullptr));
+            std::make_unique<flutter::EncodableValue>());
         break;
       case WM_RBUTTONUP:
         channel->InvokeMethod(
             "onTrayIconRightMouseDown",
-            std::make_unique<flutter::EncodableValue>(nullptr));
+            std::make_unique<flutter::EncodableValue>());
         break;
       default:
         return DefWindowProc(hWnd, message, wParam, lParam);
