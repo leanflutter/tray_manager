@@ -1,0 +1,19 @@
+name: tray_manager_platform_interface
+description: A common platform interface for the tray_manager plugin.
+version: 0.3.0
+homepage: https://github.com/leanflutter/tray_manager/blob/main/packages/tray_manager_platform_interface
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.3.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  menu_base: ^0.1.0
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mostly_reasonable_lints: ^0.1.2

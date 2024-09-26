@@ -1,0 +1,1 @@
+enum TrayIconPositon { left, right }
