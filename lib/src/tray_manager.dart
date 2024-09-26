@@ -153,6 +153,12 @@ class TrayManager {
   }
 
   /// Sets the hover text for this tray icon.
+  ///
+  /// Must be called after the icon is set.
+  /// ```dart
+  /// await trayManager.setIcon(...);
+  /// await trayManager.setToolTip(...);
+  /// ```
   Future<void> setToolTip(String toolTip) async {
     final Map<String, dynamic> arguments = {
       'toolTip': toolTip,
