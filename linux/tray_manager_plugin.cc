@@ -108,14 +108,21 @@ static FlMethodResponse* destroy(TrayManagerPlugin* self, FlValue* args) {
 
 static FlMethodResponse* set_icon(TrayManagerPlugin* self, FlValue* args) {
   const char* id = fl_value_get_string(fl_value_lookup_string(args, "id"));
-  const char* icon_path =
-      fl_value_get_string(fl_value_lookup_string(args, "iconPath"));
+  const bool prefer_icon_theme = fl_value_get_bool(fl_value_lookup_string(args, "preferIconTheme"));
+
+  const char* icon;
+
+  if (prefer_icon_theme) {
+    icon = fl_value_get_string(fl_value_lookup_string(args, "iconName"));
+  } else {
+    icon = fl_value_get_string(fl_value_lookup_string(args, "iconPath"));
+  }
 
   if (!menu)
     menu = gtk_menu_new();
 
   if (!indicator) {
-    indicator = app_indicator_new(id, icon_path,
+    indicator = app_indicator_new(id, icon,
                                   APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
 
     app_indicator_set_menu(indicator, GTK_MENU(menu));
@@ -123,7 +130,7 @@ static FlMethodResponse* set_icon(TrayManagerPlugin* self, FlValue* args) {
   }
 
   app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
-  app_indicator_set_icon_full(indicator, icon_path, "");
+  app_indicator_set_icon_full(indicator, icon, "");
 
   return FL_METHOD_RESPONSE(
       fl_method_success_response_new(fl_value_new_bool(true)));

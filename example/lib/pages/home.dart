@@ -46,6 +46,8 @@ class _HomePageState extends State<HomePage> with TrayListener {
     }
 
     await trayManager.setIcon(iconPath);
+    // Follow Linux system icon theme
+    // await trayManager.setIcon(iconPath, preferIconTheme: true, iconName: 'flutter');
   }
 
   void _startIconFlashing() {
