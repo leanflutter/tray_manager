@@ -1,3 +1,7 @@
+## 0.2.4
+
+* [windows][bug] fix the crash bug on windows targeting c++20 (#47)
+
 ## 0.2.3
 
 * fix(macos): Fix app will crash when closing the tray. #44
