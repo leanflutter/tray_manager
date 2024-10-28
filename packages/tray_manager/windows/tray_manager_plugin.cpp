@@ -76,7 +76,8 @@ class TrayManagerPlugin : public flutter::Plugin {
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
   void TrayManagerPlugin::PopUpContextMenu(
       const flutter::MethodCall<flutter::EncodableValue>& method_call,
-      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result,
+      bool bringAppToFront);
   void TrayManagerPlugin::GetBounds(
       const flutter::MethodCall<flutter::EncodableValue>& method_call,
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
@@ -185,14 +186,12 @@ std::optional<LRESULT> TrayManagerPlugin::HandleWindowProc(HWND hWnd,
   } else if (message == WM_MYMESSAGE) {
     switch (lParam) {
       case WM_LBUTTONUP:
-        channel->InvokeMethod(
-            "onTrayIconMouseDown",
-            std::make_unique<flutter::EncodableValue>());
+        channel->InvokeMethod("onTrayIconMouseDown",
+                              std::make_unique<flutter::EncodableValue>());
         break;
       case WM_RBUTTONUP:
-        channel->InvokeMethod(
-            "onTrayIconRightMouseDown",
-            std::make_unique<flutter::EncodableValue>());
+        channel->InvokeMethod("onTrayIconRightMouseDown",
+                              std::make_unique<flutter::EncodableValue>());
         break;
       default:
         return DefWindowProc(hWnd, message, wParam, lParam);
@@ -287,7 +286,8 @@ void TrayManagerPlugin::SetContextMenu(
 
 void TrayManagerPlugin::PopUpContextMenu(
     const flutter::MethodCall<flutter::EncodableValue>& method_call,
-    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result,
+    bool bringAppToFront) {
   HWND hWnd = GetMainWindow();
 
   double x, y;
@@ -303,7 +303,9 @@ void TrayManagerPlugin::PopUpContextMenu(
   x = cursorPos.x;
   y = cursorPos.y;
 
-  SetForegroundWindow(hWnd);
+  if (bringAppToFront) {
+    SetForegroundWindow(hWnd);
+  }
   TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, static_cast<int>(x),
                  static_cast<int>(y), 0, hWnd, NULL);
   result->Success(flutter::EncodableValue(true));
@@ -352,8 +354,12 @@ void TrayManagerPlugin::HandleMethodCall(
     SetToolTip(method_call, std::move(result));
   } else if (method_call.method_name().compare("setContextMenu") == 0) {
     SetContextMenu(method_call, std::move(result));
-  } else if (method_call.method_name().compare("popUpContextMenu") == 0) {
-    PopUpContextMenu(method_call, std::move(result));
+  } else if (method_call.method_name().compare(
+                 "popUpContextMenuAndNotForegroundApp") == 0) {
+    PopUpContextMenu(method_call, std::move(result), false);
+  } else if (method_call.method_name().compare(
+                 "popUpContextMenuAndForegroundApp") == 0) {
+    PopUpContextMenu(method_call, std::move(result), true);
   } else if (method_call.method_name().compare("getBounds") == 0) {
     GetBounds(method_call, std::move(result));
   } else {
