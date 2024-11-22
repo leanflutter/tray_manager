@@ -260,7 +260,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Should bring app to foreground'),
+                  const Text('Should bring app to foreground'),
                   Switch(
                     value: bringToForeground,
                     onChanged: (value) {
@@ -270,8 +270,9 @@ class _HomePageState extends State<HomePage> with TrayListener {
                 ],
               ),
               onTap: () async {
-                await trayManager
-                    .popUpContextMenu(shouldForegroundOnContextMenu.value);
+                await trayManager.popUpContextMenu(
+                  bringAppToFront: shouldForegroundOnContextMenu.value,
+                );
               },
             );
           },
@@ -309,7 +310,9 @@ class _HomePageState extends State<HomePage> with TrayListener {
     if (kDebugMode) {
       print('onTrayIconMouseDown');
     }
-    trayManager.popUpContextMenu(shouldForegroundOnContextMenu.value);
+    trayManager.popUpContextMenu(
+      bringAppToFront: shouldForegroundOnContextMenu.value,
+    );
   }
 
   @override

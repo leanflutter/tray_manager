@@ -76,8 +76,7 @@ class TrayManagerPlugin : public flutter::Plugin {
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
   void TrayManagerPlugin::PopUpContextMenu(
       const flutter::MethodCall<flutter::EncodableValue>& method_call,
-      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result,
-      bool bringAppToFront);
+      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
   void TrayManagerPlugin::GetBounds(
       const flutter::MethodCall<flutter::EncodableValue>& method_call,
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
@@ -286,8 +285,13 @@ void TrayManagerPlugin::SetContextMenu(
 
 void TrayManagerPlugin::PopUpContextMenu(
     const flutter::MethodCall<flutter::EncodableValue>& method_call,
-    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result,
-    bool bringAppToFront) {
+    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+  const flutter::EncodableMap& args =
+      std::get<flutter::EncodableMap>(*method_call.arguments());
+
+  bool bringAppToFront =
+      std::get<bool>(args.at(flutter::EncodableValue("bringAppToFront")));
+
   HWND hWnd = GetMainWindow();
 
   double x, y;
@@ -354,12 +358,8 @@ void TrayManagerPlugin::HandleMethodCall(
     SetToolTip(method_call, std::move(result));
   } else if (method_call.method_name().compare("setContextMenu") == 0) {
     SetContextMenu(method_call, std::move(result));
-  } else if (method_call.method_name().compare(
-                 "popUpContextMenuAndNotForegroundApp") == 0) {
-    PopUpContextMenu(method_call, std::move(result), false);
-  } else if (method_call.method_name().compare(
-                 "popUpContextMenuAndForegroundApp") == 0) {
-    PopUpContextMenu(method_call, std::move(result), true);
+  } else if (method_call.method_name().compare("popUpContextMenu") == 0) {
+    PopUpContextMenu(method_call, std::move(result));
   } else if (method_call.method_name().compare("getBounds") == 0) {
     GetBounds(method_call, std::move(result));
   } else {

@@ -183,23 +183,12 @@ class TrayManager {
     await _channel.invokeMethod('setContextMenu', arguments);
   }
 
-  /// Pops up the context menu of the tray icon and can foreground the app if `true` is passed as an argument.
-  Future<void> popUpContextMenu([bool bringAppToForeground = false]) async {
-    if (bringAppToForeground) {
-      _popUpContextMenuAndForegroundApp();
-    } else {
-      _popUpContextMenuAndNotForegroundApp();
-    }
-  }
-
-  // Pops up the context menu of the tray icon and do not bring app to the foreground.
-  Future<void> _popUpContextMenuAndNotForegroundApp() async {
-    await _channel.invokeMethod('popUpContextMenuAndNotForegroundApp');
-  }
-
-  // Pops up the context menu of the tray icon and bring the app to the foreground.
-  Future<void> _popUpContextMenuAndForegroundApp() async {
-    await _channel.invokeMethod('popUpContextMenuAndForegroundApp');
+  /// Pops up the context menu of the tray icon.
+  Future<void> popUpContextMenu({bool bringAppToFront = false}) async {
+    final Map<String, dynamic> arguments = {
+      'bringAppToFront': bringAppToFront,
+    };
+    await _channel.invokeMethod('popUpContextMenu', arguments);
   }
 
   /// The bounds of this tray icon.
