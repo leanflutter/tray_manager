@@ -184,7 +184,15 @@ class TrayManager {
   }
 
   /// Pops up the context menu of the tray icon.
-  Future<void> popUpContextMenu({bool bringAppToFront = false}) async {
+  ///
+  /// [bringAppToFront] If true, the app will be brought to the front when the
+  /// context menu is shown. Only works on Windows.
+  Future<void> popUpContextMenu({
+    @Deprecated(
+      'This parameter is only supported on Windows and will be removed in the future.',
+    )
+    bool bringAppToFront = false,
+  }) async {
     final Map<String, dynamic> arguments = {
       'bringAppToFront': bringAppToFront,
     };

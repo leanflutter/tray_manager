@@ -54,7 +54,7 @@ Add this to your package's pubspec.yaml file:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.2.3
+  tray_manager: ^0.3.0
 ```
 
 Or

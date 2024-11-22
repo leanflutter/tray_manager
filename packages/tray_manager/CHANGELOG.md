@@ -1,3 +1,7 @@
+## 0.3.0
+
+* chore: Add `bringAppToFront` param to `popUpContextMenu` method (#58)
+
 ## 0.2.4
 
 * [windows][bug] fix the crash bug on windows targeting c++20 (#47)
