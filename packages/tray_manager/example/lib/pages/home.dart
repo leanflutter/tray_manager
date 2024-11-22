@@ -17,6 +17,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with TrayListener {
+  ValueNotifier<bool> shouldForegroundOnContextMenu = ValueNotifier(false);
   String _iconType = _kIconTypeOriginal;
   Menu? _menu;
 
@@ -251,10 +252,28 @@ class _HomePageState extends State<HomePage> with TrayListener {
           },
         ),
         const Divider(height: 0),
-        ListTile(
-          title: const Text('popUpContextMenu'),
-          onTap: () async {
-            await trayManager.popUpContextMenu();
+        ValueListenableBuilder(
+          valueListenable: shouldForegroundOnContextMenu,
+          builder: (context, bool bringToForeground, Widget? child) {
+            return ListTile(
+              title: const Text('popUpContextMenu'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Should bring app to foreground'),
+                  Switch(
+                    value: bringToForeground,
+                    onChanged: (value) {
+                      shouldForegroundOnContextMenu.value = !bringToForeground;
+                    },
+                  ),
+                ],
+              ),
+              onTap: () async {
+                await trayManager
+                    .popUpContextMenu(shouldForegroundOnContextMenu.value);
+              },
+            );
           },
         ),
         const Divider(height: 0),
@@ -290,7 +309,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
     if (kDebugMode) {
       print('onTrayIconMouseDown');
     }
-    trayManager.popUpContextMenu();
+    trayManager.popUpContextMenu(shouldForegroundOnContextMenu.value);
   }
 
   @override
