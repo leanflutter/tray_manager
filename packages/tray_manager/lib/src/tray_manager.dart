@@ -107,6 +107,7 @@ class TrayManager {
     String iconPath, {
     bool isTemplate = false, // macOS only
     TrayIconPositon iconPosition = TrayIconPositon.left, // macOS only
+    int iconSize = 18, // macOS only
   }) async {
     final Map<String, dynamic> arguments = {
       'id': shortid.generate(),
@@ -117,6 +118,7 @@ class TrayManager {
       ]),
       'isTemplate': isTemplate,
       'iconPosition': iconPosition.name,
+      'iconSize': iconSize,
     };
 
     switch (defaultTargetPlatform) {
