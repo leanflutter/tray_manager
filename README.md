@@ -51,20 +51,16 @@ English | [简体中文](./README-ZH.md)
 
 ### Not Working with app_links
 
-When using `app_links` package alongside `tray_manager`, you may find that plugin does not work properly. This is because `app_links` internally blocks event propagation, preventing menu click events from being triggered.
+When using the `app_links` package together with `tray_manager`, the plugin may not work properly. This is because older versions of `app_links` internally block event propagation, preventing menu click events from being triggered.
 
 To resolve this issue:
 
-1. Use my forked version of `app_links` package and wait for my PR to be merged: https://github.com/llfbandit/app_links/pull/179
+1. Make sure your `app_links` package version is greater than or equal to 6.3.3
 
 ```yaml
 dependencies:
-  app_links:
-    git:
-      url: https://github.com/lijy91/app_links.git
+  app_links: ^6.3.3
 ```
-
-> Note: This is a temporary solution, and I will remove this repository once my PR is merged.
 
 2. Use [protocol_handler](https://github.com/leanflutter/protocol_handler) package instead of `app_links` package.
 

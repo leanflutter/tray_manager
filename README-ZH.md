@@ -51,20 +51,16 @@
 
 ### 与 app_links 不兼容
 
-当同时使用 `app_links` 包和 `tray_manager` 时，你可能会发现插件无法正常工作。这是因为 `app_links` 在内部阻止了事件传播，导致菜单点击事件无法触发。
+当同时使用 `app_links` 包和 `tray_manager` 时，可能会出现插件无法正常工作。这是因为低版本 `app_links` 在内部阻止了事件传播，导致菜单点击事件无法触发。
 
 要解决此问题：
 
-1. 使用我的 `app_links` 包分支版本，等待我的 PR 被合并: https://github.com/llfbandit/app_links/pull/179
+1. 确保你的 `app_links` 包版本大于或等于 6.3.3
 
 ```yaml
 dependencies:
-  app_links:
-    git:
-      url: https://github.com/lijy91/app_links.git
+  app_links: ^6.3.3
 ```
-
-> 注意：这是一个临时解决方案，一旦我的 PR 被合并，我将移除这个仓库。
 
 2. 使用 [protocol_handler](https://github.com/leanflutter/protocol_handler) 包代替 `app_links` 包。
 
