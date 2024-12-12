@@ -18,7 +18,7 @@ jobs:
       - run: |
           sudo apt-get update
           sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
-          sudo apt-get install -y keybinder-3.0
+          sudo apt-get install -y keybinder-3.0 libayatana-appindicator3-dev
       - uses: bluefireteam/melos-action@v3
       - working-directory: ./packages/tray_manager/example
         run: |

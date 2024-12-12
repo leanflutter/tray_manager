@@ -19,18 +19,19 @@ English | [简体中文](./README-ZH.md)
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [tray_manager](#tray_manager)
-  - [Platform Support](#platform-support)
-  - [Screenshots](#screenshots)
-  - [Quick Start](#quick-start)
-    - [Installation](#installation)
-      - [Linux requirements](#linux-requirements)
-    - [Usage](#usage)
-      - [Listening events](#listening-events)
-  - [Who's using it?](#whos-using-it)
-  - [API](#api)
-    - [TrayManager](#traymanager)
-  - [License](#license)
+- [Platform Support](#platform-support)
+- [Screenshots](#screenshots)
+- [Known Issues](#known-issues)
+  - [Not Working with app_links](#not-working-with-app_links)
+- [Quick Start](#quick-start)
+  - [Installation](#installation)
+    - [Linux requirements](#linux-requirements)
+  - [Usage](#usage)
+    - [Listening events](#listening-events)
+- [Who's using it?](#whos-using-it)
+- [API](#api)
+  - [TrayManager](#traymanager)
+- [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 

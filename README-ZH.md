@@ -19,18 +19,19 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [tray_manager](#tray_manager)
-  - [平台支持](#平台支持)
-  - [截图](#截图)
-  - [快速开始](#快速开始)
-    - [安装](#安装)
-      - [Linux requirements](#linux-requirements)
-    - [用法](#用法)
-      - [监听事件](#监听事件)
-  - [谁在用使用它？](#谁在用使用它)
-  - [API](#api)
-    - [TrayManager](#traymanager)
-  - [许可证](#许可证)
+- [平台支持](#%E5%B9%B3%E5%8F%B0%E6%94%AF%E6%8C%81)
+- [截图](#%E6%88%AA%E5%9B%BE)
+- [已知问题](#%E5%B7%B2%E7%9F%A5%E9%97%AE%E9%A2%98)
+  - [与 app_links 不兼容](#%E4%B8%8E-app_links-%E4%B8%8D%E5%85%BC%E5%AE%B9)
+- [快速开始](#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
+  - [安装](#%E5%AE%89%E8%A3%85)
+    - [Linux requirements](#linux-requirements)
+  - [用法](#%E7%94%A8%E6%B3%95)
+    - [监听事件](#%E7%9B%91%E5%90%AC%E4%BA%8B%E4%BB%B6)
+- [谁在用使用它？](#%E8%B0%81%E5%9C%A8%E7%94%A8%E4%BD%BF%E7%94%A8%E5%AE%83)
+- [API](#api)
+  - [TrayManager](#traymanager)
+- [许可证](#%E8%AE%B8%E5%8F%AF%E8%AF%81)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
