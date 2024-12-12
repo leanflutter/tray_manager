@@ -1,3 +1,7 @@
+## 0.3.1
+
+* [macos] Support setting the icon size on macOS. (#60)
+
 ## 0.3.0
 
 * chore: Add `bringAppToFront` param to `popUpContextMenu` method (#58)
