@@ -305,7 +305,7 @@ void TrayManagerPlugin::PopUpContextMenu(
   POINT cursorPos;
   GetCursorPos(&cursorPos);
   x = cursorPos.x;
-  y = cursorPos.y;
+  y = cursorPos.y - 20;
 
   if (bringAppToFront) {
     SetForegroundWindow(hWnd);
