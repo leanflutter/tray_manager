@@ -117,13 +117,13 @@ class _HomePageState extends State<HomePage> with TrayListener {
               TextButton(
                 child: const Text('left'),
                 onPressed: () {
-                  trayManager.setIconPosition(TrayIconPositon.left);
+                  trayManager.setIconPosition(TrayIconPosition.left);
                 },
               ),
               TextButton(
                 child: const Text('right'),
                 onPressed: () {
-                  trayManager.setIconPosition(TrayIconPositon.right);
+                  trayManager.setIconPosition(TrayIconPosition.right);
                 },
               ),
             ],

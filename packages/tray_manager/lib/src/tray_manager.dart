@@ -17,7 +17,7 @@ const kEventOnTrayIconRightMouseDown = 'onTrayIconRightMouseDown';
 const kEventOnTrayIconRightMouseUp = 'onTrayIconRightMouseUp';
 const kEventOnTrayMenuItemClick = 'onTrayMenuItemClick';
 
-enum TrayIconPositon { left, right }
+enum TrayIconPosition { left, right }
 
 class TrayManager {
   TrayManager._() {
@@ -106,7 +106,7 @@ class TrayManager {
   Future<void> setIcon(
     String iconPath, {
     bool isTemplate = false, // macOS only
-    TrayIconPositon iconPosition = TrayIconPositon.left, // macOS only
+    TrayIconPosition iconPosition = TrayIconPosition.left, // macOS only
     int iconSize = 18, // macOS only
   }) async {
     final Map<String, dynamic> arguments = {
@@ -147,9 +147,9 @@ class TrayManager {
   /// Sets the icon position of the tray icon.
   ///
   /// @platforms macos
-  Future<void> setIconPosition(TrayIconPositon trayIconPositon) async {
+  Future<void> setIconPosition(TrayIconPosition trayIconPosition) async {
     final arguments = <String, dynamic>{
-      'iconPosition': trayIconPositon.name,
+      'iconPosition': trayIconPosition.name,
     };
     await _channel.invokeMethod('setIconPosition', arguments);
   }
