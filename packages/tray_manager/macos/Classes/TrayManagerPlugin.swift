@@ -194,12 +194,12 @@ public class TrayManagerPlugin: NSObject, FlutterPlugin, NSMenuDelegate {
         let args:[String: Any] = call.arguments as! [String: Any]
         
         trayMenu = TrayMenu(args["menu"] as! [String: Any])
-        trayMenu?.onMenuItemClick = {
-            (menuItem: NSMenuItem) in
+        trayMenu?.onMenuItemClick = { [weak self] (menuItem: NSMenuItem) in
+            guard let strongSelf = self else { return }
             let args: NSDictionary = [
                 "id": menuItem.tag,
             ]
-            self.channel.invokeMethod(kEventOnTrayMenuItemClick, arguments: args, result: nil)
+            strongSelf.channel.invokeMethod(kEventOnTrayMenuItemClick, arguments: args, result: nil)
         }
         trayMenu?.delegate = self
         
