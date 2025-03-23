@@ -52,9 +52,9 @@ public class TrayMenu: NSMenu, NSMenuDelegate {
             case "submenu":
                 if let submenuDict = itemDict["submenu"] as? NSDictionary {
                     let submenu = TrayMenu(submenuDict as! [String : Any])
-                    submenu.onMenuItemClick = {
-                        (menuItem: NSMenuItem) in
-                        self.statusItemMenuButtonClicked(menuItem)
+                    submenu.onMenuItemClick = { [weak self] (menuItem: NSMenuItem) in
+                        guard let strongSelf = self else { return }
+                        strongSelf.statusItemMenuButtonClicked(menuItem)
                     }
                     self.setSubmenu(submenu, for: menuItem)
                 }
