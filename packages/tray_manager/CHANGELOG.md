@@ -1,3 +1,7 @@
+## 0.4.0
+
+* fix: resolve memory leak issue when update menu on macOS (#66)
+
 ## 0.3.1
 
 * [macos] Support setting the icon size on macOS. (#60)
