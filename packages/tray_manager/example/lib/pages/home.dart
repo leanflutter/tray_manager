@@ -348,12 +348,4 @@ class _HomePageState extends State<HomePage> with TrayListener {
       text: '${menuItem.toJson()}',
     );
   }
-
-  @override
-  void onWindowsTaskbarCreated() {
-    if (kDebugMode) {
-      print('onWindowsTaskbarCreated');
-    }
-    _handleSetIcon(_iconType);
-  }
 }

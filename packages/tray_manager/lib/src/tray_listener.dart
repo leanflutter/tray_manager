@@ -12,7 +12,4 @@ abstract mixin class TrayListener {
   void onTrayIconRightMouseUp() {}
 
   void onTrayMenuItemClick(MenuItem menuItem) {}
-
-  /// Emitted upon taskbar creation, e.g., when Explorer restarts.
-  void onWindowsTaskbarCreated() {}
 }
