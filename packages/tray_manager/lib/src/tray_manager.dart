@@ -16,7 +16,7 @@ const kEventOnTrayIconMouseUp = 'onTrayIconMouseUp';
 const kEventOnTrayIconRightMouseDown = 'onTrayIconRightMouseDown';
 const kEventOnTrayIconRightMouseUp = 'onTrayIconRightMouseUp';
 const kEventOnTrayMenuItemClick = 'onTrayMenuItemClick';
-const kWindowsTaskbarCreated = 'onWindowsTaskbarCreated';
+const kEventOnWindowsTaskbarCreated = 'onWindowsTaskbarCreated';
 
 enum TrayIconPosition { left, right }
 
@@ -70,7 +70,7 @@ class TrayManager {
             }
           }
           break;
-        case kWindowsTaskbarCreated:
+        case kEventOnWindowsTaskbarCreated:
           listener.onWindowsTaskbarCreated();
           break;
       }

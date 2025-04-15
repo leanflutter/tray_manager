@@ -13,6 +13,6 @@ abstract mixin class TrayListener {
 
   void onTrayMenuItemClick(MenuItem menuItem) {}
 
-  /// Emitted when windows taskbar created, such as explorer.exe restarted
+  /// Emitted upon taskbar creation, e.g., when Explorer restarts.
   void onWindowsTaskbarCreated() {}
 }

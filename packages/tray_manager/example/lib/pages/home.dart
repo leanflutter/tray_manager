@@ -351,7 +351,9 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
   @override
   void onWindowsTaskbarCreated() {
-    debugPrint('onWindowsTaskbarCreated');
+    if (kDebugMode) {
+      print('onWindowsTaskbarCreated');
+    }
     _handleSetIcon(_iconType);
   }
 }

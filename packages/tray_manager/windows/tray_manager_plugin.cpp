@@ -50,7 +50,7 @@ class TrayManagerPlugin : public flutter::Plugin {
   NOTIFYICONIDENTIFIER niif;
   HMENU hMenu;
   bool tray_icon_setted = false;
-  UINT windows_taskbar_created_message = 0;
+  UINT windows_taskbar_created_message_id = 0;
 
   // The ID of the WindowProc delegate registration.
   int window_proc_id = -1;
@@ -106,11 +106,11 @@ void TrayManagerPlugin::RegisterWithRegistrar(
 
 TrayManagerPlugin::TrayManagerPlugin(flutter::PluginRegistrarWindows* registrar)
     : registrar(registrar) {
-  windows_taskbar_created_message = RegisterWindowMessage(L"TaskbarCreated");
   window_proc_id = registrar->RegisterTopLevelWindowProcDelegate(
       [this](HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
         return HandleWindowProc(hwnd, message, wparam, lparam);
       });
+  windows_taskbar_created_message_id = RegisterWindowMessage(L"TaskbarCreated");
 }
 
 TrayManagerPlugin::~TrayManagerPlugin() {
@@ -197,15 +197,12 @@ std::optional<LRESULT> TrayManagerPlugin::HandleWindowProc(HWND hWnd,
       default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     };
-  } else {
-    bool isTaskBarCreateMsg = windows_taskbar_created_message != 0 
-        && message == windows_taskbar_created_message;
-    if (isTaskBarCreateMsg) {
-        channel->InvokeMethod(
-        "onWindowsTaskbarCreated",
-        std::make_unique<flutter::EncodableValue>(nullptr));
-        tray_icon_setted = false;
-        return LRESULT(0);
+  } else if (message == windows_taskbar_created_message_id) {
+    if (windows_taskbar_created_message_id != 0) {
+      channel->InvokeMethod("onWindowsTaskbarCreated",
+                            std::make_unique<flutter::EncodableValue>(nullptr));
+      // race condition?
+      tray_icon_setted = false;
     }
   }
   return result;
