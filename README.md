@@ -85,6 +85,7 @@ dependencies:
     git:
       url: https://github.com/leanflutter/tray_manager.git
       ref: main
+      path: packages/tray_manager
 ```
 
 #### Linux requirements
