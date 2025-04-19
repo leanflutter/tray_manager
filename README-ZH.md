@@ -66,6 +66,10 @@ dependencies:
 
 2. 使用 [protocol_handler](https://github.com/leanflutter/protocol_handler) 包代替 `app_links` 包。
 
+### 在 GNOME 中不显示
+
+在使用 GNOME 桌面时, 可能需要安装 [AppIndicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) 扩展以显示图标。
+
 ## 快速开始
 
 ### 安装
