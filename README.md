@@ -66,6 +66,10 @@ dependencies:
 
 2. Use [protocol_handler](https://github.com/leanflutter/protocol_handler) package instead of `app_links` package.
 
+### Not Showing in GNOME
+
+In GNOME desktop environment, the [AppIndicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) extension may be required to display the icon.
+
 ## Quick Start
 
 ### Installation
