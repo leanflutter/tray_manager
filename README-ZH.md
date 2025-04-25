@@ -12,6 +12,8 @@
 
 这个插件允许 Flutter 桌面应用定义系统托盘。
 
+> 注意：本插件计划迁移至 [nativeapi](https://github.com/leanflutter/nativeapi-flutter) 以提升可维护性和性能，但目前该方案仍处于实验阶段。
+
 ---
 
 [English](./README.md) | 简体中文
@@ -25,6 +27,7 @@
 - [截图](#%E6%88%AA%E5%9B%BE)
 - [已知问题](#%E5%B7%B2%E7%9F%A5%E9%97%AE%E9%A2%98)
   - [与 app_links 不兼容](#%E4%B8%8E-app_links-%E4%B8%8D%E5%85%BC%E5%AE%B9)
+  - [在 GNOME 中不显示](#%E5%9C%A8-gnome-%E4%B8%AD%E4%B8%8D%E6%98%BE%E7%A4%BA)
 - [快速开始](#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
   - [安装](#%E5%AE%89%E8%A3%85)
     - [Linux requirements](#linux-requirements)
@@ -78,7 +81,7 @@ dependencies:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.4.0
+  tray_manager: ^0.5.0
 ```
 
 或

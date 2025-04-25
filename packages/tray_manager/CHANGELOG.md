@@ -1,3 +1,7 @@
+## 0.5.0
+
+* feat(windows): restore icon and context menu when Explorer restarts if necessary #71
+
 ## 0.4.0
 
 * fix: resolve memory leak issue when update menu on macOS (#66)
