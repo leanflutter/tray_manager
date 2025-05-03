@@ -193,7 +193,7 @@ std::optional<LRESULT> TrayManagerPlugin::HandleWindowProc(HWND hWnd,
                               std::make_unique<flutter::EncodableValue>());
         break;
       case WM_RBUTTONUP:
-        channel->InvokeMethod("onTrayIconRightMouseDown",
+        channel->InvokeMethod("onTrayIconRightMouseUp",
                               std::make_unique<flutter::EncodableValue>());
         break;
       default:
