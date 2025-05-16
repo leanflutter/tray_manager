@@ -234,6 +234,10 @@ void TrayManagerPlugin::SetIcon(
 
   std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
+  if (nid.hIcon != nullptr) {
+    DestroyIcon(nid.hIcon);
+  }
+
   nid.hIcon = static_cast<HICON>(
       LoadImage(nullptr, (LPCWSTR)(converter.from_bytes(iconPath).c_str()),
                 IMAGE_ICON, GetSystemMetrics(SM_CXSMICON),
