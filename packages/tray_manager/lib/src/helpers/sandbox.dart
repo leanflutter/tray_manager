@@ -4,6 +4,6 @@ import 'dart:io';
 bool runningInSandbox() {
   return Platform.environment.containsKey('FLATPAK_ID') ||
       Platform.environment.containsKey('SNAP') ||
-      Platform.environment.containsKey('container') ||
+      (Platform.environment['container']?.isNotEmpty == true) ||
       FileSystemEntity.isFileSync('/.dockerenv');
 }
