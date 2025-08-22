@@ -1,3 +1,9 @@
+## 0.5.1
+
+* Prevent plugin to be reregistered when spawning subwindow (#80)
+* Fix the sandbox check to also work for docker/podman containers (#78)
+* Fix: Resolved a memory leak when setting the icon multiple times on windows (#76)
+
 ## 0.5.0
 
 * feat(windows): restore icon and context menu when Explorer restarts if necessary #71

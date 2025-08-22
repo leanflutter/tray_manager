@@ -14,8 +14,6 @@ This plugin allows Flutter desktop apps to defines system tray.
 
 > Note: This plugin is planned to migrate to [nativeapi](https://github.com/leanflutter/nativeapi-flutter) to improve maintainability and performance, but the solution is still experimental at this stage.
 
----
-
 English | [简体中文](./README-ZH.md)
 
 ---
@@ -81,7 +79,7 @@ Add this to your package's pubspec.yaml file:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.5.0
+  tray_manager: ^0.5.1
 ```
 
 Or

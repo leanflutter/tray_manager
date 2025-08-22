@@ -14,8 +14,6 @@
 
 > 注意：本插件计划迁移至 [nativeapi](https://github.com/leanflutter/nativeapi-flutter) 以提升可维护性和性能，但目前该方案仍处于实验阶段。
 
----
-
 [English](./README.md) | 简体中文
 
 ---
@@ -81,7 +79,7 @@ dependencies:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.5.0
+  tray_manager: ^0.5.1
 ```
 
 或
