@@ -89,9 +89,18 @@ class TrayManagerPlugin : public flutter::Plugin {
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 };
 
+static bool plugin_already_registered = false;
+
 // static
 void TrayManagerPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrarWindows* registrar) {
+  if (plugin_already_registered) {
+    // Skip registration in subwindow
+    return;
+  }
+  
+  plugin_already_registered = true;
+  
   channel = std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
       registrar->messenger(), "tray_manager",
       &flutter::StandardMethodCodec::GetInstance());
