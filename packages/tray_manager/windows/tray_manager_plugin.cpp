@@ -214,6 +214,21 @@ std::optional<LRESULT> TrayManagerPlugin::HandleWindowProc(HWND hWnd,
       tray_icon_setted = false;
       _ApplyIcon();
     }
+  } else if (message == WM_POWERBROADCAST) {
+    // Handle power management events (sleep/wake)
+    switch (wParam) {
+      case PBT_APMRESUMEAUTOMATIC:
+      case PBT_APMRESUMESUSPEND:
+        // System is resuming from sleep/hibernation
+        if (tray_icon_setted) {
+          // Restore the tray icon after system wakes up
+          tray_icon_setted = false;
+          _ApplyIcon();
+        }
+        break;
+      default:
+        break;
+    }
   }
   return result;
 }
