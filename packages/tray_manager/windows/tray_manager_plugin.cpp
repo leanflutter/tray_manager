@@ -261,10 +261,21 @@ void TrayManagerPlugin::_ApplyIcon() {
   if (tray_icon_setted) {
     Shell_NotifyIcon(NIM_MODIFY, &nid);
   } else {
+    HICON hIconBackup = nid.hIcon;
+    WCHAR szTipBackup[128];
+    StringCchCopy(szTipBackup, _countof(szTipBackup), nid.szTip);
+    
+    ZeroMemory(&nid, sizeof(NOTIFYICONDATA));
     nid.cbSize = sizeof(NOTIFYICONDATA);
     nid.hWnd = GetMainWindow();
+    nid.uID = 1;
+    nid.hIcon = hIconBackup;
+    StringCchCopy(nid.szTip, _countof(nid.szTip), szTipBackup);
     nid.uCallbackMessage = WM_MYMESSAGE;
     nid.uFlags = NIF_MESSAGE | NIF_ICON;
+    if (nid.szTip[0] != '\0') {
+      nid.uFlags |= NIF_TIP;
+    }
     Shell_NotifyIcon(NIM_ADD, &nid);
   }
 
