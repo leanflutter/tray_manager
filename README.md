@@ -1,6 +1,7 @@
-> **🚀 Ship Your App Faster**: Try [Fastforge](https://fastforge.dev) - The simplest way to build, package and distribute your Flutter apps.
-
-# tray_manager
+> **⚠️ Migration Notice**: This plugin is being migrated to [libnativeapi/nativeapi-flutter](https://github.com/libnativeapi/nativeapi-flutter)
+>
+> The new version is based on a unified C++ core library ([libnativeapi/nativeapi](https://github.com/libnativeapi/nativeapi)), providing more complete and consistent cross-platform native API support.
+r
 
 [![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] ![][visits-count-image]
 
@@ -11,8 +12,6 @@
 [visits-count-image]: https://img.shields.io/badge/dynamic/json?label=Visits%20Count&query=value&url=https://api.countapi.xyz/hit/leanflutter.tray_manager/visits
 
 This plugin allows Flutter desktop apps to defines system tray.
-
-> Note: This plugin is planned to migrate to [nativeapi](https://github.com/leanflutter/nativeapi-flutter) to improve maintainability and performance, but the solution is still experimental at this stage.
 
 English | [简体中文](./README-ZH.md)
 

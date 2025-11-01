@@ -1,4 +1,6 @@
-> **🚀 快速发布您的应用**: 试试 [Fastforge](https://fastforge.dev) - 构建、打包和分发您的 Flutter 应用最简单的方式。
+> **⚠️ 迁移通知**: 本插件正在迁移到 [libnativeapi/nativeapi-flutter](https://github.com/libnativeapi/nativeapi-flutter)
+>
+> 新版本基于统一的 C++ 核心库（[libnativeapi/nativeapi](https://github.com/libnativeapi/nativeapi)），提供更完整、一致的跨平台原生 API 支持。
 
 # tray_manager
 
@@ -11,8 +13,6 @@
 [visits-count-image]: https://img.shields.io/badge/dynamic/json?label=Visits%20Count&query=value&url=https://api.countapi.xyz/hit/leanflutter.tray_manager/visits
 
 这个插件允许 Flutter 桌面应用定义系统托盘。
-
-> 注意：本插件计划迁移至 [nativeapi](https://github.com/leanflutter/nativeapi-flutter) 以提升可维护性和性能，但目前该方案仍处于实验阶段。
 
 [English](./README.md) | 简体中文
 
