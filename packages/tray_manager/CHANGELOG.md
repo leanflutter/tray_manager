@@ -1,3 +1,7 @@
+## 0.5.2
+
+* fix(windows): tray icon disappears after explorer restart #85
+
 ## 0.5.1
 
 * Prevent plugin to be reregistered when spawning subwindow (#80)
