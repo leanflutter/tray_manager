@@ -214,6 +214,21 @@ std::optional<LRESULT> TrayManagerPlugin::HandleWindowProc(HWND hWnd,
       tray_icon_setted = false;
       _ApplyIcon();
     }
+  } else if (message == WM_POWERBROADCAST) {
+    // Handle power management events (sleep/wake)
+    switch (wParam) {
+      case PBT_APMRESUMEAUTOMATIC:
+      case PBT_APMRESUMESUSPEND:
+        // System is resuming from sleep/hibernation
+        if (tray_icon_setted) {
+          // Restore the tray icon after system wakes up
+          tray_icon_setted = false;
+          _ApplyIcon();
+        }
+        break;
+      default:
+        break;
+    }
   }
   return result;
 }
@@ -261,10 +276,21 @@ void TrayManagerPlugin::_ApplyIcon() {
   if (tray_icon_setted) {
     Shell_NotifyIcon(NIM_MODIFY, &nid);
   } else {
+    HICON hIconBackup = nid.hIcon;
+    WCHAR szTipBackup[128];
+    StringCchCopy(szTipBackup, _countof(szTipBackup), nid.szTip);
+    
+    ZeroMemory(&nid, sizeof(NOTIFYICONDATA));
     nid.cbSize = sizeof(NOTIFYICONDATA);
     nid.hWnd = GetMainWindow();
+    nid.uID = 1;
+    nid.hIcon = hIconBackup;
+    StringCchCopy(nid.szTip, _countof(nid.szTip), szTipBackup);
     nid.uCallbackMessage = WM_MYMESSAGE;
     nid.uFlags = NIF_MESSAGE | NIF_ICON;
+    if (nid.szTip[0] != '\0') {
+      nid.uFlags |= NIF_TIP;
+    }
     Shell_NotifyIcon(NIM_ADD, &nid);
   }
 
