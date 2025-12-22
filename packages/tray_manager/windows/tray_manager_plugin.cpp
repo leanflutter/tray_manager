@@ -52,6 +52,9 @@ class TrayManagerPlugin : public flutter::Plugin {
   HMENU hMenu = CreatePopupMenu();
   bool tray_icon_setted = false;
   UINT windows_taskbar_created_message_id = 0;
+  
+  // Track when menu closes to prevent immediate reopen on tray icon click
+  ULONGLONG menu_close_tick = 0;
 
   // The ID of the WindowProc delegate registration.
   int window_proc_id = -1;
@@ -198,6 +201,12 @@ std::optional<LRESULT> TrayManagerPlugin::HandleWindowProc(HWND hWnd,
   } else if (message == WM_MYMESSAGE) {
     switch (lParam) {
       case WM_LBUTTONUP:
+        // Suppress click if menu just closed (within 200ms) to prevent reopening
+        // when user clicks tray icon to close the menu
+        if (menu_close_tick > 0 && (GetTickCount64() - menu_close_tick) < 200) {
+          menu_close_tick = 0;  // Reset so next click works
+          break;
+        }
         channel->InvokeMethod("onTrayIconMouseDown",
                               std::make_unique<flutter::EncodableValue>());
         break;
@@ -335,32 +344,36 @@ void TrayManagerPlugin::SetContextMenu(
 void TrayManagerPlugin::PopUpContextMenu(
     const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-  const flutter::EncodableMap& args =
-      std::get<flutter::EncodableMap>(*method_call.arguments());
-
-  bool bringAppToFront =
-      std::get<bool>(args.at(flutter::EncodableValue("bringAppToFront")));
-
+  // Note: bringAppToFront parameter is ignored. SetForegroundWindow is ALWAYS
+  // required before TrackPopupMenu for notification icon menus per Windows docs:
+  // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-trackpopupmenu
+  // "To display a context menu for a notification icon, the current window must
+  // be the foreground window before the application calls TrackPopupMenu"
+  (void)method_call.arguments();  // Suppress unused warning
+  
   HWND hWnd = GetMainWindow();
 
   double x, y;
-
-  // RECT rect;
-  // Shell_NotifyIconGetRect(&niif, &rect);
-
-  // x = rect.left + ((rect.right - rect.left) / 2);
-  // y = rect.top + ((rect.bottom - rect.top) / 2);
 
   POINT cursorPos;
   GetCursorPos(&cursorPos);
   x = cursorPos.x;
   y = cursorPos.y;
 
-  if (bringAppToFront) {
-    SetForegroundWindow(hWnd);
-  }
+  // SetForegroundWindow is REQUIRED before TrackPopupMenu for notification icons.
+  SetForegroundWindow(hWnd);
+  
   TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, static_cast<int>(x),
                  static_cast<int>(y), 0, hWnd, NULL);
+  
+  // Record when menu closed to suppress immediate reopen on tray icon click
+  menu_close_tick = GetTickCount64();
+  
+  // IMPORTANT: Post a benign message to the window to work around a Windows bug.
+  // Without this, the menu won't close when clicking outside of it.
+  // This is documented in the official TrackPopupMenu API documentation.
+  // See: https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-trackpopupmenu
+  PostMessage(hWnd, WM_NULL, 0, 0);
   result->Success(flutter::EncodableValue(true));
 }
 
