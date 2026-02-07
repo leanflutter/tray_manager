@@ -202,6 +202,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
 - [Airclap](https://airclap.app/) - Send any file to any device. cross platform, ultra fast and easy to use.
 - [Biyi (比译)](https://biyidev.com/) - A convenient translation and dictionary app.
+- [scrcpy buddy 🤝](https://github.com/Codertainment/scrcpy_buddy) - A GUI for [scrcpy](https://github.com/Genymobile/scrcpy) built with Fluent Design.
 
 ## API
 
