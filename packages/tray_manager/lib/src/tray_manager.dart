@@ -105,12 +105,13 @@ class TrayManager {
   /// the icon should be passed as `org.example.app`.
   Future<void> setIcon(
     String iconPath, {
+    String? id,
     bool isTemplate = false, // macOS only
     TrayIconPosition iconPosition = TrayIconPosition.left, // macOS only
     int iconSize = 18, // macOS only
   }) async {
     final Map<String, dynamic> arguments = {
-      'id': shortid.generate(),
+      'id': id ?? shortid.generate(),
       'iconPath': path.joinAll([
         path.dirname(Platform.resolvedExecutable),
         'data/flutter_assets',
