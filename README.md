@@ -88,8 +88,7 @@ dependencies:
   tray_manager:
     git:
       url: https://github.com/leanflutter/tray_manager.git
-      ref: main
-      path: packages/tray_manager
+      ref: next
 ```
 
 #### Linux requirements
@@ -111,91 +110,36 @@ sudo apt-get install appindicator3-0.1 libappindicator3-dev
 ### Usage
 
 ```dart
-import 'package:flutter/material.dart' hide MenuItem;
 import 'package:tray_manager/tray_manager.dart';
 
-await trayManager.setIcon(
-  Platform.isWindows
-    ? 'images/tray_icon.ico'
-    : 'images/tray_icon.png',
-);
-Menu menu = Menu(
-  items: [
-    MenuItem(
-      key: 'show_window',
-      label: 'Show Window',
-    ),
-    MenuItem.separator(),
-    MenuItem(
-      key: 'exit_app',
-      label: 'Exit App',
-    ),
-  ],
-);
-await trayManager.setContextMenu(menu);
+final trayIcon = TrayIcon();
+trayIcon.icon = Image.fromAsset('images/tray_icon.png');
+trayIcon.tooltip = 'tray_manager';
+
+final menu = Menu();
+final showWindowItem = MenuItem('Show Window');
+showWindowItem.on<MenuItemClickedEvent>((event) {
+  // Show the application window.
+});
+menu.addItem(showWindowItem);
+menu.addSeparator();
+menu.addItem(MenuItem('Exit App'));
+
+trayIcon.contextMenu = menu;
+trayIcon.isVisible = true;
 ```
 
 > Please see the example app of this plugin for a full example.
 
-#### Listening events
+#### Legacy method names
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:tray_manager/tray_manager.dart';
+import 'package:tray_manager/legacy.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> with TrayListener {
-  @override
-  void initState() {
-    trayManager.addListener(this);
-    super.initState();
-    _init();
-  }
-
-  @override
-  void dispose() {
-    trayManager.removeListener(this);
-    super.dispose();
-  }
-
-  void _init() {
-    // ...
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // ...
-  }
-
-  @override
-  void onTrayIconMouseDown() {
-    // do something, for example pop up the menu
-    trayManager.popUpContextMenu();
-  }
-
-  @override
-  void onTrayIconRightMouseDown() {
-    // do something
-  }
-
-  @override
-  void onTrayIconRightMouseUp() {
-    // do something
-  }
-
-  @override
-  void onTrayMenuItemClick(MenuItem menuItem) {
-    if (menuItem.key == 'show_window') {
-      // do something
-    } else if (menuItem.key == 'exit_app') {
-       // do something
-    }
-  }
-}
+await LegacyTrayManager.instance.setIcon('images/tray_icon.png');
+await LegacyTrayManager.instance.setToolTip('tray_manager');
+await LegacyTrayManager.instance.setContextMenu(menu);
+await LegacyTrayManager.instance.popUpContextMenu();
 ```
 
 ## Who's using it?
@@ -206,17 +150,12 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
 ## API
 
-### TrayManager
+### Native API
 
-| Method           | Description                                    | Linux | macOS | Windows |
-| ---------------- | ---------------------------------------------- | ----- | ----- | ------- |
-| destroy          | Destroys the tray icon immediately.            | ✔️    | ✔️    | ✔️      |
-| setIcon          | Sets the image associated with this tray icon. | ✔️    | ✔️    | ✔️      |
-| setIconPosition  | Sets the icon position of the tray icon.       | ➖    | ✔️    | ➖      |
-| setToolTip       | Sets the hover text for this tray icon.        | ➖    | ✔️    | ✔️      |
-| setContextMenu   | Sets the context menu for this icon.           | ✔️    | ✔️    | ✔️      |
-| popUpContextMenu | Pops up the context menu of the tray icon.     | ➖    | ✔️    | ✔️      |
-| getBounds        | Returns `Rect` The bounds of this tray icon.   | ➖    | ✔️    | ✔️      |
+`tray_manager` now re-exports tray-related APIs from `nativeapi`, including
+`TrayIcon`, `TrayManager`, `Menu`, `MenuItem`, `Image`, and tray/menu events.
+Use `LegacyTrayManager` only when migrating code that still calls the old
+method names.
 
 ## License
 

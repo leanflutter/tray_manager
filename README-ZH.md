@@ -89,8 +89,7 @@ dependencies:
   tray_manager:
     git:
       url: https://github.com/leanflutter/tray_manager.git
-      ref: main
-      path: packages/tray_manager
+      ref: next
 ```
 
 #### Linux requirements
@@ -112,91 +111,36 @@ sudo apt-get install appindicator3-0.1 libappindicator3-dev
 ### 用法
 
 ```dart
-import 'package:flutter/material.dart' hide MenuItem;
 import 'package:tray_manager/tray_manager.dart';
 
-await trayManager.setIcon(
-  Platform.isWindows
-    ? 'images/tray_icon.ico'
-    : 'images/tray_icon.png',
-);
-Menu menu = Menu(
-  items: [
-    MenuItem(
-      key: 'show_window',
-      label: 'Show Window',
-    ),
-    MenuItem.separator(),
-    MenuItem(
-      key: 'exit_app',
-      label: 'Exit App',
-    ),
-  ],
-);
-await trayManager.setContextMenu(menu);
+final trayIcon = TrayIcon();
+trayIcon.icon = Image.fromAsset('images/tray_icon.png');
+trayIcon.tooltip = 'tray_manager';
+
+final menu = Menu();
+final showWindowItem = MenuItem('Show Window');
+showWindowItem.on<MenuItemClickedEvent>((event) {
+  // 显示应用窗口。
+});
+menu.addItem(showWindowItem);
+menu.addSeparator();
+menu.addItem(MenuItem('Exit App'));
+
+trayIcon.contextMenu = menu;
+trayIcon.isVisible = true;
 ```
 
 > 请看这个插件的示例应用，以了解完整的例子。
 
-#### 监听事件
+#### 旧方法名兼容
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:tray_manager/tray_manager.dart';
+import 'package:tray_manager/legacy.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> with TrayListener {
-  @override
-  void initState() {
-    trayManager.addListener(this);
-    super.initState();
-    _init();
-  }
-
-  @override
-  void dispose() {
-    trayManager.removeListener(this);
-    super.dispose();
-  }
-
-  void _init() {
-    // ...
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // ...
-  }
-
-  @override
-  void onTrayIconMouseDown() {
-    // do something, for example pop up the menu
-    trayManager.popUpContextMenu();
-  }
-
-  @override
-  void onTrayIconRightMouseDown() {
-    // do something
-  }
-
-  @override
-  void onTrayIconRightMouseUp() {
-    // do something
-  }
-
-  @override
-  void onTrayMenuItemClick(MenuItem menuItem) {
-    if (menuItem.key == 'show_window') {
-      // do something
-    } else if (menuItem.key == 'exit_app') {
-       // do something
-    }
-  }
-}
+await LegacyTrayManager.instance.setIcon('images/tray_icon.png');
+await LegacyTrayManager.instance.setToolTip('tray_manager');
+await LegacyTrayManager.instance.setContextMenu(menu);
+await LegacyTrayManager.instance.popUpContextMenu();
 ```
 
 ## 谁在用使用它？
@@ -206,17 +150,11 @@ class _HomePageState extends State<HomePage> with TrayListener {
 
 ## API
 
-### TrayManager
+### Native API
 
-| Method           | Description                      | Linux | macOS | Windows |
-| ---------------- | -------------------------------- | ----- | ----- | ------- |
-| destroy          | 立即销毁托盘图标                 | ✔️    | ✔️    | ✔️      |
-| setIcon          | 设置与此托盘图标相关的图片。     | ✔️    | ✔️    | ✔️      |
-| setIconPosition  | 设置托盘图标的图标位置。         | ➖    | ✔️    | ➖      |
-| setToolTip       | 设置此托盘图标的悬停文本。       | ➖    | ✔️    | ✔️      |
-| setContextMenu   | 设置此图标的上下文菜单。         | ✔️    | ✔️    | ✔️      |
-| popUpContextMenu | 弹出托盘图标的上下文菜单。       | ➖    | ✔️    | ✔️      |
-| getBounds        | 返回 `Rect` 这个托盘图标的边界。 | ➖    | ✔️    | ✔️      |
+`tray_manager` 现在重新导出 `nativeapi` 中的托盘相关 API，包括 `TrayIcon`、
+`TrayManager`、`Menu`、`MenuItem`、`Image` 以及托盘和菜单事件。
+迁移仍调用旧方法名的代码时，使用 `LegacyTrayManager`。
 
 ## 许可证
 
