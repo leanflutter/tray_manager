@@ -3,6 +3,8 @@
 > The new version is based on a unified C++ core library ([libnativeapi/nativeapi](https://github.com/libnativeapi/nativeapi)), providing more complete and consistent cross-platform native API support.
 r
 
+# tray_manager
+
 [![pub version][pub-image]][pub-url] [![][discord-image]][discord-url] ![][visits-count-image]
 
 [pub-image]: https://img.shields.io/pub/v/tray_manager.svg
