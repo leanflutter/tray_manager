@@ -46,8 +46,8 @@ class TrayManagerPlugin : public flutter::Plugin {
   std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> g_converter;
 
   flutter::PluginRegistrarWindows* registrar;
-  NOTIFYICONDATA nid;
-  NOTIFYICONIDENTIFIER niif;
+  NOTIFYICONDATA nid{};
+  NOTIFYICONIDENTIFIER niif{};
   // do create pop-up menu only once.
   HMENU hMenu = CreatePopupMenu();
   bool tray_icon_setted = false;
@@ -186,7 +186,10 @@ std::optional<LRESULT> TrayManagerPlugin::HandleWindowProc(HWND hWnd,
   if (message == WM_DESTROY) {
     if (tray_icon_setted) {
       Shell_NotifyIcon(NIM_DELETE, &nid);
-      DestroyIcon(nid.hIcon);
+      if (nid.hIcon != nullptr) {
+        DestroyIcon(nid.hIcon);
+        nid.hIcon = nullptr;
+      }
     }
   } else if (message == WM_COMMAND) {
     flutter::EncodableMap eventData = flutter::EncodableMap();
@@ -241,7 +244,10 @@ void TrayManagerPlugin::Destroy(
     const flutter::MethodCall<flutter::EncodableValue>& method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
   Shell_NotifyIcon(NIM_DELETE, &nid);
-  DestroyIcon(nid.hIcon);
+  if (nid.hIcon != nullptr) {
+    DestroyIcon(nid.hIcon);
+    nid.hIcon = nullptr;
+  }
   tray_icon_setted = false;
 
   result->Success(flutter::EncodableValue(true));
