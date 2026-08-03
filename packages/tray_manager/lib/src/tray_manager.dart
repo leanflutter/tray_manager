@@ -9,6 +9,7 @@ import 'package:menu_base/menu_base.dart';
 import 'package:path/path.dart' as path;
 import 'package:shortid/shortid.dart';
 import 'package:tray_manager/src/helpers/sandbox.dart';
+import 'package:tray_manager/src/menu_serialization.dart';
 import 'package:tray_manager/src/tray_listener.dart';
 
 const kEventOnTrayIconMouseDown = 'onTrayIconMouseDown';
@@ -37,6 +38,7 @@ class TrayManager {
   }
 
   Menu? _menu;
+  int _contextMenuRequestId = 0;
 
   Future<void> _methodCallHandler(MethodCall call) async {
     for (final TrayListener listener in _listeners) {
@@ -178,9 +180,14 @@ class TrayManager {
 
   /// Sets the context menu for this icon.
   Future<void> setContextMenu(Menu menu) async {
+    final requestId = ++_contextMenuRequestId;
     _menu = menu;
+    final serializedMenu = await serializeMenuForPlatform(menu);
+    if (requestId != _contextMenuRequestId) {
+      return;
+    }
     final Map<String, dynamic> arguments = {
-      'menu': menu.toJson(),
+      'menu': serializedMenu,
     };
     await _channel.invokeMethod('setContextMenu', arguments);
   }

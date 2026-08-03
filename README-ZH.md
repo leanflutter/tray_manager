@@ -125,6 +125,7 @@ Menu menu = Menu(
     MenuItem(
       key: 'show_window',
       label: 'Show Window',
+      icon: 'images/tray_icon.png',
     ),
     MenuItem.separator(),
     MenuItem(
@@ -135,6 +136,9 @@ Menu menu = Menu(
 );
 await trayManager.setContextMenu(menu);
 ```
+
+在 macOS 上，`MenuItem.icon` 可以使用 Flutter 资源路径或图像的绝对文件路径。
+菜单项图像会以 16×16 显示。其他平台保持现有行为。
 
 > 请看这个插件的示例应用，以了解完整的例子。
 

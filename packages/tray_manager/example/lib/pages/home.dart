@@ -152,6 +152,7 @@ class _HomePageState extends State<HomePage> with TrayListener {
               items: [
                 MenuItem(
                   label: 'Look Up "LeanFlutter"',
+                  icon: 'images/tray_icon.png',
                 ),
                 MenuItem(
                   label: 'Search with Google',
@@ -169,11 +170,13 @@ class _HomePageState extends State<HomePage> with TrayListener {
                 ),
                 MenuItem.submenu(
                   label: 'Share',
+                  icon: 'images/tray_icon.png',
                   submenu: Menu(
                     items: [
                       MenuItem.checkbox(
                         label: 'Item 1',
                         checked: true,
+                        icon: 'images/tray_icon.png',
                         onClick: (menuItem) {
                           if (kDebugMode) {
                             print('click item 1');

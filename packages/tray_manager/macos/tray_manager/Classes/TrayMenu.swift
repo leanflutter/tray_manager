@@ -9,6 +9,26 @@ import AppKit
 
 public class TrayMenu: NSMenu, NSMenuDelegate {
     public var onMenuItemClick:((NSMenuItem) -> Void)?
+
+    private static let menuItemIconSize = NSSize(width: 16, height: 16)
+
+    private static func loadMenuItemImage(from item: [String: Any]) -> NSImage? {
+        if let encodedIcon = item["base64Icon"] as? String,
+           let data = Data(base64Encoded: encodedIcon),
+           let image = NSImage(data: data) {
+            image.size = menuItemIconSize
+            return image
+        }
+
+        if let iconPath = item["icon"] as? String,
+           iconPath.hasPrefix("/"),
+           let image = NSImage(contentsOfFile: iconPath) {
+            image.size = menuItemIconSize
+            return image
+        }
+
+        return nil
+    }
     
     public override init(title: String) {
         super.init(title: title)
@@ -42,6 +62,7 @@ public class TrayMenu: NSMenu, NSMenuDelegate {
             menuItem.tag = id
             menuItem.title = label
             menuItem.toolTip = toolTip
+            menuItem.image = TrayMenu.loadMenuItemImage(from: itemDict)
             menuItem.isEnabled = !disabled
             menuItem.action = !disabled ? #selector(statusItemMenuButtonClicked) : nil
             menuItem.target = self

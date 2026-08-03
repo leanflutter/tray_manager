@@ -124,6 +124,7 @@ Menu menu = Menu(
     MenuItem(
       key: 'show_window',
       label: 'Show Window',
+      icon: 'images/tray_icon.png',
     ),
     MenuItem.separator(),
     MenuItem(
@@ -134,6 +135,10 @@ Menu menu = Menu(
 );
 await trayManager.setContextMenu(menu);
 ```
+
+On macOS, `MenuItem.icon` accepts a Flutter asset path or an absolute image
+file path. Menu item images are displayed at 16×16. Other platforms retain
+their existing behavior.
 
 > Please see the example app of this plugin for a full example.
 

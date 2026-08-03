@@ -1,3 +1,7 @@
+## NEXT
+
+* feat(macos): support icons on tray menu items
+
 ## 0.5.3
 
 * feat(macos): add Swift Package Manager support
