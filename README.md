@@ -1,4 +1,4 @@
-> **tray_manager 0.6 is built on [nativeapi](https://github.com/libnativeapi/nativeapi-flutter)**, a
+> **tray_manager is built on [nativeapi](https://github.com/libnativeapi/nativeapi-flutter)**, a
 > Flutter binding of one C++ core library ([libnativeapi/nativeapi](https://github.com/libnativeapi/nativeapi))
 > shared by macOS, Windows and Linux. Coming from 0.5.x? See [Upgrading from 0.5.x](#upgrading-from-05x).
 

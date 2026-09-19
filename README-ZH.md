@@ -1,4 +1,4 @@
-> **tray_manager 0.6 基于 [nativeapi](https://github.com/libnativeapi/nativeapi-flutter) 构建**——它是统一的
+> **tray_manager 基于 [nativeapi](https://github.com/libnativeapi/nativeapi-flutter) 构建**——它是统一的
 > C++ 核心库（[libnativeapi/nativeapi](https://github.com/libnativeapi/nativeapi)）的 Flutter 绑定，macOS、Windows、Linux
 > 共用同一套实现。从 0.5.x 升级？请看[从 0.5.x 升级](#从-05x-升级)。
 
