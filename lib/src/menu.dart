@@ -1,4 +1,9 @@
 // ignore_for_file: deprecated_member_use_from_same_package
+// prefer_initializing_formals would turn the public named parameters (label:,
+// toolTip:, checked:, disabled:) into private ones (_label: and friends), which
+// callers outside this library cannot pass. The fields are private because they
+// have setters that talk to the native item.
+// ignore_for_file: prefer_initializing_formals
 
 import 'dart:math' as math;
 

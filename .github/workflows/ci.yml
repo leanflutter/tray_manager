@@ -18,6 +18,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.47.5'
           channel: stable
           cache: true
 
@@ -49,6 +50,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.47.5'
           channel: stable
           cache: true
 
@@ -86,6 +88,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.47.5'
           channel: stable
           cache: true
 
@@ -101,8 +104,7 @@ jobs:
             ninja-build \
             clang \
             libx11-dev \
-            libxi-dev \
-            libayatana-appindicator3-dev
+            libxi-dev
 
       - name: Build example Linux
         run: flutter build linux --release
@@ -120,6 +122,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.47.5'
           channel: stable
           cache: true
 
@@ -139,6 +142,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.47.5'
           channel: stable
           cache: true
 

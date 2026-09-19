@@ -14,8 +14,8 @@ topics:
   - system-tray
 
 environment:
-  sdk: ^3.9.2
-  flutter: ">=3.35.0"
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 dependencies:
   flutter:

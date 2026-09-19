@@ -1,3 +1,8 @@
+## Unreleased
+
+* **Breaking:** requires Flutter 3.47 / Dart 3.13, in step with the rest of the
+  nativeapi family. CI builds and the publish workflow pin Flutter 3.47.5.
+
 ## 0.6.1
 
 Documentation only.

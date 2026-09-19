@@ -78,7 +78,7 @@ dependencies:
 
 #### 环境要求
 
-- Flutter 3.35 / Dart 3.9 及以上，macOS 10.15 及以上。
+- Flutter 3.47 / Dart 3.13 及以上，macOS 10.15 及以上。
 - Linux 构建机需要 GTK 3、X11、Xi 的开发文件；在 nativeapi 0.2.7 下还需要
   `libayatana-appindicator3-dev`。托盘图标现在是 StatusNotifierItem，已经没有代码使用这个库，
   这只是 nativeapi 构建文件里的残留，会随它的下一个版本去掉。
@@ -145,7 +145,7 @@ await trayManager.setContextMenu(
 
 与 0.5.x 的差异：
 
-- 构建需要 Flutter 3.35 / Dart 3.9 和 macOS 10.15（0.5.x 为 Flutter 3.3、macOS 10.11）。
+- 构建需要 Flutter 3.47 / Dart 3.13 和 macOS 10.15（0.5.x 为 Flutter 3.3、macOS 10.11）。
 - 点击在完成时上报：`onTrayIconMouseDown` 之后紧跟 `onTrayIconMouseUp`（右键同理）。0.5.x 在 macOS
   上分两次发，在 Windows 上只发前者。Linux 上仍然没有任何托盘图标点击事件：点击由面板自己处理并打开菜单。
 - 平台用不上的调用会被忽略，不再抛 `MissingPluginException`：Windows 上的 `setTitle`、`setIconPosition`；
