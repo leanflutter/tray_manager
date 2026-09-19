@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 /// The `tray_manager` API as it was before the move to nativeapi.
 ///
 /// Existing apps keep working by importing this library instead of

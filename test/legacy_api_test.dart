@@ -4,6 +4,7 @@
 // signature; it is compiled, never run, because running needs the native
 // library. The tests below cover the parts that are plain Dart.
 // ignore_for_file: unused_local_variable, unused_element, deprecated_member_use
+// ignore_for_file: deprecated_member_use_from_same_package
 
 import 'dart:ui';
 

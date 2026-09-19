@@ -1,5 +1,5 @@
 // The example shows the deprecated 0.5.x compatible API on purpose.
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, deprecated_member_use_from_same_package
 
 import 'dart:async';
 import 'dart:io';
