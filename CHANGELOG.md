@@ -13,9 +13,9 @@ per-platform plugin code is gone, and one C++ core drives macOS, Windows and Lin
   everything in it is `@Deprecated` and will be removed in a later release. The README
   lists the behaviour differences and maps each old call to the native API.
 * **Breaking:** requires Flutter 3.35 / Dart 3.9 and macOS 10.15.
-* Linux: the tray icon is a StatusNotifierItem. `libayatana-appindicator` /
-  `libappindicator` is no longer needed (GTK 3, X11 and Xi development files are), the
-  icon reports clicks, and `setToolTip` works.
+* Linux: the tray icon is a StatusNotifierItem; it reports clicks, and `setToolTip`
+  works. Builds need GTK 3, X11 and Xi development files and, until the next nativeapi
+  release drops a leftover requirement, still `libayatana-appindicator3-dev`.
 * Windows: `.png` icons work as well as `.ico`.
 * `MenuItem.label`, `toolTip`, `checked` and `disabled` of the legacy API update the
   visible menu when assigned; `onClick` runs once per click, with or without a

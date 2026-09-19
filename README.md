@@ -95,12 +95,13 @@ dependencies:
 #### Requirements
 
 - Flutter 3.35 / Dart 3.9 or later, macOS 10.15 or later.
-- Linux build machines need GTK 3, X11 and Xi development files. The tray icon is a
-  StatusNotifierItem, so `libayatana-appindicator` / `libappindicator` is **no longer
-  needed**:
+- Linux build machines need GTK 3, X11 and Xi development files — and, with nativeapi
+  0.2.7, still `libayatana-appindicator3-dev`. The tray icon is a StatusNotifierItem and
+  nothing uses that library any more; the requirement is a leftover in nativeapi's build
+  file and goes away with its next release.
 
 ```
-sudo apt-get install libgtk-3-dev libx11-dev libxi-dev
+sudo apt-get install libgtk-3-dev libx11-dev libxi-dev libayatana-appindicator3-dev
 ```
 
 ### Usage

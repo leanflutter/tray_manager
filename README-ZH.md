@@ -95,11 +95,12 @@ dependencies:
 #### 环境要求
 
 - Flutter 3.35 / Dart 3.9 及以上，macOS 10.15 及以上。
-- Linux 构建机需要 GTK 3、X11、Xi 的开发文件。托盘图标现在是 StatusNotifierItem，
-  **不再需要** `libayatana-appindicator` / `libappindicator`：
+- Linux 构建机需要 GTK 3、X11、Xi 的开发文件；在 nativeapi 0.2.7 下还需要
+  `libayatana-appindicator3-dev`。托盘图标现在是 StatusNotifierItem，已经没有代码使用这个库，
+  这只是 nativeapi 构建文件里的残留，会随它的下一个版本去掉。
 
 ```
-sudo apt-get install libgtk-3-dev libx11-dev libxi-dev
+sudo apt-get install libgtk-3-dev libx11-dev libxi-dev libayatana-appindicator3-dev
 ```
 
 ### 用法
