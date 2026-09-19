@@ -1,25 +1,5 @@
 ## 0.7.0
 
-* **Breaking:** requires Flutter 3.47 / Dart 3.13, in step with the rest of the
-  nativeapi family. CI builds and the publish workflow pin Flutter 3.47.5.
-* **Breaking:** depends on nativeapi ^0.3.0.
-* Linux: building no longer asks for `libayatana-appindicator3-dev` — nativeapi 0.3.0
-  stopped requiring and linking it. GTK 3, X11 and Xi development files are enough.
-
-## 0.6.1
-
-Documentation only.
-
-* Correct the 0.6.0 notes: tray icon clicks are **not** reported on Linux — the panel
-  keeps them and opens the menu itself, as it did in 0.5.x.
-* README: drop the `app_links` known issue, which no longer applies (tray and menu
-  messages no longer go through Flutter's window message delegates); say what a Linux
-  desktop needs to show the icon; list the calls that stopped throwing
-  `MissingPluginException` per platform; note that a native checkbox item is not toggled
-  by a click; fix the table of contents; remove the visits badge.
-
-## 0.6.0
-
 tray_manager is now built on [nativeapi](https://pub.dev/packages/nativeapi): the
 per-platform plugin code is gone, and one C++ core drives macOS, Windows and Linux.
 
@@ -32,14 +12,16 @@ per-platform plugin code is gone, and one C++ core drives macOS, Windows and Lin
   itself is no longer a dependency). Existing apps change one import. It is a bridge:
   everything in it is `@Deprecated` and will be removed in a later release. The README
   lists the behaviour differences and maps each old call to the native API.
-* **Breaking:** requires Flutter 3.35 / Dart 3.9 and macOS 10.15.
+* **Breaking:** requires Flutter 3.47 / Dart 3.13 and macOS 10.15, and depends on
+  nativeapi ^0.3.0. CI builds and the publish workflow pin Flutter 3.47.5.
 * Linux: the tray icon is a StatusNotifierItem, and `setToolTip` works. Tray icon clicks
-  are still not reported there. Builds need GTK 3, X11 and Xi development files and, until the next nativeapi
-  release drops a leftover requirement, still `libayatana-appindicator3-dev`.
+  are **not** reported there — the panel keeps them and opens the menu itself, as it did
+  in 0.5.x. Builds need GTK 3, X11 and Xi development files; `libayatana-appindicator3-dev`
+  is not one of them (nativeapi 0.3.0 stopped requiring and linking it).
 * Windows: `.png` icons work as well as `.ico`.
 * `MenuItem.label`, `toolTip`, `checked` and `disabled` of the legacy API update the
   visible menu when assigned; `onClick` runs once per click, with or without a
-  `TrayListener`.
+  `TrayListener`. A native checkbox item is not toggled by a click.
 * New example on `package:flutter/widgets.dart` alone; the full one is nativeapi's
   [tray_icon_example](https://github.com/libnativeapi/nativeapi-flutter/tree/main/examples/tray_icon_example).
 
