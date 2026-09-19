@@ -11,7 +11,8 @@
 [discord-image]: https://img.shields.io/discord/884679008049037342.svg
 [discord-url]: https://discord.gg/zPa6EZ2jqb
 
-This plugin allows Flutter desktop apps to defines system tray.
+This package lets Flutter desktop apps put an icon, with a tooltip, a title and a context
+menu, in the system tray.
 
 English | [简体中文](./README-ZH.md)
 
@@ -23,16 +24,16 @@ English | [简体中文](./README-ZH.md)
 - [Platform Support](#platform-support)
 - [Screenshots](#screenshots)
 - [Known Issues](#known-issues)
-  - [Not Working with app_links](#not-working-with-app_links)
   - [Not Showing in GNOME](#not-showing-in-gnome)
 - [Quick Start](#quick-start)
   - [Installation](#installation)
     - [Requirements](#requirements)
   - [Usage](#usage)
-    - [Listening events](#listening-events)
+    - [Upgrading from 0.5.x](#upgrading-from-05x)
+    - [Moving to the native API](#moving-to-the-native-api)
 - [Who's using it?](#whos-using-it)
 - [API](#api)
-  - [TrayManager](#traymanager)
+  - [Native API](#native-api)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -51,24 +52,9 @@ English | [简体中文](./README-ZH.md)
 
 ## Known Issues
 
-### Not Working with app_links
-
-When using the `app_links` package together with `tray_manager`, the plugin may not work properly. This is because older versions of `app_links` internally block event propagation, preventing menu click events from being triggered.
-
-To resolve this issue:
-
-1. Make sure your `app_links` package version is greater than or equal to 6.3.3
-
-```yaml
-dependencies:
-  app_links: ^6.3.3
-```
-
-2. Use [protocol_handler](https://github.com/leanflutter/protocol_handler) package instead of `app_links` package.
-
 ### Not Showing in GNOME
 
-In GNOME desktop environment, the [AppIndicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) extension may be required to display the icon.
+On Linux the tray icon is a StatusNotifierItem, which needs a panel that hosts them. KDE Plasma and most other desktops do; GNOME does only with the [AppIndicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) extension (Ubuntu ships it enabled).
 
 ## Quick Start
 
@@ -88,7 +74,7 @@ dependencies:
   tray_manager:
     git:
       url: https://github.com/leanflutter/tray_manager.git
-      ref: dev
+      ref: main
 ```
 
 #### Requirements
@@ -142,7 +128,7 @@ It provides the old `trayManager`, `TrayListener`, `Menu` and `MenuItem`
 (`menu_base` is no longer a dependency) on top of the native API.
 
 The import has to change on purpose: `legacy.dart` is a bridge, not the future of this
-package. Everything in it is marked `@Deprecated` and **will be removed in a later
+package. Its classes are marked `@Deprecated` and **will be removed in a later
 release** — move to the native API above when you can.
 
 ```dart
@@ -164,17 +150,17 @@ await trayManager.setContextMenu(
 What differs from 0.5.x:
 
 - Builds need Flutter 3.35 / Dart 3.9 and macOS 10.15 (0.5.x: Flutter 3.3, macOS 10.11).
-- `onTrayIconMouseDown` and `onTrayIconMouseUp` now both arrive on Windows (0.5.x only
-  sent the first) and, new, on Linux, where the panel used to keep every click for
-  itself.
-- `setToolTip`, `popUpContextMenu`, `getBounds` and `setIconPosition` no longer throw
-  `MissingPluginException` on Linux; `getBounds` answers `null` there and
-  `popUpContextMenu` does nothing, because only the panel can open the menu.
+- A click is reported when it completes, as `onTrayIconMouseDown` immediately followed by
+  `onTrayIconMouseUp` (same for the right button). 0.5.x sent the two separately on macOS
+  and only the first on Windows. Linux still reports no tray icon clicks at all: the
+  panel keeps them and opens the menu itself.
+- Calls a platform has no use for are ignored instead of throwing
+  `MissingPluginException`: `setTitle` and `setIconPosition` on Windows; `setIconPosition`,
+  `popUpContextMenu` and `getBounds` (which answers `null`) on Linux. `setToolTip` now
+  works on Linux.
 - `setIcon` throws an `ArgumentError` when the image cannot be loaded, on every
   platform. Windows takes `.png` as well as `.ico` now.
 - `bringAppToFront` of `popUpContextMenu` is accepted but ignored.
-- `onTrayIconMouseDown` / `onTrayIconMouseUp` (and the right-button pair) are
-  both delivered when the click completes.
 - `MenuItem.onClick` runs once per click, also when no `TrayListener` is
   registered.
 - `label`, `toolTip`, `checked` and `disabled` of a `MenuItem` update the
@@ -191,17 +177,18 @@ What differs from 0.5.x:
 | `setIcon(isTemplate:, iconSize:, iconPosition:)`, `setIconPosition` | `trayIcon.isIconTemplate`, `trayIcon.iconSize`, `trayIcon.iconPosition` |
 | `setToolTip(text)` / `setTitle(text)` | `trayIcon.setTooltip(text)` / `trayIcon.setTitle(text)` — `null` clears; `getTooltip()` / `getTitle()` read back |
 | `setContextMenu(Menu(items: [...]))` | `Menu.create()`, `menu.addItem(MenuItem.createWithLabelAndType(label, MenuItemType.normal))`, `menu.addSeparator()`, then `trayIcon.setContextMenu(menu)` |
-| `MenuItem.checkbox(checked:)`, `disabled:`, `toolTip:` | `MenuItemType.checkbox` with `item.state`, `item.isEnabled`, `item.tooltip` |
+| `MenuItem.checkbox(checked:)`, `disabled:`, `toolTip:` | `MenuItemType.checkbox` with `item.state` (set it yourself in the click listener; a click does not toggle it), `item.isEnabled`, `item.tooltip` |
 | `MenuItem.submenu(submenu:)` | `MenuItemType.submenu` with `item.submenu = otherMenu` |
 | `MenuItem(onClick:)`, `onTrayMenuItemClick` + `menuItem.key` | `item.addListener((event) { if (event is MenuItemClickedEvent) ... })` per item |
 | `popUpContextMenu()` from `onTrayIconRightMouseDown` | `trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked)`, or `trayIcon.openContextMenu()` |
-| `TrayListener` | `trayIcon.addListener((event) { switch (event) { case TrayIconClickedEvent(): ... } })` — also `TrayIconRightClickedEvent`, `TrayIconDoubleClickedEvent` |
-| `getBounds()` | `trayIcon.getBounds()` (synchronous; physical pixels on Windows) |
+| `TrayListener` | `trayIcon.addListener((event) { switch (event) { case TrayIconClickedEvent(): ... } })` — also `TrayIconRightClickedEvent`, `TrayIconDoubleClickedEvent` (none of them on Linux) |
+| `getBounds()` | `trayIcon.getBounds()` (synchronous; physical pixels on Windows, an empty `Rect` on Linux) |
 | `destroy()` | `trayIcon.dispose()` |
 
-Keep a reference to every `TrayIcon`, `Menu` and `MenuItem` you create for as long as it
-is in use: a wrapper that is garbage-collected releases its native handle — for a `TrayIcon` that
-removes the icon.
+Keep a reference to every `TrayIcon` for as long as it should be shown: a wrapper that is
+garbage-collected releases its native handle, and that removes the icon. A `Menu` or
+`MenuItem` that is attached stays alive natively, but keep the ones you want to change
+later.
 
 ## Who's using it?
 

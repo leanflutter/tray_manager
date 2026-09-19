@@ -1,3 +1,15 @@
+## 0.6.1
+
+Documentation only.
+
+* Correct the 0.6.0 notes: tray icon clicks are **not** reported on Linux — the panel
+  keeps them and opens the menu itself, as it did in 0.5.x.
+* README: drop the `app_links` known issue, which no longer applies (tray and menu
+  messages no longer go through Flutter's window message delegates); say what a Linux
+  desktop needs to show the icon; list the calls that stopped throwing
+  `MissingPluginException` per platform; note that a native checkbox item is not toggled
+  by a click; fix the table of contents; remove the visits badge.
+
 ## 0.6.0
 
 tray_manager is now built on [nativeapi](https://pub.dev/packages/nativeapi): the
@@ -13,8 +25,8 @@ per-platform plugin code is gone, and one C++ core drives macOS, Windows and Lin
   everything in it is `@Deprecated` and will be removed in a later release. The README
   lists the behaviour differences and maps each old call to the native API.
 * **Breaking:** requires Flutter 3.35 / Dart 3.9 and macOS 10.15.
-* Linux: the tray icon is a StatusNotifierItem; it reports clicks, and `setToolTip`
-  works. Builds need GTK 3, X11 and Xi development files and, until the next nativeapi
+* Linux: the tray icon is a StatusNotifierItem, and `setToolTip` works. Tray icon clicks
+  are still not reported there. Builds need GTK 3, X11 and Xi development files and, until the next nativeapi
   release drops a leftover requirement, still `libayatana-appindicator3-dev`.
 * Windows: `.png` icons work as well as `.ico`.
 * `MenuItem.label`, `toolTip`, `checked` and `disabled` of the legacy API update the

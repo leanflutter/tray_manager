@@ -11,7 +11,7 @@
 [discord-image]: https://img.shields.io/discord/884679008049037342.svg
 [discord-url]: https://discord.gg/zPa6EZ2jqb
 
-这个插件允许 Flutter 桌面应用定义系统托盘。
+这个包让 Flutter 桌面应用在系统托盘中放置图标，并为它设置提示、标题和右键菜单。
 
 [English](./README.md) | 简体中文
 
@@ -23,16 +23,16 @@
 - [平台支持](#%E5%B9%B3%E5%8F%B0%E6%94%AF%E6%8C%81)
 - [截图](#%E6%88%AA%E5%9B%BE)
 - [已知问题](#%E5%B7%B2%E7%9F%A5%E9%97%AE%E9%A2%98)
-  - [与 app_links 不兼容](#%E4%B8%8E-app_links-%E4%B8%8D%E5%85%BC%E5%AE%B9)
   - [在 GNOME 中不显示](#%E5%9C%A8-gnome-%E4%B8%AD%E4%B8%8D%E6%98%BE%E7%A4%BA)
 - [快速开始](#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
   - [安装](#%E5%AE%89%E8%A3%85)
     - [环境要求](#%E7%8E%AF%E5%A2%83%E8%A6%81%E6%B1%82)
   - [用法](#%E7%94%A8%E6%B3%95)
-    - [监听事件](#%E7%9B%91%E5%90%AC%E4%BA%8B%E4%BB%B6)
-- [谁在用使用它？](#%E8%B0%81%E5%9C%A8%E7%94%A8%E4%BD%BF%E7%94%A8%E5%AE%83)
+    - [从 0.5.x 升级](#%E4%BB%8E-05x-%E5%8D%87%E7%BA%A7)
+    - [迁移到原生 API](#%E8%BF%81%E7%A7%BB%E5%88%B0%E5%8E%9F%E7%94%9F-api)
+- [谁在使用它？](#%E8%B0%81%E5%9C%A8%E4%BD%BF%E7%94%A8%E5%AE%83)
 - [API](#api)
-  - [TrayManager](#traymanager)
+  - [Native API](#native-api)
 - [许可证](#%E8%AE%B8%E5%8F%AF%E8%AF%81)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -51,24 +51,9 @@
 
 ## 已知问题
 
-### 与 app_links 不兼容
-
-当同时使用 `app_links` 包和 `tray_manager` 时，可能会出现插件无法正常工作。这是因为低版本 `app_links` 在内部阻止了事件传播，导致菜单点击事件无法触发。
-
-要解决此问题：
-
-1. 确保你的 `app_links` 包版本大于或等于 6.3.3
-
-```yaml
-dependencies:
-  app_links: ^6.3.3
-```
-
-2. 使用 [protocol_handler](https://github.com/leanflutter/protocol_handler) 包代替 `app_links` 包。
-
 ### 在 GNOME 中不显示
 
-在使用 GNOME 桌面时, 可能需要安装 [AppIndicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) 扩展以显示图标。
+Linux 上的托盘图标是 StatusNotifierItem，需要面板支持才能显示。KDE Plasma 和大多数桌面都支持；GNOME 需要安装 [AppIndicator](https://github.com/ubuntu/gnome-shell-extension-appindicator) 扩展（Ubuntu 默认已启用）。
 
 ## 快速开始
 
@@ -88,7 +73,7 @@ dependencies:
   tray_manager:
     git:
       url: https://github.com/leanflutter/tray_manager.git
-      ref: dev
+      ref: main
 ```
 
 #### 环境要求
@@ -161,14 +146,13 @@ await trayManager.setContextMenu(
 与 0.5.x 的差异：
 
 - 构建需要 Flutter 3.35 / Dart 3.9 和 macOS 10.15（0.5.x 为 Flutter 3.3、macOS 10.11）。
-- `onTrayIconMouseDown` 和 `onTrayIconMouseUp` 在 Windows 上现在都会触发（0.5.x 只发前者）；
-  Linux 上也开始有点击事件了，以前所有点击都被面板自己吃掉。
-- `setToolTip`、`popUpContextMenu`、`getBounds`、`setIconPosition` 在 Linux 上不再抛
-  `MissingPluginException`；那里 `getBounds` 返回 `null`，`popUpContextMenu` 什么也不做，
-  因为只有面板能打开菜单。
+- 点击在完成时上报：`onTrayIconMouseDown` 之后紧跟 `onTrayIconMouseUp`（右键同理）。0.5.x 在 macOS
+  上分两次发，在 Windows 上只发前者。Linux 上仍然没有任何托盘图标点击事件：点击由面板自己处理并打开菜单。
+- 平台用不上的调用会被忽略，不再抛 `MissingPluginException`：Windows 上的 `setTitle`、`setIconPosition`；
+  Linux 上的 `setIconPosition`、`popUpContextMenu` 和 `getBounds`（返回 `null`）。`setToolTip` 现在在
+  Linux 上可用。
 - 图片加载失败时，`setIcon` 在所有平台上都抛 `ArgumentError`。Windows 现在除 `.ico` 外也接受 `.png`。
 - `popUpContextMenu` 的 `bringAppToFront` 仍可传入，但会被忽略。
-- `onTrayIconMouseDown` / `onTrayIconMouseUp`（以及右键的一对）在点击完成时一并触发。
 - `MenuItem.onClick` 每次点击只调用一次，没有注册 `TrayListener` 时也会调用。
 - 给 `MenuItem` 的 `label`、`toolTip`、`checked`、`disabled` 赋值会立即更新已显示的菜单；
   增删菜单项仍需再次调用 `setContextMenu`。
@@ -183,17 +167,18 @@ await trayManager.setContextMenu(
 | `setIcon(isTemplate:, iconSize:, iconPosition:)`、`setIconPosition` | `trayIcon.isIconTemplate`、`trayIcon.iconSize`、`trayIcon.iconPosition` |
 | `setToolTip(text)` / `setTitle(text)` | `trayIcon.setTooltip(text)` / `trayIcon.setTitle(text)`——传 `null` 清除；`getTooltip()` / `getTitle()` 可读回 |
 | `setContextMenu(Menu(items: [...]))` | `Menu.create()`、`menu.addItem(MenuItem.createWithLabelAndType(label, MenuItemType.normal))`、`menu.addSeparator()`，然后 `trayIcon.setContextMenu(menu)` |
-| `MenuItem.checkbox(checked:)`、`disabled:`、`toolTip:` | `MenuItemType.checkbox` 配合 `item.state`，以及 `item.isEnabled`、`item.tooltip` |
+| `MenuItem.checkbox(checked:)`、`disabled:`、`toolTip:` | `MenuItemType.checkbox` 配合 `item.state`（需在点击监听里自己设置，点击不会自动切换），以及 `item.isEnabled`、`item.tooltip` |
 | `MenuItem.submenu(submenu:)` | `MenuItemType.submenu` 配合 `item.submenu = otherMenu` |
 | `MenuItem(onClick:)`、`onTrayMenuItemClick` + `menuItem.key` | 每个菜单项 `item.addListener((event) { if (event is MenuItemClickedEvent) ... })` |
 | 在 `onTrayIconRightMouseDown` 里 `popUpContextMenu()` | `trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked)`，或 `trayIcon.openContextMenu()` |
-| `TrayListener` | `trayIcon.addListener((event) { switch (event) { case TrayIconClickedEvent(): ... } })`——另有 `TrayIconRightClickedEvent`、`TrayIconDoubleClickedEvent` |
-| `getBounds()` | `trayIcon.getBounds()`（同步；Windows 上是物理像素） |
+| `TrayListener` | `trayIcon.addListener((event) { switch (event) { case TrayIconClickedEvent(): ... } })`——另有 `TrayIconRightClickedEvent`、`TrayIconDoubleClickedEvent`（Linux 上都没有） |
+| `getBounds()` | `trayIcon.getBounds()`（同步；Windows 上是物理像素，Linux 上是空 `Rect`） |
 | `destroy()` | `trayIcon.dispose()` |
 
-创建的每个 `TrayIcon`、`Menu`、`MenuItem` 在使用期间都要保留引用：包装对象被垃圾回收时会释放对应的原生句柄——对 `TrayIcon` 来说就是图标消失。
+每个 `TrayIcon` 在需要显示期间都要保留引用：包装对象被垃圾回收时会释放原生句柄，图标随之消失。已挂上去的
+`Menu` 和 `MenuItem` 在原生侧会继续存活，但之后还想修改的那些要自己留着。
 
-## 谁在用使用它？
+## 谁在使用它？
 
 - [Airclap](https://airclap.app/) - 任何文件，任意设备，随意发送。简单好用的跨平台高速文件传输 APP。
 - [Biyi (比译)](https://biyidev.com/) - 一个便捷的翻译和词典应用程序。
