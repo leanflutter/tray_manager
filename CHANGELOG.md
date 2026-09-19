@@ -1,7 +1,10 @@
-## Unreleased
+## 0.7.0
 
 * **Breaking:** requires Flutter 3.47 / Dart 3.13, in step with the rest of the
   nativeapi family. CI builds and the publish workflow pin Flutter 3.47.5.
+* **Breaking:** depends on nativeapi ^0.3.0.
+* Linux: building no longer asks for `libayatana-appindicator3-dev` — nativeapi 0.3.0
+  stopped requiring and linking it. GTK 3, X11 and Xi development files are enough.
 
 ## 0.6.1
 

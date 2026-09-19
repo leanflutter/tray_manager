@@ -64,7 +64,7 @@ Add this to your package's pubspec.yaml file:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.6.0
+  tray_manager: ^0.7.0
 ```
 
 Or
@@ -80,13 +80,11 @@ dependencies:
 #### Requirements
 
 - Flutter 3.47 / Dart 3.13 or later, macOS 10.15 or later.
-- Linux build machines need GTK 3, X11 and Xi development files — and, with nativeapi
-  0.2.7, still `libayatana-appindicator3-dev`. The tray icon is a StatusNotifierItem and
-  nothing uses that library any more; the requirement is a leftover in nativeapi's build
-  file and goes away with its next release.
+- Linux build machines need GTK 3, X11 and Xi development files. The tray icon is a
+  StatusNotifierItem over D-Bus, so `libayatana-appindicator3-dev` is no longer needed.
 
 ```
-sudo apt-get install libgtk-3-dev libx11-dev libxi-dev libayatana-appindicator3-dev
+sudo apt-get install libgtk-3-dev libx11-dev libxi-dev
 ```
 
 ### Usage

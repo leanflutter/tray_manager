@@ -63,7 +63,7 @@ Linux 上的托盘图标是 StatusNotifierItem，需要面板支持才能显示�
 
 ```yaml
 dependencies:
-  tray_manager: ^0.6.0
+  tray_manager: ^0.7.0
 ```
 
 或
@@ -79,12 +79,11 @@ dependencies:
 #### 环境要求
 
 - Flutter 3.47 / Dart 3.13 及以上，macOS 10.15 及以上。
-- Linux 构建机需要 GTK 3、X11、Xi 的开发文件；在 nativeapi 0.2.7 下还需要
-  `libayatana-appindicator3-dev`。托盘图标现在是 StatusNotifierItem，已经没有代码使用这个库，
-  这只是 nativeapi 构建文件里的残留，会随它的下一个版本去掉。
+- Linux 构建机需要 GTK 3、X11、Xi 的开发文件。托盘图标是基于 D-Bus 的 StatusNotifierItem，
+  不再需要 `libayatana-appindicator3-dev`。
 
 ```
-sudo apt-get install libgtk-3-dev libx11-dev libxi-dev libayatana-appindicator3-dev
+sudo apt-get install libgtk-3-dev libx11-dev libxi-dev
 ```
 
 ### 用法

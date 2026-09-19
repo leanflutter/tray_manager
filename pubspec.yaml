@@ -1,6 +1,6 @@
 name: tray_manager
 description: This plugin allows Flutter desktop apps to define a system tray icon.
-version: 0.6.1
+version: 0.7.0
 homepage: https://github.com/leanflutter/tray_manager
 
 platforms:
@@ -20,7 +20,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  nativeapi: ^0.2.7
+  nativeapi: ^0.3.0
 
 dev_dependencies:
   flutter_test:
