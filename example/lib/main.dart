@@ -1,310 +1,318 @@
-import 'package:flutter/material.dart' hide Image;
-import 'package:tray_manager/legacy.dart' as legacy;
-import 'package:tray_manager/tray_manager.dart';
+// The example shows the deprecated 0.5.x compatible API on purpose.
+// ignore_for_file: deprecated_member_use
 
-const _defaultIconPath = 'images/tray_icon.png';
-const _originalIconPath = 'images/tray_icon_original.png';
+import 'package:flutter/widgets.dart';
+import 'package:tray_manager/legacy.dart';
+
+import 'tray_controller.dart';
+import 'widgets/event_footer.dart';
+import 'widgets/option_chip.dart';
+import 'widgets/palette.dart';
+
+// tray_manager through its 0.5.x compatible API (package:tray_manager/legacy.dart):
+// one tray icon, the classic `trayManager` calls, a `TrayListener`.
+//
+//   tray_controller.dart   every trayManager call, the context menu, the listener
+//   widgets/               the few widgets the window is made of (no Material)
+//
+// This is deliberately the small example. The full one — several icons at once,
+// animated icons, every native property with read-back, and an acceptance
+// checklist — is nativeapi's tray_icon_example:
+// https://github.com/libnativeapi/nativeapi-flutter/tree/main/examples/tray_icon_example
+
+const kFullExampleUrl =
+    'github.com/libnativeapi/nativeapi-flutter/tree/main/examples/tray_icon_example';
 
 void main() {
   runApp(const TrayManagerExampleApp());
 }
 
 class TrayManagerExampleApp extends StatelessWidget {
-  const TrayManagerExampleApp({super.key});
+  const TrayManagerExampleApp({
+    super.key,
+    this.shell = const Shell(),
+    this.fontFamily,
+  });
+
+  final Widget shell;
+
+  /// Null uses the platform's font; a test has to name one it has loaded.
+  final String? fontFamily;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return WidgetsApp(
       title: 'tray_manager example',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF006D77)),
-      ),
-      home: const TrayExamplePage(),
+      color: Palette.light.accent,
+      debugShowCheckedModeBanner: false,
+      builder: (context, _) {
+        final palette = Palette.of(context);
+        return DefaultTextStyle(
+          style: TextStyle(
+            fontFamily: fontFamily,
+            fontSize: 12,
+            height: 1.3,
+            color: palette.text,
+          ),
+          child: shell,
+        );
+      },
     );
   }
 }
 
-class TrayExamplePage extends StatefulWidget {
-  const TrayExamplePage({super.key});
+/// Lifecycle strip, one row per compatible API, event footer.
+class Shell extends StatefulWidget {
+  const Shell({super.key, this.controller});
+
+  /// Defaults to a controller that creates the tray icon right away.
+  final TrayController? controller;
 
   @override
-  State<TrayExamplePage> createState() => _TrayExamplePageState();
+  State<Shell> createState() => _ShellState();
 }
 
-class _TrayExamplePageState extends State<TrayExamplePage>
-    with legacy.TrayListener {
-  TrayIcon? _trayIcon;
-  Image? _icon;
-  Menu? _menu;
-  ListenerId? _trayListenerId;
-  // Keeps the menu item wrappers (and their listeners) alive with the menu.
-  final List<MenuItem> _menuItems = <MenuItem>[];
-  int _eventCount = 0;
-  String _status = 'Tray icon is not created.';
-  String _iconPath = _defaultIconPath;
-  bool _legacyListenerAttached = false;
+class _ShellState extends State<Shell> {
+  late final TrayController _controller = widget.controller ?? TrayController();
+
+  static const _titles = <String, String>{
+    'No title': '',
+    '42%': '42%',
+    '00:12': '00:12',
+    '你好': '你好',
+  };
+
+  static const _tooltips = <String, String>{
+    'Short': kDefaultTooltip,
+    'Long':
+        'A long tooltip that says rather more than a tooltip usually should, '
+        'to see where the platform cuts it off',
+    '2 lines': 'Line one\nLine two',
+  };
 
   @override
   void dispose() {
-    _removeNativeListeners();
-    _trayIcon?.dispose();
-    _icon?.dispose();
-    if (_legacyListenerAttached) {
-      legacy.trayManager.removeListener(this);
-    }
-    legacy.trayManager.destroy();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
-  void onTrayIconMouseDown() {
-    _log('Legacy TrayListener received tray mouse down.');
-  }
-
-  @override
-  void onTrayIconRightMouseDown() {
-    _log('Legacy TrayListener received tray right mouse down.');
-  }
-
-  @override
-  void onTrayMenuItemClick(legacy.MenuItem menuItem) {
-    _log('Legacy TrayListener menu item: ${menuItem.key}');
-  }
-
-  void _createNativeTrayIcon([String iconPath = _defaultIconPath]) {
-    _removeNativeListeners();
-    _trayIcon?.dispose();
-    _icon?.dispose();
-
-    final icon = ImageAsset.fromAsset(iconPath);
-    if (icon == null) {
-      _log('Unable to create tray icon image.');
-      return;
-    }
-
-    final trayIcon = TrayIcon.create();
-    if (trayIcon == null) {
-      icon.dispose();
-      _log('Unable to create tray icon.');
-      return;
-    }
-
-    trayIcon
-      ..icon = icon
-      ..setTitle('tray_manager')
-      ..setTooltip('tray_manager nativeapi example')
-      ..setContextMenu(_buildMenu())
-      ..setContextMenuTrigger(ContextMenuTrigger.rightClicked)
-      ..setVisible(true);
-
-    _trayListenerId = trayIcon.addListener((event) {
-      switch (event) {
-        case TrayIconClickedEvent():
-          _log('Native tray icon clicked.');
-        case TrayIconRightClickedEvent():
-          _log('Native tray icon right clicked.');
-        case TrayIconDoubleClickedEvent():
-          _log('Native tray icon double clicked.');
-      }
-    });
-
-    setState(() {
-      _icon = icon;
-      _iconPath = iconPath;
-      _trayIcon = trayIcon;
-      _status = 'Native tray icon is visible: $iconPath';
-    });
-  }
-
-  void _setNativeTrayIcon(String iconPath) {
-    final trayIcon = _trayIcon;
-    if (trayIcon == null) {
-      _createNativeTrayIcon(iconPath);
-      return;
-    }
-
-    final icon = ImageAsset.fromAsset(iconPath);
-    if (icon == null) {
-      _log('Unable to create tray icon image.');
-      return;
-    }
-
-    _icon?.dispose();
-    trayIcon.icon = icon;
-    setState(() {
-      _icon = icon;
-      _iconPath = iconPath;
-      _status = 'Native tray icon changed: $iconPath';
-    });
-  }
-
-  void _destroyNativeTrayIcon() {
-    _removeNativeListeners();
-    _trayIcon?.dispose();
-    _icon?.dispose();
-    setState(() {
-      _trayIcon = null;
-      _icon = null;
-      _menu = null;
-      _status = 'Native tray icon is destroyed.';
-    });
-  }
-
-  Future<void> _createLegacyTrayIcon() async {
-    final menu = legacy.Menu(
-      items: [
-        legacy.MenuItem(key: 'legacy_item', label: 'Legacy menu item'),
-        legacy.MenuItem.checkbox(
-          key: 'legacy_checkbox',
-          label: 'Legacy checkbox',
-          checked: false,
-          onClick: (menuItem) {
-            menuItem.checked = !(menuItem.checked == true);
-          },
-        ),
-        legacy.MenuItem.separator(),
-        legacy.MenuItem.submenu(
-          key: 'legacy_submenu',
-          label: 'Legacy submenu',
-          submenu: legacy.Menu(
-            items: [
-              legacy.MenuItem(key: 'legacy_nested', label: 'Nested item'),
-            ],
-          ),
-        ),
-      ],
-    );
-
-    if (!_legacyListenerAttached) {
-      legacy.trayManager.addListener(this);
-      _legacyListenerAttached = true;
-    }
-
-    await legacy.trayManager.setIcon(_iconPath);
-    await legacy.trayManager.setTitle('tray_manager');
-    await legacy.trayManager.setToolTip('legacy TrayManager example');
-    await legacy.trayManager.setContextMenu(menu);
-
-    _log('legacy TrayManager created a tray icon.');
-  }
-
-  Future<void> _showLegacyContextMenu() async {
-    await legacy.trayManager.popUpContextMenu();
-    _log('Requested legacy context menu.');
-  }
-
-  Menu _buildMenu() {
-    final menu = Menu.create()!;
-    _menuItems.clear();
-
-    final openItem = _menuItem('Open context menu', () {
-      _trayIcon?.openContextMenu();
-      _log('Menu item requested context menu.');
-    });
-
-    late final MenuItem checkedItem;
-    checkedItem = _menuItem('Toggle checked state', () {
-      checkedItem.state = checkedItem.state == MenuItemState.checked
-          ? MenuItemState.unchecked
-          : MenuItemState.checked;
-      _log('Checkbox is ${checkedItem.state.name}.');
-    }, type: MenuItemType.checkbox)..state = MenuItemState.unchecked;
-
-    final destroyItem = _menuItem('Destroy tray icon', _destroyNativeTrayIcon);
-
-    menu
-      ..addItem(openItem)
-      ..addItem(checkedItem)
-      ..addSeparator()
-      ..addItem(destroyItem);
-
-    _menu = menu;
-    return menu;
-  }
-
-  MenuItem _menuItem(
-    String label,
-    void Function() onClicked, {
-    MenuItemType type = MenuItemType.normal,
-  }) {
-    final item = MenuItem.createWithLabelAndType(label, type)!;
-    item.addListener((event) {
-      if (event is MenuItemClickedEvent) onClicked();
-    });
-    _menuItems.add(item);
-    return item;
-  }
-
-  void _removeNativeListeners() {
-    final listenerId = _trayListenerId;
-    if (listenerId != null) {
-      _trayIcon?.removeListener(listenerId);
-    }
-    _trayListenerId = null;
-  }
-
-  void _log(String message) {
-    setState(() {
-      _eventCount += 1;
-      _status = message;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final menuReady = _menu != null;
-    return Scaffold(
-      appBar: AppBar(title: const Text('tray_manager example')),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
+    final palette = Palette.of(context);
+    final c = _controller;
+    return ListenableBuilder(
+      listenable: c,
+      builder: (context, _) => ColoredBox(
+        color: palette.background,
+        child: Column(
+          children: [
+            _lifecycleStrip(palette),
+            Expanded(
+              child: ListView(
+                children: [
+                  _stateBlock(palette),
+                  OptionRow(
+                    label: 'Icon',
+                    children: [
+                      OptionChip(
+                        label: 'Glyph',
+                        selected: c.iconPath == kGlyphIcon,
+                        onTap: c.created ? () => c.setIcon(kGlyphIcon) : null,
+                      ),
+                      OptionChip(
+                        label: 'Colour',
+                        selected: c.iconPath == kColourIcon,
+                        onTap: c.created ? () => c.setIcon(kColourIcon) : null,
+                      ),
+                    ],
+                  ),
+                  OptionRow(
+                    label: 'Template',
+                    children: [
+                      OptionChip(
+                        label: 'On',
+                        selected: c.isTemplate,
+                        onTap: c.created ? () => c.setTemplate(true) : null,
+                      ),
+                      OptionChip(
+                        label: 'Off',
+                        selected: !c.isTemplate,
+                        onTap: c.created ? () => c.setTemplate(false) : null,
+                      ),
+                      if (!TrayController.iconLayoutSupported)
+                        const Hint('macOS only'),
+                    ],
+                  ),
+                  OptionRow(
+                    label: 'Icon size',
+                    children: [
+                      for (final size in const [12, 18, 22])
+                        OptionChip(
+                          label: '$size',
+                          selected: c.iconSize == size,
+                          onTap: c.created ? () => c.setIconSize(size) : null,
+                        ),
+                      if (!TrayController.iconLayoutSupported)
+                        const Hint('macOS only'),
+                    ],
+                  ),
+                  OptionRow(
+                    label: 'Position',
+                    children: [
+                      for (final position in TrayIconPosition.values)
+                        OptionChip(
+                          label: 'Icon ${position.name}',
+                          selected: c.iconPosition == position,
+                          onTap: c.created
+                              ? () => c.setIconPosition(position)
+                              : null,
+                        ),
+                      Hint(
+                        TrayController.iconLayoutSupported
+                            ? 'of the title'
+                            : 'macOS only',
+                      ),
+                    ],
+                  ),
+                  OptionRow(
+                    label: 'Title',
+                    children: [
+                      for (final MapEntry(:key, :value) in _titles.entries)
+                        OptionChip(
+                          label: key,
+                          selected: c.title == value,
+                          onTap: c.created ? () => c.setTitle(value) : null,
+                        ),
+                      if (!TrayController.titleSupported)
+                        const Hint('no titles on Windows'),
+                    ],
+                  ),
+                  OptionRow(
+                    label: 'Tooltip',
+                    children: [
+                      for (final MapEntry(:key, :value) in _tooltips.entries)
+                        OptionChip(
+                          label: key,
+                          selected: c.tooltip == value,
+                          onTap: c.created ? () => c.setToolTip(value) : null,
+                        ),
+                    ],
+                  ),
+                  OptionRow(
+                    label: 'Menu',
+                    children: [
+                      OptionChip(
+                        label: 'Pop up context menu',
+                        onTap: c.created && TrayController.popUpSupported
+                            ? c.popUpContextMenu
+                            : null,
+                      ),
+                      Hint(
+                        TrayController.popUpSupported
+                            ? 'or right-click the icon'
+                            : 'the shell opens it on Linux',
+                      ),
+                    ],
+                  ),
+                  _fullExampleNote(palette),
+                ],
+              ),
+            ),
+            EventFooter(controller: c),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _lifecycleStrip(Palette palette) {
+    final created = _controller.created;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: palette.border)),
+      ),
+      child: Row(
         children: [
-          Text(_status, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Text('Events: $_eventCount'),
-          const SizedBox(height: 24),
-          FilledButton(
-            onPressed: _createNativeTrayIcon,
-            child: const Text('Create nativeapi TrayIcon'),
+          Expanded(
+            child: Text(
+              'trayManager',
+              style: TextStyle(fontSize: 11, color: palette.muted),
+            ),
           ),
-          const SizedBox(height: 12),
-          SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(
-                value: _defaultIconPath,
-                label: Text('Default PNG'),
-              ),
-              ButtonSegment(
-                value: _originalIconPath,
-                label: Text('Original PNG'),
-              ),
-            ],
-            selected: {_iconPath},
-            onSelectionChanged: (selection) {
-              _setNativeTrayIcon(selection.single);
-            },
+          OptionChip(
+            label: 'Create',
+            selected: created,
+            onTap: created ? null : _controller.create,
           ),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: menuReady ? _trayIcon?.openContextMenu : null,
-            child: const Text('Open native context menu'),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: _trayIcon == null ? null : _destroyNativeTrayIcon,
-            child: const Text('Destroy native tray icon'),
-          ),
-          const SizedBox(height: 24),
-          FilledButton.tonal(
-            onPressed: _createLegacyTrayIcon,
-            child: const Text('Create legacy TrayManager icon'),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton(
-            onPressed: _showLegacyContextMenu,
-            child: const Text('Open legacy context menu'),
+          const SizedBox(width: 5),
+          OptionChip(
+            label: 'Destroy',
+            onTap: created ? _controller.destroy : null,
           ),
         ],
+      ),
+    );
+  }
+
+  /// What the system says, as opposed to what the chips asked for.
+  Widget _stateBlock(Palette palette) {
+    final bounds = _controller.bounds;
+    final text = !_controller.created
+        ? 'destroyed'
+        : !TrayController.boundsSupported
+        ? 'getBounds()  not available on Linux'
+        : bounds == null
+        ? 'getBounds()  …'
+        : 'getBounds()  ${bounds.left.round()}, ${bounds.top.round()}  '
+              '${bounds.width.round()} × ${bounds.height.round()}';
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: palette.surface,
+        border: Border(bottom: BorderSide(color: palette.border)),
+      ),
+      child: Row(
+        children: [
+          Expanded(child: Text(text, style: palette.mono)),
+          OptionChip(
+            label: 'Refresh',
+            onTap: _controller.created && TrayController.boundsSupported
+                ? _controller.refreshBounds
+                : null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _fullExampleNote(Palette palette) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 12, 10, 12),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: palette.accentSurface,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Looking for the full example?',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'This window only covers the 0.5.x compatible API. Several icons '
+              'at once, animated icons, every native property and an acceptance '
+              'checklist are in nativeapi\'s tray_icon_example:',
+            ),
+            const SizedBox(height: 6),
+            Text(kFullExampleUrl, style: palette.mono),
+          ],
+        ),
       ),
     );
   }

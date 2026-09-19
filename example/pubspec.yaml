@@ -1,5 +1,5 @@
 name: tray_manager_example
-description: Demonstrates how to use the tray_manager package.
+description: tray_manager through its 0.5.x compatible API.
 publish_to: "none"
 version: 1.0.0+1
 
@@ -18,7 +18,6 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 
 flutter:
-  uses-material-design: true
   assets:
     - images/tray_icon.png
     - images/tray_icon_original.png
