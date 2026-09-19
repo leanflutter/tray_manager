@@ -114,35 +114,64 @@ sudo apt-get install appindicator3-0.1 libappindicator3-dev
 ```dart
 import 'package:tray_manager/tray_manager.dart';
 
-final trayIcon = TrayIcon();
-trayIcon.icon = Image.fromAsset('images/tray_icon.png');
-trayIcon.tooltip = 'tray_manager';
+final trayIcon = TrayIcon.create()!;
+trayIcon.icon = ImageAsset.fromAsset('images/tray_icon.png');
+trayIcon.setTooltip('tray_manager');
 
-final menu = Menu();
-final showWindowItem = MenuItem('Show Window');
-showWindowItem.on<MenuItemClickedEvent>((event) {
-  // Show the application window.
+final menu = Menu.create()!;
+final showWindowItem = MenuItem.createWithLabelAndType(
+  'Show Window',
+  MenuItemType.normal,
+)!;
+showWindowItem.addListener((event) {
+  if (event is MenuItemClickedEvent) {
+    // Show the application window.
+  }
 });
 menu.addItem(showWindowItem);
 menu.addSeparator();
-menu.addItem(MenuItem('Exit App'));
+menu.addItem(MenuItem.createWithLabelAndType('Exit App', MenuItemType.normal));
 
-trayIcon.contextMenu = menu;
-trayIcon.isVisible = true;
+trayIcon.setContextMenu(menu);
+trayIcon.setVisible(true);
 ```
 
 > Please see the example app of this plugin for a full example.
 
-#### Legacy method names
+#### Upgrading from 0.5.x
+
+Code written for `tray_manager` 0.5.x keeps working by importing
+`package:tray_manager/legacy.dart` instead of `package:tray_manager/tray_manager.dart`.
+It provides the old `trayManager`, `TrayListener`, `Menu` and `MenuItem`
+(`menu_base` is no longer a dependency) on top of the native API.
 
 ```dart
 import 'package:tray_manager/legacy.dart';
 
-await LegacyTrayManager.instance.setIcon('images/tray_icon.png');
-await LegacyTrayManager.instance.setToolTip('tray_manager');
-await LegacyTrayManager.instance.setContextMenu(menu);
-await LegacyTrayManager.instance.popUpContextMenu();
+await trayManager.setIcon('images/tray_icon.png');
+await trayManager.setToolTip('tray_manager');
+await trayManager.setContextMenu(
+  Menu(
+    items: [
+      MenuItem(key: 'show_window', label: 'Show Window'),
+      MenuItem.separator(),
+      MenuItem(key: 'exit_app', label: 'Exit App'),
+    ],
+  ),
+);
 ```
+
+What differs from 0.5.x:
+
+- `bringAppToFront` of `popUpContextMenu` is accepted but ignored.
+- `onTrayIconMouseDown` / `onTrayIconMouseUp` (and the right-button pair) are
+  both delivered when the click completes.
+- `MenuItem.onClick` runs once per click, also when no `TrayListener` is
+  registered.
+- `label`, `toolTip`, `checked` and `disabled` of a `MenuItem` update the
+  visible menu as soon as they are assigned; adding or removing items still
+  needs another `setContextMenu` call.
+- `sublabel`, `onHighlight` and `onLoseHighlight` are kept but unused.
 
 ## Who's using it?
 
@@ -156,8 +185,8 @@ await LegacyTrayManager.instance.popUpContextMenu();
 
 `tray_manager` now re-exports tray-related APIs from `nativeapi`, including
 `TrayIcon`, `TrayManager`, `Menu`, `MenuItem`, `Image`, and tray/menu events.
-Use `LegacyTrayManager` only when migrating code that still calls the old
-method names.
+Import `package:tray_manager/legacy.dart` only for code that still uses the
+0.5.x API.
 
 ## License
 

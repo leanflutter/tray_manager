@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' hide Image;
-import 'package:tray_manager/legacy.dart';
+import 'package:tray_manager/legacy.dart' as legacy;
 import 'package:tray_manager/tray_manager.dart';
 
 const _defaultIconPath = 'images/tray_icon.png';
@@ -32,12 +32,14 @@ class TrayExamplePage extends StatefulWidget {
   State<TrayExamplePage> createState() => _TrayExamplePageState();
 }
 
-class _TrayExamplePageState extends State<TrayExamplePage> with TrayListener {
+class _TrayExamplePageState extends State<TrayExamplePage>
+    with legacy.TrayListener {
   TrayIcon? _trayIcon;
   Image? _icon;
   Menu? _menu;
-  int? _clickListenerId;
-  int? _rightClickListenerId;
+  ListenerId? _trayListenerId;
+  // Keeps the menu item wrappers (and their listeners) alive with the menu.
+  final List<MenuItem> _menuItems = <MenuItem>[];
   int _eventCount = 0;
   String _status = 'Tray icon is not created.';
   String _iconPath = _defaultIconPath;
@@ -49,9 +51,9 @@ class _TrayExamplePageState extends State<TrayExamplePage> with TrayListener {
     _trayIcon?.dispose();
     _icon?.dispose();
     if (_legacyListenerAttached) {
-      LegacyTrayManager.instance.removeListener(this);
+      legacy.trayManager.removeListener(this);
     }
-    LegacyTrayManager.instance.destroy();
+    legacy.trayManager.destroy();
     super.dispose();
   }
 
@@ -66,8 +68,8 @@ class _TrayExamplePageState extends State<TrayExamplePage> with TrayListener {
   }
 
   @override
-  void onTrayMenuItemClick(MenuItem menuItem) {
-    _log('Legacy TrayListener menu item: ${menuItem.label}');
+  void onTrayMenuItemClick(legacy.MenuItem menuItem) {
+    _log('Legacy TrayListener menu item: ${menuItem.key}');
   }
 
   void _createNativeTrayIcon([String iconPath = _defaultIconPath]) {
@@ -75,25 +77,36 @@ class _TrayExamplePageState extends State<TrayExamplePage> with TrayListener {
     _trayIcon?.dispose();
     _icon?.dispose();
 
-    final icon = Image.fromAsset(iconPath);
+    final icon = ImageAsset.fromAsset(iconPath);
     if (icon == null) {
       _log('Unable to create tray icon image.');
       return;
     }
 
-    final trayIcon = TrayIcon()
-      ..icon = icon
-      ..title = 'tray_manager'
-      ..tooltip = 'tray_manager nativeapi example'
-      ..contextMenu = _buildMenu()
-      ..contextMenuTrigger = ContextMenuTrigger.rightClicked
-      ..isVisible = true;
+    final trayIcon = TrayIcon.create();
+    if (trayIcon == null) {
+      icon.dispose();
+      _log('Unable to create tray icon.');
+      return;
+    }
 
-    _clickListenerId = trayIcon.on<TrayIconClickedEvent>((event) {
-      _log('Native tray icon clicked.');
-    });
-    _rightClickListenerId = trayIcon.on<TrayIconRightClickedEvent>((event) {
-      _log('Native tray icon right clicked.');
+    trayIcon
+      ..icon = icon
+      ..setTitle('tray_manager')
+      ..setTooltip('tray_manager nativeapi example')
+      ..setContextMenu(_buildMenu())
+      ..setContextMenuTrigger(ContextMenuTrigger.rightClicked)
+      ..setVisible(true);
+
+    _trayListenerId = trayIcon.addListener((event) {
+      switch (event) {
+        case TrayIconClickedEvent():
+          _log('Native tray icon clicked.');
+        case TrayIconRightClickedEvent():
+          _log('Native tray icon right clicked.');
+        case TrayIconDoubleClickedEvent():
+          _log('Native tray icon double clicked.');
+      }
     });
 
     setState(() {
@@ -111,7 +124,7 @@ class _TrayExamplePageState extends State<TrayExamplePage> with TrayListener {
       return;
     }
 
-    final icon = Image.fromAsset(iconPath);
+    final icon = ImageAsset.fromAsset(iconPath);
     if (icon == null) {
       _log('Unable to create tray icon image.');
       return;
@@ -139,51 +152,66 @@ class _TrayExamplePageState extends State<TrayExamplePage> with TrayListener {
   }
 
   Future<void> _createLegacyTrayIcon() async {
-    final menu = LegacyMenu();
-    menu.addItem(MenuItem('Legacy menu item'));
-    menu.addSeparator();
-    menu.addItem(MenuItem('Close legacy menu'));
+    final menu = legacy.Menu(
+      items: [
+        legacy.MenuItem(key: 'legacy_item', label: 'Legacy menu item'),
+        legacy.MenuItem.checkbox(
+          key: 'legacy_checkbox',
+          label: 'Legacy checkbox',
+          checked: false,
+          onClick: (menuItem) {
+            menuItem.checked = !(menuItem.checked == true);
+          },
+        ),
+        legacy.MenuItem.separator(),
+        legacy.MenuItem.submenu(
+          key: 'legacy_submenu',
+          label: 'Legacy submenu',
+          submenu: legacy.Menu(
+            items: [
+              legacy.MenuItem(key: 'legacy_nested', label: 'Nested item'),
+            ],
+          ),
+        ),
+      ],
+    );
 
     if (!_legacyListenerAttached) {
-      LegacyTrayManager.instance.addListener(this);
+      legacy.trayManager.addListener(this);
       _legacyListenerAttached = true;
     }
 
-    await LegacyTrayManager.instance.setIcon(_iconPath);
-    await LegacyTrayManager.instance.setTitle('tray_manager');
-    await LegacyTrayManager.instance.setToolTip('LegacyTrayManager example');
-    await LegacyTrayManager.instance.setContextMenu(menu);
+    await legacy.trayManager.setIcon(_iconPath);
+    await legacy.trayManager.setTitle('tray_manager');
+    await legacy.trayManager.setToolTip('legacy TrayManager example');
+    await legacy.trayManager.setContextMenu(menu);
 
-    _log('LegacyTrayManager created a tray icon.');
+    _log('legacy TrayManager created a tray icon.');
   }
 
   Future<void> _showLegacyContextMenu() async {
-    await LegacyTrayManager.instance.popUpContextMenu();
+    await legacy.trayManager.popUpContextMenu();
     _log('Requested legacy context menu.');
   }
 
   Menu _buildMenu() {
-    final menu = Menu();
+    final menu = Menu.create()!;
+    _menuItems.clear();
 
-    final openItem = MenuItem('Open context menu');
-    openItem.on<MenuItemClickedEvent>((event) {
+    final openItem = _menuItem('Open context menu', () {
       _trayIcon?.openContextMenu();
       _log('Menu item requested context menu.');
     });
 
-    final checkedItem = MenuItem('Toggle checked state', MenuItemType.checkbox)
-      ..state = MenuItemState.unchecked;
-    checkedItem.on<MenuItemClickedEvent>((event) {
+    late final MenuItem checkedItem;
+    checkedItem = _menuItem('Toggle checked state', () {
       checkedItem.state = checkedItem.state == MenuItemState.checked
           ? MenuItemState.unchecked
           : MenuItemState.checked;
       _log('Checkbox is ${checkedItem.state.name}.');
-    });
+    }, type: MenuItemType.checkbox)..state = MenuItemState.unchecked;
 
-    final destroyItem = MenuItem('Destroy tray icon');
-    destroyItem.on<MenuItemClickedEvent>((event) {
-      _destroyNativeTrayIcon();
-    });
+    final destroyItem = _menuItem('Destroy tray icon', _destroyNativeTrayIcon);
 
     menu
       ..addItem(openItem)
@@ -195,26 +223,25 @@ class _TrayExamplePageState extends State<TrayExamplePage> with TrayListener {
     return menu;
   }
 
+  MenuItem _menuItem(
+    String label,
+    void Function() onClicked, {
+    MenuItemType type = MenuItemType.normal,
+  }) {
+    final item = MenuItem.createWithLabelAndType(label, type)!;
+    item.addListener((event) {
+      if (event is MenuItemClickedEvent) onClicked();
+    });
+    _menuItems.add(item);
+    return item;
+  }
+
   void _removeNativeListeners() {
-    final trayIcon = _trayIcon;
-    if (trayIcon == null) {
-      _clickListenerId = null;
-      _rightClickListenerId = null;
-      return;
+    final listenerId = _trayListenerId;
+    if (listenerId != null) {
+      _trayIcon?.removeListener(listenerId);
     }
-
-    final clickListenerId = _clickListenerId;
-    if (clickListenerId != null) {
-      trayIcon.off(clickListenerId);
-    }
-
-    final rightClickListenerId = _rightClickListenerId;
-    if (rightClickListenerId != null) {
-      trayIcon.off(rightClickListenerId);
-    }
-
-    _clickListenerId = null;
-    _rightClickListenerId = null;
+    _trayListenerId = null;
   }
 
   void _log(String message) {
@@ -270,7 +297,7 @@ class _TrayExamplePageState extends State<TrayExamplePage> with TrayListener {
           const SizedBox(height: 24),
           FilledButton.tonal(
             onPressed: _createLegacyTrayIcon,
-            child: const Text('Create LegacyTrayManager icon'),
+            child: const Text('Create legacy TrayManager icon'),
           ),
           const SizedBox(height: 12),
           OutlinedButton(

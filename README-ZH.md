@@ -113,35 +113,61 @@ sudo apt-get install appindicator3-0.1 libappindicator3-dev
 ```dart
 import 'package:tray_manager/tray_manager.dart';
 
-final trayIcon = TrayIcon();
-trayIcon.icon = Image.fromAsset('images/tray_icon.png');
-trayIcon.tooltip = 'tray_manager';
+final trayIcon = TrayIcon.create()!;
+trayIcon.icon = ImageAsset.fromAsset('images/tray_icon.png');
+trayIcon.setTooltip('tray_manager');
 
-final menu = Menu();
-final showWindowItem = MenuItem('Show Window');
-showWindowItem.on<MenuItemClickedEvent>((event) {
-  // 显示应用窗口。
+final menu = Menu.create()!;
+final showWindowItem = MenuItem.createWithLabelAndType(
+  'Show Window',
+  MenuItemType.normal,
+)!;
+showWindowItem.addListener((event) {
+  if (event is MenuItemClickedEvent) {
+    // Show the application window.
+  }
 });
 menu.addItem(showWindowItem);
 menu.addSeparator();
-menu.addItem(MenuItem('Exit App'));
+menu.addItem(MenuItem.createWithLabelAndType('Exit App', MenuItemType.normal));
 
-trayIcon.contextMenu = menu;
-trayIcon.isVisible = true;
+trayIcon.setContextMenu(menu);
+trayIcon.setVisible(true);
 ```
 
 > 请看这个插件的示例应用，以了解完整的例子。
 
-#### 旧方法名兼容
+#### 从 0.5.x 升级
+
+为 `tray_manager` 0.5.x 编写的代码，只需把导入从
+`package:tray_manager/tray_manager.dart` 改为 `package:tray_manager/legacy.dart` 即可继续使用。
+该库在原生 API 之上提供旧版的 `trayManager`、`TrayListener`、`Menu` 和 `MenuItem`
+（不再依赖 `menu_base`）。
 
 ```dart
 import 'package:tray_manager/legacy.dart';
 
-await LegacyTrayManager.instance.setIcon('images/tray_icon.png');
-await LegacyTrayManager.instance.setToolTip('tray_manager');
-await LegacyTrayManager.instance.setContextMenu(menu);
-await LegacyTrayManager.instance.popUpContextMenu();
+await trayManager.setIcon('images/tray_icon.png');
+await trayManager.setToolTip('tray_manager');
+await trayManager.setContextMenu(
+  Menu(
+    items: [
+      MenuItem(key: 'show_window', label: 'Show Window'),
+      MenuItem.separator(),
+      MenuItem(key: 'exit_app', label: 'Exit App'),
+    ],
+  ),
+);
 ```
+
+与 0.5.x 的差异：
+
+- `popUpContextMenu` 的 `bringAppToFront` 仍可传入，但会被忽略。
+- `onTrayIconMouseDown` / `onTrayIconMouseUp`（以及右键的一对）在点击完成时一并触发。
+- `MenuItem.onClick` 每次点击只调用一次，没有注册 `TrayListener` 时也会调用。
+- 给 `MenuItem` 的 `label`、`toolTip`、`checked`、`disabled` 赋值会立即更新已显示的菜单；
+  增删菜单项仍需再次调用 `setContextMenu`。
+- `sublabel`、`onHighlight`、`onLoseHighlight` 仅为兼容保留，不再生效。
 
 ## 谁在用使用它？
 
@@ -154,7 +180,7 @@ await LegacyTrayManager.instance.popUpContextMenu();
 
 `tray_manager` 现在重新导出 `nativeapi` 中的托盘相关 API，包括 `TrayIcon`、
 `TrayManager`、`Menu`、`MenuItem`、`Image` 以及托盘和菜单事件。
-迁移仍调用旧方法名的代码时，使用 `LegacyTrayManager`。
+仅在代码仍使用 0.5.x API 时导入 `package:tray_manager/legacy.dart`。
 
 ## 许可证
 

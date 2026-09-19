@@ -1,78 +1,42 @@
 import 'dart:async';
+import 'dart:ui' show Rect, Size;
 
 import 'package:nativeapi/nativeapi.dart' as nativeapi;
+import 'package:tray_manager/src/menu.dart';
 import 'package:tray_manager/src/tray_listener.dart';
 
 enum TrayIconPosition { left, right }
 
-class LegacyMenu extends nativeapi.Menu {
-  LegacyMenu();
+/// The pre-nativeapi `TrayManager` on top of a single [nativeapi.TrayIcon],
+/// for code that has not moved to the native API yet.
+class TrayManager {
+  TrayManager._();
 
-  final List<nativeapi.MenuItem> _items = <nativeapi.MenuItem>[];
-
-  List<nativeapi.MenuItem> get items =>
-      List<nativeapi.MenuItem>.unmodifiable(_items);
-
-  @override
-  void addItem(nativeapi.MenuItem item) {
-    _items.add(item);
-    super.addItem(item);
-  }
-
-  @override
-  void insertItem(int index, nativeapi.MenuItem item) {
-    _items.insert(index, item);
-    super.insertItem(index, item);
-  }
-
-  @override
-  bool removeItem(nativeapi.MenuItem item) {
-    final removed = super.removeItem(item);
-    if (removed) {
-      _items.remove(item);
-    }
-    return removed;
-  }
-
-  @override
-  bool removeItemById(int itemId) {
-    final removed = super.removeItemById(itemId);
-    if (removed) {
-      _items.removeWhere((item) => item.id == itemId);
-    }
-    return removed;
-  }
-
-  @override
-  bool removeItemAt(int index) {
-    final removed = super.removeItemAt(index);
-    if (removed) {
-      _items.removeAt(index);
-    }
-    return removed;
-  }
-}
-
-class LegacyTrayManager {
-  LegacyTrayManager._();
-
-  static final LegacyTrayManager instance = LegacyTrayManager._();
+  /// The shared instance of [TrayManager].
+  static final TrayManager instance = TrayManager._();
 
   nativeapi.TrayIcon? _trayIcon;
   nativeapi.Image? _icon;
-  nativeapi.Menu? _menu;
+  Menu? _menu;
+  NativeMenuBinding? _menuBinding;
   final List<TrayListener> _listeners = <TrayListener>[];
-  final List<int> _trayEventListenerIds = <int>[];
-  final Map<nativeapi.MenuItem, int> _menuItemListenerIds =
-      <nativeapi.MenuItem, int>{};
+  nativeapi.ListenerId? _trayListenerId;
 
   nativeapi.TrayIcon get _ensureTrayIcon {
-    final trayIcon = _trayIcon ??= nativeapi.TrayIcon()..isVisible = true;
+    var trayIcon = _trayIcon;
+    if (trayIcon == null) {
+      trayIcon = nativeapi.TrayIcon.create();
+      if (trayIcon == null) {
+        throw StateError('Unable to create the tray icon');
+      }
+      trayIcon.setVisible(true);
+      _trayIcon = trayIcon;
+    }
     _wireTrayEvents(trayIcon);
     return trayIcon;
   }
 
-  bool get isSupported => nativeapi.TrayManager.instance.isSupported;
+  bool get isSupported => nativeapi.TrayManager.instance.isSupported();
 
   bool get hasListeners => _listeners.isNotEmpty;
 
@@ -85,24 +49,20 @@ class LegacyTrayManager {
     if (trayIcon != null) {
       _wireTrayEvents(trayIcon);
     }
-    final menu = _menu;
-    if (menu != null) {
-      _wireMenuEvents(menu);
-    }
   }
 
   void removeListener(TrayListener listener) {
     _listeners.remove(listener);
     if (_listeners.isEmpty) {
       _unwireTrayEvents();
-      _unwireMenuEvents();
     }
   }
 
   Future<void> destroy() async {
     _unwireTrayEvents();
-    _unwireMenuEvents();
     _menu = null;
+    _menuBinding?.dispose();
+    _menuBinding = null;
     _icon?.dispose();
     _icon = null;
     _trayIcon?.dispose();
@@ -117,7 +77,7 @@ class LegacyTrayManager {
   }) async {
     final icon = iconPath.startsWith('data:image/')
         ? nativeapi.Image.fromBase64(iconPath)
-        : nativeapi.Image.fromAsset(iconPath) ??
+        : nativeapi.ImageAsset.fromAsset(iconPath) ??
               nativeapi.Image.fromFile(iconPath);
     if (icon == null) {
       throw ArgumentError.value(
@@ -127,30 +87,38 @@ class LegacyTrayManager {
       );
     }
 
+    // macOS only, as before; the other platforms record the values.
+    _ensureTrayIcon
+      ..isIconTemplate = isTemplate
+      ..iconSize = Size.square(iconSize.toDouble())
+      ..iconPosition = _nativePosition(iconPosition)
+      ..icon = icon
+      ..setVisible(true);
     _icon?.dispose();
     _icon = icon;
-    _ensureTrayIcon
-      ..icon = icon
-      ..isVisible = true;
   }
 
+  /// Sets the icon position of the tray icon.
+  ///
+  /// @platforms macos
   Future<void> setIconPosition(TrayIconPosition trayIconPosition) async {
-    // nativeapi does not currently expose tray icon positioning.
+    _ensureTrayIcon.iconPosition = _nativePosition(trayIconPosition);
   }
 
   Future<void> setToolTip(String toolTip) async {
-    _ensureTrayIcon.tooltip = toolTip;
+    _ensureTrayIcon.setTooltip(toolTip);
   }
 
   Future<void> setTitle(String title) async {
-    _ensureTrayIcon.title = title;
+    _ensureTrayIcon.setTitle(title);
   }
 
-  Future<void> setContextMenu(nativeapi.Menu menu) async {
-    _unwireMenuEvents();
+  Future<void> setContextMenu(Menu menu) async {
+    final binding = NativeMenuBinding(menu, onItemClicked: _onMenuItemClicked);
+    _ensureTrayIcon.setContextMenu(binding.menu);
+    _menuBinding?.dispose();
+    _menuBinding = binding;
     _menu = menu;
-    _ensureTrayIcon.contextMenu = menu;
-    _wireMenuEvents(menu);
   }
 
   Future<void> popUpContextMenu({
@@ -162,79 +130,57 @@ class LegacyTrayManager {
     _ensureTrayIcon.openContextMenu();
   }
 
-  Future<nativeapi.Rect?> getBounds() async {
-    return _ensureTrayIcon.bounds;
+  Future<Rect?> getBounds() async {
+    return _ensureTrayIcon.getBounds();
   }
 
   nativeapi.TrayIcon? get trayIcon => _trayIcon;
 
-  nativeapi.Menu? get contextMenu => _menu;
+  Menu? get contextMenu => _menu;
+
+  nativeapi.TrayIconPosition _nativePosition(TrayIconPosition position) {
+    return switch (position) {
+      TrayIconPosition.left => nativeapi.TrayIconPosition.left,
+      TrayIconPosition.right => nativeapi.TrayIconPosition.right,
+    };
+  }
 
   void _wireTrayEvents(nativeapi.TrayIcon trayIcon) {
-    if (_listeners.isEmpty || _trayEventListenerIds.isNotEmpty) {
+    if (_listeners.isEmpty || _trayListenerId != null) {
       return;
     }
 
-    _trayEventListenerIds.addAll([
-      trayIcon.on<nativeapi.TrayIconClickedEvent>((event) {
-        for (final listener in List<TrayListener>.of(_listeners)) {
-          listener.onTrayIconMouseDown();
-          listener.onTrayIconMouseUp();
-        }
-      }),
-      trayIcon.on<nativeapi.TrayIconRightClickedEvent>((event) {
-        for (final listener in List<TrayListener>.of(_listeners)) {
-          listener.onTrayIconRightMouseDown();
-          listener.onTrayIconRightMouseUp();
-        }
-      }),
-    ]);
-  }
-
-  void _unwireTrayEvents() {
-    final trayIcon = _trayIcon;
-    if (trayIcon == null) {
-      _trayEventListenerIds.clear();
-      return;
-    }
-    for (final listenerId in _trayEventListenerIds) {
-      trayIcon.off(listenerId);
-    }
-    _trayEventListenerIds.clear();
-  }
-
-  void _wireMenuEvents(nativeapi.Menu menu) {
-    if (_listeners.isEmpty || menu is! LegacyMenu) {
-      return;
-    }
-
-    for (final item in menu.items) {
-      _wireMenuItemEvent(item);
-      final submenu = item.submenu;
-      if (submenu != null) {
-        _wireMenuEvents(submenu);
-      }
-    }
-  }
-
-  void _wireMenuItemEvent(nativeapi.MenuItem item) {
-    if (_menuItemListenerIds.containsKey(item)) {
-      return;
-    }
-
-    _menuItemListenerIds[item] = item.on<nativeapi.MenuItemClickedEvent>((
-      event,
-    ) {
+    // nativeapi reports whole clicks, so a click is replayed as down + up.
+    _trayListenerId = trayIcon.addListener((event) {
       for (final listener in List<TrayListener>.of(_listeners)) {
-        listener.onTrayMenuItemClick(item);
+        switch (event) {
+          case nativeapi.TrayIconClickedEvent():
+            listener.onTrayIconMouseDown();
+            listener.onTrayIconMouseUp();
+          case nativeapi.TrayIconRightClickedEvent():
+            listener.onTrayIconRightMouseDown();
+            listener.onTrayIconRightMouseUp();
+          case nativeapi.TrayIconDoubleClickedEvent():
+            break;
+        }
       }
     });
   }
 
-  void _unwireMenuEvents() {
-    for (final entry in _menuItemListenerIds.entries) {
-      entry.key.off(entry.value);
+  void _unwireTrayEvents() {
+    final listenerId = _trayListenerId;
+    if (listenerId != null) {
+      _trayIcon?.removeListener(listenerId);
     }
-    _menuItemListenerIds.clear();
+    _trayListenerId = null;
+  }
+
+  void _onMenuItemClicked(MenuItem menuItem) {
+    menuItem.onClick?.call(menuItem);
+    for (final listener in List<TrayListener>.of(_listeners)) {
+      listener.onTrayMenuItemClick(menuItem);
+    }
   }
 }
+
+final trayManager = TrayManager.instance;

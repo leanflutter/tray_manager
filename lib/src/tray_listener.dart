@@ -1,4 +1,4 @@
-import 'package:nativeapi/nativeapi.dart' as nativeapi;
+import 'package:tray_manager/src/menu.dart';
 
 abstract mixin class TrayListener {
   void onTrayIconMouseDown() {}
@@ -9,5 +9,5 @@ abstract mixin class TrayListener {
 
   void onTrayIconRightMouseUp() {}
 
-  void onTrayMenuItemClick(nativeapi.MenuItem menuItem) {}
+  void onTrayMenuItemClick(MenuItem menuItem) {}
 }
