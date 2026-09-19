@@ -1,3 +1,34 @@
+## 0.6.0
+
+tray_manager is now built on [nativeapi](https://pub.dev/packages/nativeapi): the
+per-platform plugin code is gone, and one C++ core drives macOS, Windows and Linux.
+
+* **Breaking:** `package:tray_manager/tray_manager.dart` exports the native API —
+  `TrayIcon`, `Menu`, `MenuItem`, `Image` and their events. Several tray icons at once,
+  double-click events, `contextMenuTrigger`, menu item icons, radio groups and
+  accelerators come with it.
+* The 0.5.x API moved to `package:tray_manager/legacy.dart`: `trayManager`,
+  `TrayListener`, and a `Menu` / `MenuItem` pair with the `menu_base` shape (`menu_base`
+  itself is no longer a dependency). Existing apps change one import. It is a bridge:
+  everything in it is `@Deprecated` and will be removed in a later release. The README
+  lists the behaviour differences and maps each old call to the native API.
+* **Breaking:** requires Flutter 3.35 / Dart 3.9 and macOS 10.15.
+* Linux: the tray icon is a StatusNotifierItem. `libayatana-appindicator` /
+  `libappindicator` is no longer needed (GTK 3, X11 and Xi development files are), the
+  icon reports clicks, and `setToolTip` works.
+* Windows: `.png` icons work as well as `.ico`.
+* `MenuItem.label`, `toolTip`, `checked` and `disabled` of the legacy API update the
+  visible menu when assigned; `onClick` runs once per click, with or without a
+  `TrayListener`.
+* New example on `package:flutter/widgets.dart` alone; the full one is nativeapi's
+  [tray_icon_example](https://github.com/libnativeapi/nativeapi-flutter/tree/main/examples/tray_icon_example).
+
+## 0.5.3
+
+* feat(macos): add Swift Package Manager support
+* chore: replace mostly_reasonable_lints with flutter_lints
+* ci: align workflows with screen_retriever
+
 ## 0.5.2
 
 * fix(windows): tray icon disappears after explorer restart #85

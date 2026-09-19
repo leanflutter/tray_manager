@@ -1,6 +1,6 @@
-> **⚠️ 迁移通知**: 本插件正在迁移到 [libnativeapi/nativeapi-flutter](https://github.com/libnativeapi/nativeapi-flutter)
->
-> 新版本基于统一的 C++ 核心库（[libnativeapi/nativeapi](https://github.com/libnativeapi/nativeapi)），提供更完整、一致的跨平台原生 API 支持。
+> **tray_manager 0.6 基于 [nativeapi](https://github.com/libnativeapi/nativeapi-flutter) 构建**——它是统一的
+> C++ 核心库（[libnativeapi/nativeapi](https://github.com/libnativeapi/nativeapi)）的 Flutter 绑定，macOS、Windows、Linux
+> 共用同一套实现。从 0.5.x 升级？请看[从 0.5.x 升级](#从-05x-升级)。
 
 # tray_manager
 
@@ -79,7 +79,7 @@ dependencies:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.5.2
+  tray_manager: ^0.6.0
 ```
 
 或
@@ -89,7 +89,7 @@ dependencies:
   tray_manager:
     git:
       url: https://github.com/leanflutter/tray_manager.git
-      ref: next
+      ref: dev
 ```
 
 #### 环境要求
@@ -173,6 +173,25 @@ await trayManager.setContextMenu(
 - 给 `MenuItem` 的 `label`、`toolTip`、`checked`、`disabled` 赋值会立即更新已显示的菜单；
   增删菜单项仍需再次调用 `setContextMenu`。
 - `sublabel`、`onHighlight`、`onLoseHighlight` 仅为兼容保留，不再生效。
+
+#### 迁移到原生 API
+
+| 0.5.x（`legacy.dart`） | 原生 API（`tray_manager.dart`） |
+| --- | --- |
+| `trayManager`（每个应用一个图标） | `TrayIcon.create()`——需要几个建几个；保留对象，用完 `dispose()` |
+| `setIcon('images/icon.png')` | `trayIcon.icon = ImageAsset.fromAsset('images/icon.png')`（另有 `Image.fromFile`、`Image.fromBase64`） |
+| `setIcon(isTemplate:, iconSize:, iconPosition:)`、`setIconPosition` | `trayIcon.isIconTemplate`、`trayIcon.iconSize`、`trayIcon.iconPosition` |
+| `setToolTip(text)` / `setTitle(text)` | `trayIcon.setTooltip(text)` / `trayIcon.setTitle(text)`——传 `null` 清除；`getTooltip()` / `getTitle()` 可读回 |
+| `setContextMenu(Menu(items: [...]))` | `Menu.create()`、`menu.addItem(MenuItem.createWithLabelAndType(label, MenuItemType.normal))`、`menu.addSeparator()`，然后 `trayIcon.setContextMenu(menu)` |
+| `MenuItem.checkbox(checked:)`、`disabled:`、`toolTip:` | `MenuItemType.checkbox` 配合 `item.state`，以及 `item.isEnabled`、`item.tooltip` |
+| `MenuItem.submenu(submenu:)` | `MenuItemType.submenu` 配合 `item.submenu = otherMenu` |
+| `MenuItem(onClick:)`、`onTrayMenuItemClick` + `menuItem.key` | 每个菜单项 `item.addListener((event) { if (event is MenuItemClickedEvent) ... })` |
+| 在 `onTrayIconRightMouseDown` 里 `popUpContextMenu()` | `trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked)`，或 `trayIcon.openContextMenu()` |
+| `TrayListener` | `trayIcon.addListener((event) { switch (event) { case TrayIconClickedEvent(): ... } })`——另有 `TrayIconRightClickedEvent`、`TrayIconDoubleClickedEvent` |
+| `getBounds()` | `trayIcon.getBounds()`（同步；Windows 上是物理像素） |
+| `destroy()` | `trayIcon.dispose()` |
+
+创建的每个 `TrayIcon`、`Menu`、`MenuItem` 在使用期间都要保留引用：包装对象被垃圾回收时会释放对应的原生句柄——对 `TrayIcon` 来说就是图标消失。
 
 ## 谁在用使用它？
 

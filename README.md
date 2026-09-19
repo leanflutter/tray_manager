@@ -1,7 +1,6 @@
-> **⚠️ Migration Notice**: This plugin is being migrated to [libnativeapi/nativeapi-flutter](https://github.com/libnativeapi/nativeapi-flutter)
->
-> The new version is based on a unified C++ core library ([libnativeapi/nativeapi](https://github.com/libnativeapi/nativeapi)), providing more complete and consistent cross-platform native API support.
-r
+> **tray_manager 0.6 is built on [nativeapi](https://github.com/libnativeapi/nativeapi-flutter)**, a
+> Flutter binding of one C++ core library ([libnativeapi/nativeapi](https://github.com/libnativeapi/nativeapi))
+> shared by macOS, Windows and Linux. Coming from 0.5.x? See [Upgrading from 0.5.x](#upgrading-from-05x).
 
 # tray_manager
 
@@ -80,7 +79,7 @@ Add this to your package's pubspec.yaml file:
 
 ```yaml
 dependencies:
-  tray_manager: ^0.5.2
+  tray_manager: ^0.6.0
 ```
 
 Or
@@ -90,7 +89,7 @@ dependencies:
   tray_manager:
     git:
       url: https://github.com/leanflutter/tray_manager.git
-      ref: next
+      ref: dev
 ```
 
 #### Requirements
@@ -182,6 +181,27 @@ What differs from 0.5.x:
   visible menu as soon as they are assigned; adding or removing items still
   needs another `setContextMenu` call.
 - `sublabel`, `onHighlight` and `onLoseHighlight` are kept but unused.
+
+#### Moving to the native API
+
+| 0.5.x (`legacy.dart`) | Native API (`tray_manager.dart`) |
+| --- | --- |
+| `trayManager` (one icon per app) | `TrayIcon.create()` — as many as you need; keep the object, `dispose()` it when done |
+| `setIcon('images/icon.png')` | `trayIcon.icon = ImageAsset.fromAsset('images/icon.png')` (also `Image.fromFile`, `Image.fromBase64`) |
+| `setIcon(isTemplate:, iconSize:, iconPosition:)`, `setIconPosition` | `trayIcon.isIconTemplate`, `trayIcon.iconSize`, `trayIcon.iconPosition` |
+| `setToolTip(text)` / `setTitle(text)` | `trayIcon.setTooltip(text)` / `trayIcon.setTitle(text)` — `null` clears; `getTooltip()` / `getTitle()` read back |
+| `setContextMenu(Menu(items: [...]))` | `Menu.create()`, `menu.addItem(MenuItem.createWithLabelAndType(label, MenuItemType.normal))`, `menu.addSeparator()`, then `trayIcon.setContextMenu(menu)` |
+| `MenuItem.checkbox(checked:)`, `disabled:`, `toolTip:` | `MenuItemType.checkbox` with `item.state`, `item.isEnabled`, `item.tooltip` |
+| `MenuItem.submenu(submenu:)` | `MenuItemType.submenu` with `item.submenu = otherMenu` |
+| `MenuItem(onClick:)`, `onTrayMenuItemClick` + `menuItem.key` | `item.addListener((event) { if (event is MenuItemClickedEvent) ... })` per item |
+| `popUpContextMenu()` from `onTrayIconRightMouseDown` | `trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked)`, or `trayIcon.openContextMenu()` |
+| `TrayListener` | `trayIcon.addListener((event) { switch (event) { case TrayIconClickedEvent(): ... } })` — also `TrayIconRightClickedEvent`, `TrayIconDoubleClickedEvent` |
+| `getBounds()` | `trayIcon.getBounds()` (synchronous; physical pixels on Windows) |
+| `destroy()` | `trayIcon.dispose()` |
+
+Keep a reference to every `TrayIcon`, `Menu` and `MenuItem` you create for as long as it
+is in use: a wrapper that is garbage-collected releases its native handle — for a `TrayIcon` that
+removes the icon.
 
 ## Who's using it?
 
