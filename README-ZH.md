@@ -28,7 +28,7 @@
   - [在 GNOME 中不显示](#%E5%9C%A8-gnome-%E4%B8%AD%E4%B8%8D%E6%98%BE%E7%A4%BA)
 - [快速开始](#%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
   - [安装](#%E5%AE%89%E8%A3%85)
-    - [Linux requirements](#linux-requirements)
+    - [环境要求](#%E7%8E%AF%E5%A2%83%E8%A6%81%E6%B1%82)
   - [用法](#%E7%94%A8%E6%B3%95)
     - [监听事件](#%E7%9B%91%E5%90%AC%E4%BA%8B%E4%BB%B6)
 - [谁在用使用它？](#%E8%B0%81%E5%9C%A8%E7%94%A8%E4%BD%BF%E7%94%A8%E5%AE%83)
@@ -92,20 +92,14 @@ dependencies:
       ref: next
 ```
 
-#### Linux requirements
+#### 环境要求
 
-- `ayatana-appindicator3-0.1` or `appindicator3-0.1`
-
-运行以下命令
-
-```
-sudo apt-get install libayatana-appindicator3-dev
-```
-
-或
+- Flutter 3.35 / Dart 3.9 及以上，macOS 10.15 及以上。
+- Linux 构建机需要 GTK 3、X11、Xi 的开发文件。托盘图标现在是 StatusNotifierItem，
+  **不再需要** `libayatana-appindicator` / `libappindicator`：
 
 ```
-sudo apt-get install appindicator3-0.1 libappindicator3-dev
+sudo apt-get install libgtk-3-dev libx11-dev libxi-dev
 ```
 
 ### 用法
@@ -135,7 +129,8 @@ trayIcon.setContextMenu(menu);
 trayIcon.setVisible(true);
 ```
 
-> 请看这个插件的示例应用，以了解完整的例子。
+> 本插件的[示例应用](./example)演示的是与 0.5.x 兼容的 API。完整示例（多个图标、动画图标、全部原生属性）请看 nativeapi 的
+> [tray_icon_example](https://github.com/libnativeapi/nativeapi-flutter/tree/main/examples/tray_icon_example)。
 
 #### 从 0.5.x 升级
 
@@ -143,6 +138,9 @@ trayIcon.setVisible(true);
 `package:tray_manager/tray_manager.dart` 改为 `package:tray_manager/legacy.dart` 即可继续使用。
 该库在原生 API 之上提供旧版的 `trayManager`、`TrayListener`、`Menu` 和 `MenuItem`
 （不再依赖 `menu_base`）。
+
+需要改 import 是有意为之：`legacy.dart` 只是过渡用的桥，不是这个包的未来。其中的类都已标记
+`@Deprecated`，**会在后续版本中移除**——请尽早迁移到上面的原生 API。
 
 ```dart
 import 'package:tray_manager/legacy.dart';
@@ -162,6 +160,13 @@ await trayManager.setContextMenu(
 
 与 0.5.x 的差异：
 
+- 构建需要 Flutter 3.35 / Dart 3.9 和 macOS 10.15（0.5.x 为 Flutter 3.3、macOS 10.11）。
+- `onTrayIconMouseDown` 和 `onTrayIconMouseUp` 在 Windows 上现在都会触发（0.5.x 只发前者）；
+  Linux 上也开始有点击事件了，以前所有点击都被面板自己吃掉。
+- `setToolTip`、`popUpContextMenu`、`getBounds`、`setIconPosition` 在 Linux 上不再抛
+  `MissingPluginException`；那里 `getBounds` 返回 `null`，`popUpContextMenu` 什么也不做，
+  因为只有面板能打开菜单。
+- 图片加载失败时，`setIcon` 在所有平台上都抛 `ArgumentError`。Windows 现在除 `.ico` 外也接受 `.png`。
 - `popUpContextMenu` 的 `bringAppToFront` 仍可传入，但会被忽略。
 - `onTrayIconMouseDown` / `onTrayIconMouseUp`（以及右键的一对）在点击完成时一并触发。
 - `MenuItem.onClick` 每次点击只调用一次，没有注册 `TrayListener` 时也会调用。

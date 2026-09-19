@@ -29,7 +29,7 @@ English | [简体中文](./README-ZH.md)
   - [Not Showing in GNOME](#not-showing-in-gnome)
 - [Quick Start](#quick-start)
   - [Installation](#installation)
-    - [Linux requirements](#linux-requirements)
+    - [Requirements](#requirements)
   - [Usage](#usage)
     - [Listening events](#listening-events)
 - [Who's using it?](#whos-using-it)
@@ -93,20 +93,15 @@ dependencies:
       ref: next
 ```
 
-#### Linux requirements
+#### Requirements
 
-- `ayatana-appindicator3-0.1` or `appindicator3-0.1`
-
-Run the following command
-
-```
-sudo apt-get install libayatana-appindicator3-dev
-```
-
-Or
+- Flutter 3.35 / Dart 3.9 or later, macOS 10.15 or later.
+- Linux build machines need GTK 3, X11 and Xi development files. The tray icon is a
+  StatusNotifierItem, so `libayatana-appindicator` / `libappindicator` is **no longer
+  needed**:
 
 ```
-sudo apt-get install appindicator3-0.1 libappindicator3-dev
+sudo apt-get install libgtk-3-dev libx11-dev libxi-dev
 ```
 
 ### Usage
@@ -136,7 +131,9 @@ trayIcon.setContextMenu(menu);
 trayIcon.setVisible(true);
 ```
 
-> Please see the example app of this plugin for a full example.
+> The [example app](./example) of this plugin covers the 0.5.x compatible API. For the
+> full example — several icons, animated icons, every native property — see nativeapi's
+> [tray_icon_example](https://github.com/libnativeapi/nativeapi-flutter/tree/main/examples/tray_icon_example).
 
 #### Upgrading from 0.5.x
 
@@ -144,6 +141,10 @@ Code written for `tray_manager` 0.5.x keeps working by importing
 `package:tray_manager/legacy.dart` instead of `package:tray_manager/tray_manager.dart`.
 It provides the old `trayManager`, `TrayListener`, `Menu` and `MenuItem`
 (`menu_base` is no longer a dependency) on top of the native API.
+
+The import has to change on purpose: `legacy.dart` is a bridge, not the future of this
+package. Everything in it is marked `@Deprecated` and **will be removed in a later
+release** — move to the native API above when you can.
 
 ```dart
 import 'package:tray_manager/legacy.dart';
@@ -163,6 +164,15 @@ await trayManager.setContextMenu(
 
 What differs from 0.5.x:
 
+- Builds need Flutter 3.35 / Dart 3.9 and macOS 10.15 (0.5.x: Flutter 3.3, macOS 10.11).
+- `onTrayIconMouseDown` and `onTrayIconMouseUp` now both arrive on Windows (0.5.x only
+  sent the first) and, new, on Linux, where the panel used to keep every click for
+  itself.
+- `setToolTip`, `popUpContextMenu`, `getBounds` and `setIconPosition` no longer throw
+  `MissingPluginException` on Linux; `getBounds` answers `null` there and
+  `popUpContextMenu` does nothing, because only the panel can open the menu.
+- `setIcon` throws an `ArgumentError` when the image cannot be loaded, on every
+  platform. Windows takes `.png` as well as `.ico` now.
 - `bringAppToFront` of `popUpContextMenu` is accepted but ignored.
 - `onTrayIconMouseDown` / `onTrayIconMouseUp` (and the right-button pair) are
   both delivered when the click completes.

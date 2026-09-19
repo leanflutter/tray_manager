@@ -103,7 +103,8 @@ jobs:
             cmake \
             ninja-build \
             clang \
-            libayatana-appindicator3-dev
+            libx11-dev \
+            libxi-dev
 
       - name: Build example Linux
         run: flutter build linux --release

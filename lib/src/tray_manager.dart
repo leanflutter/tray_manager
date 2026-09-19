@@ -1,14 +1,30 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'dart:async';
-import 'dart:ui' show Rect, Size;
+import 'dart:io';
+import 'dart:ui' show PlatformDispatcher, Rect, Size;
 
 import 'package:nativeapi/nativeapi.dart' as nativeapi;
 import 'package:tray_manager/src/menu.dart';
 import 'package:tray_manager/src/tray_listener.dart';
 
+// The channel method names of the 0.5.x implementation; part of its public API.
+const kEventOnTrayIconMouseDown = 'onTrayIconMouseDown';
+const kEventOnTrayIconMouseUp = 'onTrayIconMouseUp';
+const kEventOnTrayIconRightMouseDown = 'onTrayIconRightMouseDown';
+const kEventOnTrayIconRightMouseUp = 'onTrayIconRightMouseUp';
+const kEventOnTrayMenuItemClick = 'onTrayMenuItemClick';
+
+@Deprecated(
+  'The 0.5.x compatible API will be removed in a future release. Use the native API from package:tray_manager/tray_manager.dart.',
+)
 enum TrayIconPosition { left, right }
 
 /// The pre-nativeapi `TrayManager` on top of a single [nativeapi.TrayIcon],
 /// for code that has not moved to the native API yet.
+@Deprecated(
+  'The 0.5.x compatible API will be removed in a future release. Use the native API from package:tray_manager/tray_manager.dart.',
+)
 class TrayManager {
   TrayManager._();
 
@@ -61,7 +77,7 @@ class TrayManager {
   Future<void> destroy() async {
     _unwireTrayEvents();
     _menu = null;
-    _menuBinding?.dispose();
+    _disposeLater(_menuBinding);
     _menuBinding = null;
     _icon?.dispose();
     _icon = null;
@@ -78,7 +94,8 @@ class TrayManager {
     final icon = iconPath.startsWith('data:image/')
         ? nativeapi.Image.fromBase64(iconPath)
         : nativeapi.ImageAsset.fromAsset(iconPath) ??
-              nativeapi.Image.fromFile(iconPath);
+              nativeapi.Image.fromFile(iconPath) ??
+              _fromLinuxIconName(iconPath);
     if (icon == null) {
       throw ArgumentError.value(
         iconPath,
@@ -116,7 +133,7 @@ class TrayManager {
   Future<void> setContextMenu(Menu menu) async {
     final binding = NativeMenuBinding(menu, onItemClicked: _onMenuItemClicked);
     _ensureTrayIcon.setContextMenu(binding.menu);
-    _menuBinding?.dispose();
+    _disposeLater(_menuBinding);
     _menuBinding = binding;
     _menu = menu;
   }
@@ -130,13 +147,66 @@ class TrayManager {
     _ensureTrayIcon.openContextMenu();
   }
 
+  /// The bounds of this tray icon, in logical pixels as before; null where the
+  /// system does not tell (Linux).
   Future<Rect?> getBounds() async {
-    return _ensureTrayIcon.getBounds();
+    final bounds = _ensureTrayIcon.getBounds();
+    if (bounds.isEmpty) {
+      return null;
+    }
+    if (!Platform.isWindows) {
+      return bounds;
+    }
+    // Windows reports physical pixels; 0.5.x divided them by the view's ratio.
+    final views = PlatformDispatcher.instance.views;
+    final ratio = views.isEmpty ? 1.0 : views.first.devicePixelRatio;
+    return Rect.fromLTWH(
+      bounds.left / ratio,
+      bounds.top / ratio,
+      bounds.width / ratio,
+      bounds.height / ratio,
+    );
   }
 
   nativeapi.TrayIcon? get trayIcon => _trayIcon;
 
   Menu? get contextMenu => _menu;
+
+  // In a Flatpak or Snap, 0.5.x took the *name* of an icon the package installs
+  // (`org.example.app`) instead of a path, and let the panel look it up. The
+  // icon now travels as pixels, so the lookup happens here.
+  nativeapi.Image? _fromLinuxIconName(String name) {
+    if (!Platform.isLinux || name.contains('/')) {
+      return null;
+    }
+    final env = Platform.environment;
+    final snap = env['SNAP'];
+    final dataDirs = <String>[
+      ...?env['XDG_DATA_DIRS']?.split(':'),
+      '/app/share',
+      if (snap != null) ...['$snap/usr/share', '$snap/share'],
+      '/usr/local/share',
+      '/usr/share',
+    ];
+    const sizes = ['48x48', '64x64', '32x32', '128x128', '256x256', '24x24'];
+    final candidates = <String>[
+      if (snap != null) '$snap/meta/gui/$name.png',
+      for (final dir in dataDirs) ...[
+        for (final size in sizes) '$dir/icons/hicolor/$size/apps/$name.png',
+        '$dir/icons/hicolor/scalable/apps/$name.svg',
+        '$dir/pixmaps/$name.png',
+      ],
+    ];
+    for (final candidate in candidates) {
+      if (candidate.startsWith('/') && File(candidate).existsSync()) {
+        final image = nativeapi.Image.fromFile(candidate);
+        if (image != null) {
+          return image;
+        }
+      }
+    }
+    return null;
+  }
 
   nativeapi.TrayIconPosition _nativePosition(TrayIconPosition position) {
     return switch (position) {
@@ -175,6 +245,15 @@ class TrayManager {
     _trayListenerId = null;
   }
 
+  // 0.5.x apps call setContextMenu (or destroy) from onTrayMenuItemClick, which
+  // runs inside the clicked item's own native callback; the item has to
+  // outlive that call.
+  void _disposeLater(NativeMenuBinding? binding) {
+    if (binding != null) {
+      Timer.run(binding.dispose);
+    }
+  }
+
   void _onMenuItemClicked(MenuItem menuItem) {
     menuItem.onClick?.call(menuItem);
     for (final listener in List<TrayListener>.of(_listeners)) {
@@ -183,4 +262,7 @@ class TrayManager {
   }
 }
 
+@Deprecated(
+  'The 0.5.x compatible API will be removed in a future release. Use the native API from package:tray_manager/tray_manager.dart.',
+)
 final trayManager = TrayManager.instance;

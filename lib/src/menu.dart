@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'dart:math' as math;
 
 import 'package:nativeapi/nativeapi.dart' as nativeapi;
@@ -22,6 +24,9 @@ int _generateMenuItemId() {
 /// It is a plain description; `TrayManager.setContextMenu` turns it into a
 /// [nativeapi.Menu]. Changing [items] afterwards needs another
 /// `setContextMenu` call, as it always did.
+@Deprecated(
+  'The 0.5.x compatible API will be removed in a future release. Use the native API from package:tray_manager/tray_manager.dart.',
+)
 class Menu {
   Menu({this.items});
 
@@ -64,6 +69,9 @@ class Menu {
 /// [label], [toolTip], [checked] and [disabled] are live: once the menu has
 /// been handed to `setContextMenu`, assigning them updates the native item, so
 /// `menuItem.checked = !menuItem.checked` inside [onClick] is enough.
+@Deprecated(
+  'The 0.5.x compatible API will be removed in a future release. Use the native API from package:tray_manager/tray_manager.dart.',
+)
 class MenuItem {
   MenuItem({
     this.key,
@@ -187,6 +195,7 @@ class MenuItem {
   // `checked`, so a normal item with a value becomes a native checkbox.
   nativeapi.MenuItemType get _nativeType => switch (type) {
     'submenu' => nativeapi.MenuItemType.submenu,
+    _ when submenu != null => nativeapi.MenuItemType.submenu,
     'checkbox' => nativeapi.MenuItemType.checkbox,
     _ =>
       _checked == null
@@ -269,8 +278,15 @@ class NativeMenuBinding {
       }
 
       final listenerId = nativeItem.addListener((event) {
-        if (event is nativeapi.MenuItemClickedEvent) {
-          onItemClicked(menuItem);
+        if (event is! nativeapi.MenuItemClickedEvent) {
+          return;
+        }
+        onItemClicked(menuItem);
+        // 0.5.x menus showed exactly what `checked` said. Some platforms tick
+        // a check item by themselves when it is clicked, so say it again.
+        if (identical(menuItem._native, nativeItem) &&
+            menuItem._nativeType == nativeapi.MenuItemType.checkbox) {
+          nativeItem.state = menuItem._nativeState;
         }
       });
       _items[menuItem] = (nativeItem, listenerId);
