@@ -110,6 +110,7 @@ class _ShellState extends State<Shell> {
             Expanded(
               child: ListView(
                 children: [
+                  if (!TrayController.supported) _webNote(palette),
                   _stateBlock(palette),
                   OptionRow(
                     label: 'Icon',
@@ -243,7 +244,9 @@ class _ShellState extends State<Shell> {
           OptionChip(
             label: 'Create',
             selected: created,
-            onTap: created ? null : _controller.create,
+            onTap: created || !TrayController.supported
+                ? null
+                : _controller.create,
           ),
           const SizedBox(width: 5),
           OptionChip(
@@ -283,6 +286,21 @@ class _ShellState extends State<Shell> {
                 : null,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _webNote(Palette palette) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: palette.accentSurface,
+        border: Border(bottom: BorderSide(color: palette.border)),
+      ),
+      child: const Text(
+        'The web has no system tray: tray_manager builds here, but every '
+        'call throws, so the controls below stay disabled.',
       ),
     );
   }

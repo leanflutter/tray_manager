@@ -4,6 +4,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tray_manager/legacy.dart';
 
@@ -18,15 +19,23 @@ const kDefaultTooltip = 'tray_manager example';
 /// value read back from the system.
 class TrayController extends ChangeNotifier with TrayListener {
   /// [autoCreate] false leaves the tray alone, for rendering the window in a
-  /// test, where there is no native library to call.
+  /// test, where there is no native library to call. The web has no tray at
+  /// all, so nothing is created there either.
   TrayController({bool autoCreate = true}) {
     trayManager.addListener(this);
-    if (autoCreate) create();
+    if (autoCreate && supported) create();
   }
+
+  /// False on the web: nativeapi compiles there, but every call throws.
+  static bool get supported => !kIsWeb;
+
+  static bool get _isMacOS => defaultTargetPlatform == TargetPlatform.macOS;
+  static bool get _isLinux => defaultTargetPlatform == TargetPlatform.linux;
+  static bool get _isWindows => defaultTargetPlatform == TargetPlatform.windows;
 
   bool created = false;
   String iconPath = kGlyphIcon;
-  bool isTemplate = Platform.isMacOS;
+  bool isTemplate = _isMacOS;
   int iconSize = 18;
   TrayIconPosition iconPosition = TrayIconPosition.left;
   String title = '';
@@ -38,15 +47,15 @@ class TrayController extends ChangeNotifier with TrayListener {
   final List<String> log = <String>[];
 
   /// Windows tray icons have no title; `setTitle` is accepted and ignored.
-  static bool get titleSupported => !Platform.isWindows;
+  static bool get titleSupported => !_isWindows;
 
   /// Template images, icon sizes and icon positions are macOS concepts.
-  static bool get iconLayoutSupported => Platform.isMacOS;
+  static bool get iconLayoutSupported => _isMacOS;
 
   /// A Linux tray icon is drawn by the shell: it has no bounds to ask for and
   /// only the shell can open its menu.
-  static bool get boundsSupported => !Platform.isLinux;
-  static bool get popUpSupported => !Platform.isLinux;
+  static bool get boundsSupported => !_isLinux;
+  static bool get popUpSupported => !_isLinux;
 
   // ---------------------------------------------------------------------
   // Lifecycle
@@ -72,7 +81,7 @@ class TrayController extends ChangeNotifier with TrayListener {
   @override
   void dispose() {
     trayManager.removeListener(this);
-    trayManager.destroy();
+    if (supported) trayManager.destroy();
     super.dispose();
   }
 

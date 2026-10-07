@@ -1,3 +1,17 @@
+## Unreleased
+
+* Depends on nativeapi 0.5.0 and nativeapi_flutter 0.5.0. `ImageAsset` now
+  comes from nativeapi_flutter; `package:tray_manager/tray_manager.dart` still
+  exports it.
+* Apps that also target the web build again (#108): tray_manager compiles
+  there, and every call throws, so guard tray code with `kIsWeb`.
+* Linux: the StatusNotifierItem `Id` is stable across launches (#109). It is
+  the GApplication ID or the executable name, and `TrayIcon.createWithIdentifier`
+  sets one explicitly.
+* Windows: `getBounds()` no longer divides by the device pixel ratio; nativeapi
+  reports tray bounds in logical pixels.
+* The example runs on the web, with the tray controls disabled.
+
 ## 0.7.0
 
 tray_manager is now built on [nativeapi](https://pub.dev/packages/nativeapi): the
