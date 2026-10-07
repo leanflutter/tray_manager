@@ -4,7 +4,6 @@ export 'package:nativeapi/nativeapi.dart'
     show
         ContextMenuTrigger,
         Image,
-        ImageAsset,
         KeyboardAccelerator,
         ListenerId,
         Menu,
@@ -30,3 +29,4 @@ export 'package:nativeapi/nativeapi.dart'
         TrayIconPosition,
         TrayIconRightClickedEvent,
         TrayManager;
+export 'package:nativeapi_flutter/nativeapi_flutter.dart' show ImageAsset;

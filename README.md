@@ -1,4 +1,4 @@
-> **tray_manager is built on [nativeapi](https://github.com/libnativeapi/nativeapi-flutter)**, a
+> **tray_manager is built on [nativeapi](https://github.com/libnativeapi/nativeapi)**, a
 > Flutter binding of one C++ core library ([libnativeapi/nativeapi](https://github.com/libnativeapi/nativeapi))
 > shared by macOS, Windows and Linux. Coming from 0.5.x? See [Upgrading from 0.5.x](#upgrading-from-05x).
 
@@ -116,7 +116,7 @@ trayIcon.setVisible(true);
 
 > The [example app](./example) of this plugin covers the 0.5.x compatible API. For the
 > full example — several icons, animated icons, every native property — see nativeapi's
-> [tray_icon_example](https://github.com/libnativeapi/nativeapi-flutter/tree/main/examples/tray_icon_example).
+> [tray_icon_example](https://github.com/libnativeapi/nativeapi/tree/main/examples/flutter_tray_icon_example).
 
 #### Upgrading from 0.5.x
 

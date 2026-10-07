@@ -1,4 +1,4 @@
-> **tray_manager 基于 [nativeapi](https://github.com/libnativeapi/nativeapi-flutter) 构建**——它是统一的
+> **tray_manager 基于 [nativeapi](https://github.com/libnativeapi/nativeapi) 构建**——它是统一的
 > C++ 核心库（[libnativeapi/nativeapi](https://github.com/libnativeapi/nativeapi)）的 Flutter 绑定，macOS、Windows、Linux
 > 共用同一套实现。从 0.5.x 升级？请看[从 0.5.x 升级](#从-05x-升级)。
 
@@ -114,7 +114,7 @@ trayIcon.setVisible(true);
 ```
 
 > 本插件的[示例应用](./example)演示的是与 0.5.x 兼容的 API。完整示例（多个图标、动画图标、全部原生属性）请看 nativeapi 的
-> [tray_icon_example](https://github.com/libnativeapi/nativeapi-flutter/tree/main/examples/tray_icon_example)。
+> [tray_icon_example](https://github.com/libnativeapi/nativeapi/tree/main/examples/flutter_tray_icon_example)。
 
 #### 从 0.5.x 升级
 

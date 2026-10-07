@@ -2,9 +2,11 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui' show PlatformDispatcher, Rect, Size;
+import 'dart:ui' show Rect, Size;
 
 import 'package:nativeapi/nativeapi.dart' as nativeapi;
+import 'package:nativeapi_flutter/nativeapi_flutter.dart'
+    show ImageAsset, RectangleToRect, SizeToNative;
 import 'package:tray_manager/src/menu.dart';
 import 'package:tray_manager/src/tray_listener.dart';
 
@@ -93,7 +95,7 @@ class TrayManager {
   }) async {
     final icon = iconPath.startsWith('data:image/')
         ? nativeapi.Image.fromBase64(iconPath)
-        : nativeapi.ImageAsset.fromAsset(iconPath) ??
+        : ImageAsset.fromAsset(iconPath) ??
               nativeapi.Image.fromFile(iconPath) ??
               _fromLinuxIconName(iconPath);
     if (icon == null) {
@@ -107,7 +109,7 @@ class TrayManager {
     // macOS only, as before; the other platforms record the values.
     _ensureTrayIcon
       ..isIconTemplate = isTemplate
-      ..iconSize = Size.square(iconSize.toDouble())
+      ..iconSize = Size.square(iconSize.toDouble()).toNative()
       ..iconPosition = _nativePosition(iconPosition)
       ..icon = icon
       ..setVisible(true);
@@ -151,21 +153,10 @@ class TrayManager {
   /// system does not tell (Linux).
   Future<Rect?> getBounds() async {
     final bounds = _ensureTrayIcon.getBounds();
-    if (bounds.isEmpty) {
+    if (bounds.width <= 0 || bounds.height <= 0) {
       return null;
     }
-    if (!Platform.isWindows) {
-      return bounds;
-    }
-    // Windows reports physical pixels; 0.5.x divided them by the view's ratio.
-    final views = PlatformDispatcher.instance.views;
-    final ratio = views.isEmpty ? 1.0 : views.first.devicePixelRatio;
-    return Rect.fromLTWH(
-      bounds.left / ratio,
-      bounds.top / ratio,
-      bounds.width / ratio,
-      bounds.height / ratio,
-    );
+    return bounds.toRect();
   }
 
   nativeapi.TrayIcon? get trayIcon => _trayIcon;

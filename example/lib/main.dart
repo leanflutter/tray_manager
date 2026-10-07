@@ -18,10 +18,10 @@ import 'widgets/palette.dart';
 // This is deliberately the small example. The full one — several icons at once,
 // animated icons, every native property with read-back, and an acceptance
 // checklist — is nativeapi's tray_icon_example:
-// https://github.com/libnativeapi/nativeapi-flutter/tree/main/examples/tray_icon_example
+// https://github.com/libnativeapi/nativeapi/tree/main/examples/flutter_tray_icon_example
 
 const kFullExampleUrl =
-    'github.com/libnativeapi/nativeapi-flutter/tree/main/examples/tray_icon_example';
+    'github.com/libnativeapi/nativeapi/tree/main/examples/flutter_tray_icon_example';
 
 void main() {
   runApp(const TrayManagerExampleApp());

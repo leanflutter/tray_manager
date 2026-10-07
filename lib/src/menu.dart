@@ -8,6 +8,7 @@
 import 'dart:math' as math;
 
 import 'package:nativeapi/nativeapi.dart' as nativeapi;
+import 'package:nativeapi_flutter/nativeapi_flutter.dart' show ImageAsset;
 
 // Same id range the old platform implementations relied on; kept so that ids
 // stored by existing apps keep their shape.
@@ -270,7 +271,7 @@ class NativeMenuBinding {
       final iconPath = menuItem.icon;
       if (iconPath != null) {
         final icon =
-            nativeapi.ImageAsset.fromAsset(iconPath) ??
+            ImageAsset.fromAsset(iconPath) ??
             nativeapi.Image.fromFile(iconPath);
         if (icon != null) {
           nativeItem.icon = icon;

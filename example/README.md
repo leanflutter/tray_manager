@@ -21,4 +21,4 @@ flutter run -d windows
 
 This one is deliberately small. Several icons at once, animated icons, every native
 property with read-back, and an acceptance checklist are in nativeapi's
-[tray_icon_example](https://github.com/libnativeapi/nativeapi-flutter/tree/main/examples/tray_icon_example).
+[tray_icon_example](https://github.com/libnativeapi/nativeapi/tree/main/examples/flutter_tray_icon_example).
