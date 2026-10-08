@@ -54,6 +54,14 @@ jobs:
           channel: stable
           cache: true
 
+      # flutter test runs cnativeapi's build hook, which compiles the core
+      # against GTK 3, X11 and Xi on Linux.
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libx11-dev libxi-dev pkg-config clang
+
       - name: Install dependencies
         run: flutter pub get
 
