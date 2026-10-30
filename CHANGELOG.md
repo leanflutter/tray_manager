@@ -1,3 +1,10 @@
+## Unreleased
+
+* Windows: an elevated app's tray icon responds to clicks again (#110). The
+  shell posts the icon's callback message from a lower integrity level, which
+  User Interface Privilege Isolation dropped at an elevated window; nativeapi
+  now lets that message through. Needs nativeapi 0.5.3 or later.
+
 ## 0.8.0
 
 * Depends on nativeapi 0.5.1 and nativeapi_flutter 0.5.1. `ImageAsset` now
