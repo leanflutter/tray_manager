@@ -134,7 +134,13 @@ class TrayManager {
 
   Future<void> setContextMenu(Menu menu) async {
     final binding = NativeMenuBinding(menu, onItemClicked: _onMenuItemClicked);
-    _ensureTrayIcon.setContextMenu(binding.menu);
+    final trayIcon = _ensureTrayIcon;
+    trayIcon.setContextMenu(binding.menu);
+    if (Platform.isLinux) {
+      // Linux panels display the exported menu themselves. The native default
+      // (no automatic trigger) deliberately does not export it to the panel.
+      trayIcon.setContextMenuTrigger(nativeapi.ContextMenuTrigger.rightClicked);
+    }
     _disposeLater(_menuBinding);
     _menuBinding = binding;
     _menu = menu;

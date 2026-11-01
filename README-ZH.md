@@ -110,8 +110,13 @@ menu.addSeparator();
 menu.addItem(MenuItem.createWithLabelAndType('Exit App', MenuItemType.normal));
 
 trayIcon.setContextMenu(menu);
+trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked);
 trayIcon.setVisible(true);
 ```
+
+菜单触发方式默认为 `none`，仅设置菜单不会自动启用它。Linux 的菜单由面板显示，
+因此必须设置自动触发方式。`openContextMenu()` 可用于 macOS 和 Windows；Linux 上
+菜单何时打开由面板决定。旧版兼容 API 会在 `setContextMenu()` 中启用 Linux 菜单触发方式。
 
 > 本插件的[示例应用](./example)演示的是与 0.5.x 兼容的 API。完整示例（多个图标、动画图标、全部原生属性）请看 nativeapi 的
 > [tray_icon_example](https://github.com/libnativeapi/nativeapi/tree/main/examples/flutter_tray_icon_example)。
@@ -165,11 +170,11 @@ await trayManager.setContextMenu(
 | `setIcon('images/icon.png')` | `trayIcon.icon = ImageAsset.fromAsset('images/icon.png')`（另有 `Image.fromFile`、`Image.fromBase64`） |
 | `setIcon(isTemplate:, iconSize:, iconPosition:)`、`setIconPosition` | `trayIcon.isIconTemplate`、`trayIcon.iconSize`、`trayIcon.iconPosition` |
 | `setToolTip(text)` / `setTitle(text)` | `trayIcon.setTooltip(text)` / `trayIcon.setTitle(text)`——传 `null` 清除；`getTooltip()` / `getTitle()` 可读回 |
-| `setContextMenu(Menu(items: [...]))` | `Menu.create()`、`menu.addItem(MenuItem.createWithLabelAndType(label, MenuItemType.normal))`、`menu.addSeparator()`，然后 `trayIcon.setContextMenu(menu)` |
+| `setContextMenu(Menu(items: [...]))` | `Menu.create()`、`menu.addItem(MenuItem.createWithLabelAndType(label, MenuItemType.normal))`、`menu.addSeparator()`，然后 `trayIcon.setContextMenu(menu)` 和 `trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked)` |
 | `MenuItem.checkbox(checked:)`、`disabled:`、`toolTip:` | `MenuItemType.checkbox` 配合 `item.state`（需在点击监听里自己设置，点击不会自动切换），以及 `item.isEnabled`、`item.tooltip` |
 | `MenuItem.submenu(submenu:)` | `MenuItemType.submenu` 配合 `item.submenu = otherMenu` |
 | `MenuItem(onClick:)`、`onTrayMenuItemClick` + `menuItem.key` | 每个菜单项 `item.addListener((event) { if (event is MenuItemClickedEvent) ... })` |
-| 在 `onTrayIconRightMouseDown` 里 `popUpContextMenu()` | `trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked)`，或 `trayIcon.openContextMenu()` |
+| 在 `onTrayIconRightMouseDown` 里 `popUpContextMenu()` | `trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked)`；macOS、Windows 还支持 `trayIcon.openContextMenu()` |
 | `TrayListener` | `trayIcon.addListener((event) { switch (event) { case TrayIconClickedEvent(): ... } })`——另有 `TrayIconRightClickedEvent`、`TrayIconDoubleClickedEvent`（Linux 上都没有） |
 | `getBounds()` | `trayIcon.getBounds()`（同步；Windows 上是物理像素，Linux 上是空 `Rect`） |
 | `destroy()` | `trayIcon.dispose()` |

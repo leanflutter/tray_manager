@@ -1,3 +1,10 @@
+## Unreleased
+
+* Linux: the legacy `setContextMenu()` enables the menu trigger so panels can
+  display the attached menu (#107). Replacing the menu retains that behavior.
+* Enable the context-menu trigger explicitly in both README native API examples
+  and document Linux's panel-controlled menu behavior.
+
 ## 0.8.1
 
 * Depends on nativeapi 0.5.3 and nativeapi_flutter 0.5.3.

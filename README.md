@@ -111,8 +111,14 @@ menu.addSeparator();
 menu.addItem(MenuItem.createWithLabelAndType('Exit App', MenuItemType.normal));
 
 trayIcon.setContextMenu(menu);
+trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked);
 trayIcon.setVisible(true);
 ```
+
+The default context-menu trigger is `none`; setting a menu alone does not enable it.
+On Linux the panel displays the exported menu, so an automatic trigger is required.
+`openContextMenu()` is available on macOS and Windows; Linux panels control when the
+menu opens. The legacy API enables the Linux menu trigger in `setContextMenu()`.
 
 > The [example app](./example) of this plugin covers the 0.5.x compatible API. For the
 > full example — several icons, animated icons, every native property — see nativeapi's
@@ -174,11 +180,11 @@ What differs from 0.5.x:
 | `setIcon('images/icon.png')` | `trayIcon.icon = ImageAsset.fromAsset('images/icon.png')` (also `Image.fromFile`, `Image.fromBase64`) |
 | `setIcon(isTemplate:, iconSize:, iconPosition:)`, `setIconPosition` | `trayIcon.isIconTemplate`, `trayIcon.iconSize`, `trayIcon.iconPosition` |
 | `setToolTip(text)` / `setTitle(text)` | `trayIcon.setTooltip(text)` / `trayIcon.setTitle(text)` — `null` clears; `getTooltip()` / `getTitle()` read back |
-| `setContextMenu(Menu(items: [...]))` | `Menu.create()`, `menu.addItem(MenuItem.createWithLabelAndType(label, MenuItemType.normal))`, `menu.addSeparator()`, then `trayIcon.setContextMenu(menu)` |
+| `setContextMenu(Menu(items: [...]))` | `Menu.create()`, `menu.addItem(MenuItem.createWithLabelAndType(label, MenuItemType.normal))`, `menu.addSeparator()`, then `trayIcon.setContextMenu(menu)` and `trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked)` |
 | `MenuItem.checkbox(checked:)`, `disabled:`, `toolTip:` | `MenuItemType.checkbox` with `item.state` (set it yourself in the click listener; a click does not toggle it), `item.isEnabled`, `item.tooltip` |
 | `MenuItem.submenu(submenu:)` | `MenuItemType.submenu` with `item.submenu = otherMenu` |
 | `MenuItem(onClick:)`, `onTrayMenuItemClick` + `menuItem.key` | `item.addListener((event) { if (event is MenuItemClickedEvent) ... })` per item |
-| `popUpContextMenu()` from `onTrayIconRightMouseDown` | `trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked)`, or `trayIcon.openContextMenu()` |
+| `popUpContextMenu()` from `onTrayIconRightMouseDown` | `trayIcon.setContextMenuTrigger(ContextMenuTrigger.rightClicked)`; macOS and Windows also support `trayIcon.openContextMenu()` |
 | `TrayListener` | `trayIcon.addListener((event) { switch (event) { case TrayIconClickedEvent(): ... } })` — also `TrayIconRightClickedEvent`, `TrayIconDoubleClickedEvent` (none of them on Linux) |
 | `getBounds()` | `trayIcon.getBounds()` (synchronous; physical pixels on Windows, an empty `Rect` on Linux) |
 | `destroy()` | `trayIcon.dispose()` |
