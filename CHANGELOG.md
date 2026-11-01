@@ -1,4 +1,4 @@
-## Unreleased
+## 0.8.2
 
 * Linux: the legacy `setContextMenu()` enables the menu trigger so panels can
   display the attached menu (#107). Replacing the menu retains that behavior.
