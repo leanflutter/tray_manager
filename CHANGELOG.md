@@ -1,3 +1,11 @@
+## 0.8.3
+
+* Depends on nativeapi 0.5.9 and nativeapi_flutter 0.5.9.
+* Windows: switching between tray icons keeps working when the app runs
+  elevated. Every icon stays registered with the shell and visibility is toggled
+  with `NIS_HIDDEN`, so the icon shown after a switch still receives clicks
+  (#110).
+
 ## 0.8.2
 
 * Linux: the legacy `setContextMenu()` enables the menu trigger so panels can
