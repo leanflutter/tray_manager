@@ -81,7 +81,7 @@ dependencies:
 
 #### Requirements
 
-- Flutter 3.47 / Dart 3.13 or later, macOS 10.15 or later.
+- Flutter 3.50 / Dart 3.14 or later, macOS 10.15 or later.
 - Linux build machines need GTK 3, X11 and Xi development files. The tray icon is a
   StatusNotifierItem over D-Bus, so `libayatana-appindicator3-dev` is no longer needed.
 
@@ -155,7 +155,7 @@ await trayManager.setContextMenu(
 
 What differs from 0.5.x:
 
-- Builds need Flutter 3.47 / Dart 3.13 and macOS 10.15 (0.5.x: Flutter 3.3, macOS 10.11).
+- Builds need Flutter 3.50 / Dart 3.14 and macOS 10.15 (0.5.x: Flutter 3.3, macOS 10.11).
 - A click is reported when it completes, as `onTrayIconMouseDown` immediately followed by
   `onTrayIconMouseUp` (same for the right button). 0.5.x sent the two separately on macOS
   and only the first on Windows. Linux still reports no tray icon clicks at all: the

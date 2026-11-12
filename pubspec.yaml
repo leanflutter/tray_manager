@@ -14,14 +14,14 @@ topics:
   - system-tray
 
 environment:
-  sdk: ^3.13.0
-  flutter: ">=3.47.0"
+  sdk: ^3.14.0
+  flutter: ">=3.50.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  nativeapi: ^0.5.9
-  nativeapi_flutter: ^0.5.9
+  nativeapi: ^0.6.0
+  nativeapi_flutter: ^0.6.0
 
 dev_dependencies:
   flutter_test:

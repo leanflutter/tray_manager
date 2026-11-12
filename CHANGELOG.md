@@ -1,3 +1,7 @@
+## Unreleased
+
+* **Breaking:** requires Flutter 3.50 / Dart 3.14, nativeapi 0.6.0 and nativeapi_flutter 0.6.0.
+
 ## 0.8.3
 
 * Depends on nativeapi 0.5.9 and nativeapi_flutter 0.5.9.
