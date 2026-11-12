@@ -65,7 +65,7 @@ Linux 上的托盘图标是 StatusNotifierItem，需要面板支持才能显示�
 
 ```yaml
 dependencies:
-  tray_manager: ^0.8.2
+  tray_manager: ^0.9.0
 ```
 
 或
