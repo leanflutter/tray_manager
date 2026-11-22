@@ -20,8 +20,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  nativeapi: ^0.6.0
-  nativeapi_flutter: ^0.6.0
+  nativeapi: ^0.6.2
+  nativeapi_flutter: ^0.6.2
 
 dev_dependencies:
   flutter_test:
